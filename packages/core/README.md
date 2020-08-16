@@ -164,6 +164,10 @@ const modules = {
     ],
   }
 ```
+**NOTE!** In the Substrate SDK the events do not have names for their arguments, only the data types. Therefore, `metaConvertToConfig` method works according to the following algorithm:
+1. if the event description corresponds to this [PR](https://github.com/paritytech/substrate/pull/6684), 
+then the names of the arguments correspond to those described in square brackets.
+2. if not, we convert the type name in the camel-case and in case of repeated types we add a serial number to the event. (In this case, you'll most likely need a manual correction)
 
 ### `@modes`
 By default, the bot has only one event and call mode - `Advanced`. It contains everything you have described in the modules. But it is very difficult to navigate through all the event/calls lists of all the modules. For simplicity, we have added the option to group events into additional modes. Sample:
