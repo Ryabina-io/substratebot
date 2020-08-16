@@ -1,0 +1,7 @@
+node_modules
+dbold.json
+parse.js
+.vscode
+db
+launch.json
+package-lock.json
