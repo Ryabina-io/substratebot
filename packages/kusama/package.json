@@ -1,10 +1,9 @@
 {
-  "name": "@polkadotbot/kusama",
+  "name": "substratebot/kusama",
   "main": "main.js",
-  "version": "0.2.0",
-  "private": true,
-  "author": "warfollowsme",
-  "license": "ISC",
+  "version": "1.0.0",
+  "author": "ryabina-io",
+  "license": "Apache-2.0",
   "dependencies": {
     "@polkadot/api": "^1.27.1",
     "@polkadot/util": "^2.18.1",
