@@ -1,12 +1,14 @@
 {
-  "name": "polkadot",
-  "version": "1.0.0",
+  "name": "substratebot/acala",
   "main": "main.js",
-  "author": "ryabina-io",
+  "version": "1.0.0",
   "private": true,
+  "author": "ryabina-io",
   "license": "Apache-2.0",
   "dependencies": {
-    "@polkadot/api": "^1.27.1",
+    "@acala-network/api": "^0.3.1",
+    "@polkadot/api": "^1.25.1",
+    "@polkadot/types": "^1.25.1",
     "@polkadot/util": "^2.18.1",
     "substratebot": "^1.0.0",
     "bent": "^7.3.7",

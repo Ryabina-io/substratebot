@@ -2,6 +2,7 @@
   "name": "substratebot/kusama",
   "main": "main.js",
   "version": "1.0.0",
+  "private": true,
   "author": "ryabina-io",
   "license": "Apache-2.0",
   "dependencies": {

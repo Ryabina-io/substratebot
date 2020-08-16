@@ -1,0 +1,293 @@
+[
+  {
+    "name": "Accounts",
+    "index": "a",
+    "description": "Here are most useful events for your account. [Wiki](https://github.com/AcalaNetwork/Acala/wiki#1-introduction)\n\nYou can select🟢/ unselect⚪️ by clicking on them.",
+    "isAddressFiltering": true,
+    "alerts": [
+      {
+        "name": "Token Transfer",
+        "contract": "currencies",
+        "call": "transfer",
+        "filters": ["sender", "dest"],
+        "short": "Trnsfrrd",
+        "selected": true
+      },
+      {
+        "name": "Deposit",
+        "contract": "currencies",
+        "event": "Deposited",
+        "filters": ["who"],
+        "short": "Dpst",
+        "selected": true
+      },
+      {
+        "name": "Withdrawal",
+        "contract": "currencies",
+        "event": "Withdrawn",
+        "filters": ["who"],
+        "short": "Wthdrwn",
+        "selected": true
+      },
+      {
+        "name": "Ren Mint",
+        "contract": "renVmBridge",
+        "event": "Minted",
+        "filters": ["owner"],
+        "short": "Mntd",
+        "selected": false
+      },
+      {
+        "name": "Ren Burn",
+        "contract": "renVmBridge",
+        "event": "Burnt",
+        "filters": ["owner"],
+        "short": "Brnt",
+        "selected": false
+      },
+      {
+        "name": "Native Currency Transfer",
+        "contract": "currencies",
+        "call": "transferNativeCurrency",
+        "filters": ["sender", "dest"],
+        "short": "TrnsfrrdNtvCrrnc",
+        "selected": false
+      }
+    ]
+  },
+  {
+    "name": "CDP Loans",
+    "index": "h",
+    "description": "CDP Loans. [Wiki](https://github.com/AcalaNetwork/Acala/wiki#21-multi-collateral-type-cdp)\n\nYou can select🟢/ unselect⚪️ by clicking on them.",
+    "isAddressFiltering": true,
+    "alerts": [
+      {
+        "name": "Liquidate CDP Warning",
+        "contract": "cdpEngine",
+        "event": "LiquidationCDPWarning",
+        "filters": ["owner"],
+        "short": "LqdtnCDPWrnng",
+        "selected": true
+      },
+      {
+        "name": "Liquidate Unsafe CDP",
+        "contract": "cdpEngine",
+        "event": "LiquidateUnsafeCDP",
+        "filters": ["owner"],
+        "short": "LqdtUnsfCDP",
+        "selected": true
+      },
+      {
+        "name": "Position Updated",
+        "contract": "loans",
+        "event": "PositionUpdated",
+        "filters": ["owner"],
+        "short": "PstnUpdtd",
+        "selected": true
+      },
+      {
+        "name": "Confiscate Collateral And Debit",
+        "contract": "loans",
+        "event": "ConfiscateCollateralAndDebit",
+        "filters": ["owner"],
+        "short": "CnfsctClltrlAndDbt",
+        "selected": true
+      },
+      {
+        "name": "Transfer Loan",
+        "contract": "loans",
+        "event": "TransferLoan",
+        "filters": ["from", "to"],
+        "short": "TrnsfrLn",
+        "selected": true
+      },
+      {
+        "name": "Settle CDP in Debit",
+        "contract": "cdpEngine",
+        "event": "SettleCDPInDebit",
+        "filters": ["owner"],
+        "short": "SttlCDPInDbt",
+        "selected": true
+      },
+      {
+        "name": "Authorize the loan operator.",
+        "contract": "honzon",
+        "event": "Authorization",
+        "filters": ["authorizer", "authorizee"],
+        "short": "Athrztn",
+        "selected": false
+      },
+      {
+        "name": "Cancel authorization of specific collateral",
+        "contract": "honzon",
+        "event": "UnAuthorization",
+        "filters": ["authorizer", "authorizee"],
+        "short": "UnAthrztn",
+        "selected": false
+      },
+      {
+        "name": "Cancel all authorization",
+        "contract": "honzon",
+        "event": "UnAuthorizationAll",
+        "filters": ["authorizer"],
+        "short": "UnAthrztnAll",
+        "selected": false
+      }
+    ]
+  },
+  {
+    "name": "Liquidation Auction",
+    "index": "auc",
+    "description": "Liquidation Auction. [Wiki](https://github.com/AcalaNetwork/Acala/wiki#242-adjusting-liquidation-auction-parameters)\n\nYou can select🟢/ unselect⚪️ by clicking on them.",
+    "isAddressFiltering": true,
+    "alerts": [
+      {
+        "name": "Auction Bid",
+        "contract": "auction",
+        "event": "Bid",
+        "filters": ["bidder"],
+        "short": "Bd",
+        "selected": true
+      },
+      {
+        "name": "Collateral Auction Dealed",
+        "contract": "auctionManager",
+        "event": "CollateralAuctionDealed",
+        "filters": ["winner"],
+        "short": "ClltrlActnDld",
+        "selected": true
+      },
+      {
+        "name": "Surplus Auction Dealed",
+        "contract": "auctionManager",
+        "event": "SurplusAuctionDealed",
+        "filters": ["winner"],
+        "short": "SrplsActnDld",
+        "selected": true
+      },
+      {
+        "name": "Debit Auction Dealed",
+        "contract": "auctionManager",
+        "event": "DebitAuctionDealed",
+        "filters": ["winner"],
+        "short": "DbtActnDld",
+        "selected": true
+      },
+      {
+        "name": "New Collateral Auction",
+        "contract": "auctionManager",
+        "event": "NewCollateralAuction",
+        "filters": [],
+        "short": "NwClltrlActn",
+        "selected": true
+      },
+      {
+        "name": "New Debit Auction",
+        "contract": "auctionManager",
+        "event": "NewDebitAuction",
+        "filters": [],
+        "short": "NwDbtActn",
+        "selected": false
+      },
+      {
+        "name": "New Surplus Auction",
+        "contract": "auctionManager",
+        "event": "NewSurplusAuction",
+        "filters": [],
+        "short": "NwSrplsActn",
+        "selected": false
+      },
+      {
+        "name": "DEX Take Collateral Auction",
+        "contract": "auctionManager",
+        "event": "DEXTakeCollateralAuction",
+        "filters": [],
+        "short": "DEXTkClltrlActn",
+        "selected": false
+      }
+    ]
+  },
+  {
+    "name": "Honzon Parameters",
+    "index": "p",
+    "description": "Honzon - The Stablecoin Protocol. [Wiki](https://github.com/AcalaNetwork/Acala/wiki#2-honzon---the-stablecoin-protocol)\n\nYou can select🟢/ unselect⚪️ by clicking on them.",
+    "isAddressFiltering": false,
+    "alerts": [
+      {
+        "name": "Debit And Surplus Handle Params Updated",
+        "contract": "cdpTreasury",
+        "call": "setDebitAndSurplusHandleParams",
+        "short": "stDbtAndSrplsHndlPrms",
+        "selected": true
+      },
+      {
+        "name": "Collateral Auction Maximum Size Updated",
+        "contract": "cdpTreasury",
+        "call": "setCollateralAuctionMaximumSize",
+        "short": "stClltrlActnMxmmSz",
+        "selected": true
+      },
+      {
+        "name": "Collateral Params Updated",
+        "contract": "сdpEngine",
+        "call": "setCollateralParams",
+        "short": "stClltrlPrms",
+        "selected": true
+      },
+      {
+        "name": "Global Stability Fee Updated",
+        "contract": "сdpEngine",
+        "event": "GlobalStabilityFeeUpdated",
+        "short": "GlblStbltyFUpdtd",
+        "selected": true
+      }
+    ]
+  },
+  {
+    "name": "Dex - Swap, Deposit & Earn",
+    "index": "d",
+    "description": "Dex. [Wiki](https://github.com/AcalaNetwork/Acala/wiki/3.-DeX#overview)\n\nYou can select🟢/ unselect⚪️ by clicking on them.",
+    "isAddressFiltering": true,
+    "alerts": [
+      {
+        "name": "Add Liquidity",
+        "contract": "dex",
+        "event": "AddLiquidity",
+        "filters": ["who"],
+        "short": "AddLqdty",
+        "selected": true
+      },
+      {
+        "name": "Withdraw Liquidity",
+        "contract": "dex",
+        "event": "WithdrawLiquidity",
+        "filters": ["who"],
+        "short": "WthdrwLqdty",
+        "selected": true
+      },
+      {
+        "name": "Swap",
+        "contract": "dex",
+        "event": "Swap",
+        "filters": ["trader"],
+        "short": "Swp",
+        "selected": true
+      },
+      {
+        "name": "Liquidity Incentive Rate Updated",
+        "contract": "dex",
+        "event": "LiquidityIncentiveRateUpdated",
+        "short": "LqdtyIncntvRtUpdtd",
+        "selected": true
+      },
+      {
+        "name": "Incentive Interest Claimed",
+        "contract": "dex",
+        "event": "IncentiveInterestClaimed",
+        "filters": ["who"],
+        "short": "IncntvIntrstClmd",
+        "selected": true
+      }
+    ]
+  }
+]
