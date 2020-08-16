@@ -1,16 +1,18 @@
 {
-  "name": "kusamabot",
+  "name": "edgewarebot",
   "main": "main.js",
   "version": "1.0.0",
-  "private": true,
   "author": "ryabina-io",
+  "private": true,
   "license": "Apache-2.0",
   "dependencies": {
-    "@polkadot/api": "^1.27.1",
+    "@polkadot/api": "^1.25.1",
+    "@polkadot/types": "^1.25.1",
     "@polkadot/util": "^2.18.1",
     "substratebot": "^1.0.0",
     "bent": "^7.3.7",
     "bignumber.js": "^9.0.0",
+    "edgeware-node-types": "^2.3.4",
     "lodash": "^4.17.19"
   }
 }

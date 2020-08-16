@@ -1,0 +1,3110 @@
+{
+    "System": {
+        "events": {
+            "CodeUpdated": {
+                "short": "CdUpdtd",
+                "documentation": " `:code` was updated.",
+                "args": []
+            }
+        },
+        "calls": {
+            "fillBlock": {
+                "short": "fllBlck",
+                "documentation": " A big dispatch that will disallow any other transaction to be included.",
+                "args": []
+            },
+            "remark": {
+                "short": "rmrk",
+                "documentation": " Make some on-chain remark.",
+                "args": [
+                    {
+                        "name": "onchainRemark",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "setHeapPages": {
+                "short": "stHpPgs",
+                "documentation": " Set the number of pages in the WebAssembly environment's heap.",
+                "args": [
+                    {
+                        "name": "pages",
+                        "type": "u64",
+                        "baseType": "u64"
+                    }
+                ]
+            },
+            "setCode": {
+                "short": "stCd",
+                "documentation": " Set the new runtime code.",
+                "args": [
+                    {
+                        "name": "code",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "setCodeWithoutChecks": {
+                "short": "stCdWthtChcks",
+                "documentation": " Set the new runtime code without doing any checks of the given `code`.",
+                "args": [
+                    {
+                        "name": "code",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "setChangesTrieConfig": {
+                "short": "stChngsTrCnfg",
+                "documentation": " Set the new changes trie configuration.",
+                "args": [
+                    {
+                        "name": "changesTrieConfig",
+                        "type": "Option<ChangesTrieConfiguration>",
+                        "baseType": "Option<{\"digestInterval\":\"u32\",\"digestLevels\":\"u32\"}>",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "setStorage": {
+                "short": "stStrg",
+                "documentation": " Set some items of storage.",
+                "args": [
+                    {
+                        "name": "items",
+                        "type": "Vec<KeyValue>",
+                        "baseType": "Vec<(StorageKey, StorageData)>",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "killStorage": {
+                "short": "kllStrg",
+                "documentation": " Kill some items from storage.",
+                "args": [
+                    {
+                        "name": "keys",
+                        "type": "Vec<Key>",
+                        "baseType": "Vec<Bytes>",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "killPrefix": {
+                "short": "kllPrfx",
+                "documentation": " Kill all storage items with a key that starts with the given prefix.",
+                "args": [
+                    {
+                        "name": "prefix",
+                        "type": "Key",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "short": "Systm"
+    },
+    "Utility": {
+        "events": {
+            "NewMultisig": {
+                "short": "NwMltsg",
+                "documentation": " A new multisig operation has begun. First param is the account that is approving,  second is the multisig account.",
+                "args": [
+                    {
+                        "name": "approving",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "multisig",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "MultisigApproval": {
+                "short": "MltsgApprvl",
+                "documentation": " A multisig operation has been approved by someone. First param is the account that is  approving, third is the multisig account.",
+                "args": [
+                    {
+                        "name": "approving",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "timepoint",
+                        "type": "Timepoint",
+                        "baseType": "{\"height\":\"BlockNumber\",\"index\":\"u32\"}",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "multisig",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "MultisigExecuted": {
+                "short": "MltsgExctd",
+                "documentation": " A multisig operation has been executed. First param is the account that is  approving, third is the multisig account.",
+                "args": [
+                    {
+                        "name": "approving",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "timepoint",
+                        "type": "Timepoint",
+                        "baseType": "{\"height\":\"BlockNumber\",\"index\":\"u32\"}",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "multisig",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "result",
+                        "type": "DispatchResult",
+                        "baseType": "Result<(), DispatchError>",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "MultisigCancelled": {
+                "short": "MltsgCnclld",
+                "documentation": " A multisig operation has been cancelled. First param is the account that is  cancelling, third is the multisig account.",
+                "args": [
+                    {
+                        "name": "cancelling",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "timepoint",
+                        "type": "Timepoint",
+                        "baseType": "{\"height\":\"BlockNumber\",\"index\":\"u32\"}",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "multisig",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "asSub": {
+                "short": "sSb",
+                "documentation": " Send a call through an indexed pseudonym of the sender.",
+                "args": [
+                    {
+                        "name": "id",
+                        "type": "u16",
+                        "baseType": "u16"
+                    },
+                    {
+                        "name": "call",
+                        "type": "Call",
+                        "baseType": "GenericCall",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "asMulti": {
+                "short": "sMlt",
+                "documentation": " Register approval for a dispatch to be made from a deterministic composite account if  approved by a total of `threshold - 1` of `other_signatories`.",
+                "args": [
+                    {
+                        "name": "threshold",
+                        "type": "u16",
+                        "baseType": "u16"
+                    },
+                    {
+                        "name": "otherSignatories",
+                        "type": "Vec<AccountId>",
+                        "baseType": "Vec<GenericAccountId>"
+                    },
+                    {
+                        "name": "optionЕimepoint",
+                        "type": "Option<Timepoint>",
+                        "baseType": "Option<{\"height\":\"BlockNumber\",\"index\":\"u32\"}>",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "call",
+                        "type": "Call",
+                        "baseType": "GenericCall",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "approveAsMulti": {
+                "short": "pprvAsMlt",
+                "documentation": " Register approval for a dispatch to be made from a deterministic composite account if  approved by a total of `threshold - 1` of `other_signatories`.",
+                "args": [
+                    {
+                        "name": "threshold",
+                        "type": "u16",
+                        "baseType": "u16"
+                    },
+                    {
+                        "name": "otherSignatories",
+                        "type": "Vec<AccountId>",
+                        "baseType": "Vec<GenericAccountId>"
+                    },
+                    {
+                        "name": "optionЕimepoint",
+                        "type": "Option<Timepoint>",
+                        "baseType": "Option<{\"height\":\"BlockNumber\",\"index\":\"u32\"}>",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "callHash",
+                        "type": "[u8;32]",
+                        "baseType": "[u8;32]",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "cancelAsMulti": {
+                "short": "cnclAsMlt",
+                "documentation": " Cancel a pre-existing, on-going multisig transaction. Any deposit reserved previously  for this operation will be unreserved on success.",
+                "args": [
+                    {
+                        "name": "threshold",
+                        "type": "u16",
+                        "baseType": "u16"
+                    },
+                    {
+                        "name": "otherSignatories",
+                        "type": "Vec<AccountId>",
+                        "baseType": "Vec<GenericAccountId>"
+                    },
+                    {
+                        "name": "timepoint",
+                        "type": "Timepoint",
+                        "baseType": "{\"height\":\"BlockNumber\",\"index\":\"u32\"}",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "callHash",
+                        "type": "[u8;32]",
+                        "baseType": "[u8;32]",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "short": "Utlty"
+    },
+    "Timestamp": {
+        "events": {},
+        "calls": {
+            "set": {
+                "short": "st",
+                "documentation": " Set the current time.",
+                "args": [
+                    {
+                        "name": "now",
+                        "type": "Compact<Moment>",
+                        "baseType": "Compact<u64>"
+                    }
+                ]
+            }
+        },
+        "short": "Tmstmp"
+    },
+    "Authorship": {
+        "events": {},
+        "calls": {
+            "setUncles": {
+                "short": "stUncls",
+                "documentation": " Provide a set of uncles.",
+                "args": [
+                    {
+                        "name": "newUncles",
+                        "type": "Vec<Header>",
+                        "baseType": "Vec<{\"parentHash\":\"Hash\",\"number\":\"Compact<BlockNumber>\",\"stateRoot\":\"Hash\",\"extrinsicsRoot\":\"Hash\",\"digest\":\"Digest\"}>",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "short": "Athrshp"
+    },
+    "Indices": {
+        "events": {
+            "NewAccountIndex": {
+                "short": "NwAccntIndx",
+                "documentation": " A new account index was assigned.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "newAccountIndex",
+                        "type": "AccountIndex",
+                        "baseType": "GenericAccountIndex",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "calls": {},
+        "short": "Indcs"
+    },
+    "Balances": {
+        "events": {
+            "NewAccount": {
+                "short": "NwAccnt",
+                "documentation": " A new account was created.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "ReapedAccount": {
+                "short": "RpdAccnt",
+                "documentation": " An account was reaped.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "Transfer": {
+                "short": "Trnsfr",
+                "documentation": " Transfer succeeded (from, to, value, fees).",
+                "args": [
+                    {
+                        "name": "from",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "to",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    },
+                    {
+                        "name": "fees",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "BalanceSet": {
+                "short": "BlncSt",
+                "documentation": " A balance was set by root (who, free, reserved).",
+                "args": [
+                    {
+                        "name": "who",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "free",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    },
+                    {
+                        "name": "reserved",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "Deposit": {
+                "short": "Dpst",
+                "documentation": " Some amount was deposited (e.g. for transaction fees).",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "fees",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "transfer": {
+                "short": "trnsfr",
+                "documentation": " Transfer some liquid free balance to another account.",
+                "args": [
+                    {
+                        "name": "dest",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Compact<Balance>",
+                        "baseType": "Compact<u128>"
+                    }
+                ]
+            },
+            "setBalance": {
+                "short": "stBlnc",
+                "documentation": " Set the balances of a given account.",
+                "args": [
+                    {
+                        "name": "who",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    },
+                    {
+                        "name": "newFree",
+                        "type": "Compact<Balance>",
+                        "baseType": "Compact<u128>"
+                    },
+                    {
+                        "name": "newReserved",
+                        "type": "Compact<Balance>",
+                        "baseType": "Compact<u128>"
+                    }
+                ]
+            },
+            "forceTransfer": {
+                "short": "frcTrnsfr",
+                "documentation": " Exactly as `transfer`, except the origin must be root and the source account may be  specified.",
+                "args": [
+                    {
+                        "name": "source",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    },
+                    {
+                        "name": "dest",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Compact<Balance>",
+                        "baseType": "Compact<u128>"
+                    }
+                ]
+            },
+            "transferKeepAlive": {
+                "short": "trnsfrKpAlv",
+                "documentation": " Same as the [`transfer`] call, but with a check that the transfer will not kill the  origin account.",
+                "args": [
+                    {
+                        "name": "dest",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Compact<Balance>",
+                        "baseType": "Compact<u128>"
+                    }
+                ]
+            }
+        },
+        "short": "Blncs"
+    },
+    "Staking": {
+        "events": {
+            "Reward": {
+                "short": "Rwrd",
+                "documentation": " All validators have been rewarded by the first balance; the second is the remainder  from the maximum amount of reward.",
+                "args": [
+                    {
+                        "name": "rewarded",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    },
+                    {
+                        "name": "maxReward",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "Slash": {
+                "short": "Slsh",
+                "documentation": " One validator (and its nominators) has been slashed by the given amount.",
+                "args": [
+                    {
+                        "name": "slashedValidator",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "OldSlashingReportDiscarded": {
+                "short": "OldSlshngRprtDscrdd",
+                "documentation": " An old slashing report from a prior era was discarded because it could  not be processed.",
+                "args": [
+                    {
+                        "name": "session",
+                        "type": "SessionIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "bond": {
+                "short": "bnd",
+                "documentation": " Take the origin account as a stash and lock up `value` of its balance. `controller` will  be the account that controls it.",
+                "args": [
+                    {
+                        "name": "controller",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Compact<BalanceOf>",
+                        "baseType": "Compact<u128>"
+                    },
+                    {
+                        "name": "rewardDestination",
+                        "type": "RewardDestination",
+                        "baseType": "{\"_enum\":[\"Staked\",\"Stash\",\"Controller\"]}",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "bondExtra": {
+                "short": "bndExtr",
+                "documentation": " Add some extra amount that have appeared in the stash `free_balance` into the balance up  for staking.",
+                "args": [
+                    {
+                        "name": "maxAdditional",
+                        "type": "Compact<BalanceOf>",
+                        "baseType": "Compact<u128>"
+                    }
+                ]
+            },
+            "unbond": {
+                "short": "nbnd",
+                "documentation": " Schedule a portion of the stash to be unlocked ready for transfer out after the bond  period ends. If this leaves an amount actively bonded less than  T::Currency::minimum_balance(), then it is increased to the full amount.",
+                "args": [
+                    {
+                        "name": "value",
+                        "type": "Compact<BalanceOf>",
+                        "baseType": "Compact<u128>"
+                    }
+                ]
+            },
+            "withdrawUnbonded": {
+                "short": "wthdrwUnbndd",
+                "documentation": " Remove any unlocked chunks from the `unlocking` queue from our management.",
+                "args": []
+            },
+            "validate": {
+                "short": "vldt",
+                "documentation": " Declare the desire to validate for the origin controller.",
+                "args": [
+                    {
+                        "name": "prefs",
+                        "type": "ValidatorPrefs",
+                        "baseType": "{\"commission\":\"Compact<Perbill>\"}",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "nominate": {
+                "short": "nmnt",
+                "documentation": " Declare the desire to nominate `targets` for the origin controller.",
+                "args": [
+                    {
+                        "name": "targets",
+                        "type": "Vec<LookupSource>",
+                        "baseType": "Vec<GenericAddress>"
+                    }
+                ]
+            },
+            "chill": {
+                "short": "chll",
+                "documentation": " Declare no desire to either validate or nominate.",
+                "args": []
+            },
+            "setPayee": {
+                "short": "stPy",
+                "documentation": " (Re-)set the payment target for a controller.",
+                "args": [
+                    {
+                        "name": "rewardDestination",
+                        "type": "RewardDestination",
+                        "baseType": "{\"_enum\":[\"Staked\",\"Stash\",\"Controller\"]}",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "setController": {
+                "short": "stCntrllr",
+                "documentation": " (Re-)set the controller of a stash.",
+                "args": [
+                    {
+                        "name": "controller",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    }
+                ]
+            },
+            "setValidatorCount": {
+                "short": "stVldtrCnt",
+                "documentation": " The ideal number of validators.",
+                "args": [
+                    {
+                        "name": "newNumberOfValidators",
+                        "type": "Compact<u32>",
+                        "baseType": "Compact<u32>"
+                    }
+                ]
+            },
+            "forceNoEras": {
+                "short": "frcNErs",
+                "documentation": " Force there to be no new eras indefinitely.",
+                "args": []
+            },
+            "forceNewEra": {
+                "short": "frcNwEr",
+                "documentation": " Force there to be a new era at the end of the next session. After this, it will be  reset to normal (non-forced) behaviour.",
+                "args": []
+            },
+            "setInvulnerables": {
+                "short": "stInvlnrbls",
+                "documentation": " Set the validators who cannot be slashed (if any).",
+                "args": [
+                    {
+                        "name": "validators",
+                        "type": "Vec<AccountId>",
+                        "baseType": "Vec<GenericAccountId>"
+                    }
+                ]
+            },
+            "forceUnstake": {
+                "short": "frcUnstk",
+                "documentation": " Force a current staker to become completely unstaked, immediately.",
+                "args": [
+                    {
+                        "name": "stash",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "forceNewEraAlways": {
+                "short": "frcNwErAlwys",
+                "documentation": " Force there to be a new era at the end of sessions indefinitely.",
+                "args": []
+            },
+            "cancelDeferredSlash": {
+                "short": "cnclDfrrdSlsh",
+                "documentation": " Cancel enactment of a deferred slash. Can be called by either the root origin or  the `T::SlashCancelOrigin`.  passing the era and indices of the slashes for that era to kill.",
+                "args": [
+                    {
+                        "name": "era",
+                        "type": "EraIndex",
+                        "baseType": "u32"
+                    },
+                    {
+                        "name": "slashIndices",
+                        "type": "Vec<u32>",
+                        "baseType": "Vec<u32>"
+                    }
+                ]
+            },
+            "rebond": {
+                "short": "rbnd",
+                "documentation": " Rebond a portion of the stash scheduled to be unlocked.",
+                "args": [
+                    {
+                        "name": "value",
+                        "type": "Compact<BalanceOf>",
+                        "baseType": "Compact<u128>"
+                    }
+                ]
+            }
+        },
+        "short": "Stkng"
+    },
+    "Session": {
+        "events": {
+            "NewSession": {
+                "short": "NwSssn",
+                "documentation": " New session has happened. Note that the argument is the session index, not the block  number as the type might suggest.",
+                "args": [
+                    {
+                        "name": "session",
+                        "type": "SessionIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "setKeys": {
+                "short": "stKys",
+                "documentation": " Sets the session key(s) of the function caller to `keys`.  Allows an account to set its session key prior to becoming a validator.  This doesn't take effect until the next session.",
+                "args": [
+                    {
+                        "name": "keys",
+                        "type": "Keys",
+                        "baseType": "(AccountId, AccountId, AccountId, AccountId)",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "proof",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "short": "Sssn"
+    },
+    "Democracy": {
+        "events": {
+            "Proposed": {
+                "short": "Prpsd",
+                "documentation": " A motion has been proposed by a public account.",
+                "args": [
+                    {
+                        "name": "proposal",
+                        "type": "PropIndex",
+                        "baseType": "u32"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "Tabled": {
+                "short": "Tbld",
+                "documentation": " A public proposal has been tabled for referendum vote.",
+                "args": [
+                    {
+                        "name": "proposal",
+                        "type": "PropIndex",
+                        "baseType": "u32"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    },
+                    {
+                        "name": "members",
+                        "type": "Vec<AccountId>",
+                        "baseType": "Vec<GenericAccountId>"
+                    }
+                ]
+            },
+            "ExternalTabled": {
+                "short": "ExtrnlTbld",
+                "documentation": " An external proposal has been tabled.",
+                "args": []
+            },
+            "Started": {
+                "short": "Strtd",
+                "documentation": " A referendum has begun.",
+                "args": [
+                    {
+                        "name": "referendum",
+                        "type": "ReferendumIndex",
+                        "baseType": "u32"
+                    },
+                    {
+                        "name": "threshold",
+                        "type": "VoteThreshold",
+                        "baseType": "{\"_enum\":[\"Super majority approval\",\"Super majority rejection\",\"Simple majority\"]}",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "Passed": {
+                "short": "Pssd",
+                "documentation": " A proposal has been approved by referendum.",
+                "args": [
+                    {
+                        "name": "referendum",
+                        "type": "ReferendumIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "NotPassed": {
+                "short": "NtPssd",
+                "documentation": " A proposal has been rejected by referendum.",
+                "args": [
+                    {
+                        "name": "referendum",
+                        "type": "ReferendumIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "Cancelled": {
+                "short": "Cnclld",
+                "documentation": " A referendum has been cancelled.",
+                "args": [
+                    {
+                        "name": "referendum",
+                        "type": "ReferendumIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "Executed": {
+                "short": "Exctd",
+                "documentation": " A proposal has been enacted.",
+                "args": [
+                    {
+                        "name": "referendum",
+                        "type": "ReferendumIndex",
+                        "baseType": "u32"
+                    },
+                    {
+                        "name": "result",
+                        "type": "bool",
+                        "baseType": "bool"
+                    }
+                ]
+            },
+            "Delegated": {
+                "short": "Dlgtd",
+                "documentation": " An account has delegated their vote to another account.",
+                "args": [
+                    {
+                        "name": "delegator",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "recipient",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "Undelegated": {
+                "short": "Undlgtd",
+                "documentation": " An account has cancelled a previous delegation operation.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "Vetoed": {
+                "short": "Vtd",
+                "documentation": " An external proposal has been vetoed.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "hash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "blockNumber",
+                        "type": "BlockNumber",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "PreimageNoted": {
+                "short": "PrmgNtd",
+                "documentation": " A proposal's preimage was noted, and the deposit taken.",
+                "args": [
+                    {
+                        "name": "hash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "takenBalance",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "PreimageUsed": {
+                "short": "PrmgUsd",
+                "documentation": " A proposal preimage was removed and used (the deposit was returned).",
+                "args": [
+                    {
+                        "name": "hash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "returnedBalance",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "PreimageInvalid": {
+                "short": "PrmgInvld",
+                "documentation": " A proposal could not be executed because its preimage was invalid.",
+                "args": [
+                    {
+                        "name": "proposalHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "referendum",
+                        "type": "ReferendumIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "PreimageMissing": {
+                "short": "PrmgMssng",
+                "documentation": " A proposal could not be executed because its preimage was missing.",
+                "args": [
+                    {
+                        "name": "proposalHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "referendum",
+                        "type": "ReferendumIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "PreimageReaped": {
+                "short": "PrmgRpd",
+                "documentation": " A registered preimage was removed and the deposit collected by the reaper (last item).",
+                "args": [
+                    {
+                        "name": "hash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "collectedBalance",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    },
+                    {
+                        "name": "reaper",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "Unlocked": {
+                "short": "Unlckd",
+                "documentation": " An account has been unlocked successfully.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "propose": {
+                "short": "prps",
+                "documentation": " Propose a sensitive action to be taken.",
+                "args": [
+                    {
+                        "name": "proposalHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Compact<BalanceOf>",
+                        "baseType": "Compact<u128>"
+                    }
+                ]
+            },
+            "second": {
+                "short": "scnd",
+                "documentation": " Propose a sensitive action to be taken.",
+                "args": [
+                    {
+                        "name": "proposal",
+                        "type": "Compact<PropIndex>",
+                        "baseType": "Compact<u32>"
+                    }
+                ]
+            },
+            "vote": {
+                "short": "vt",
+                "documentation": " Vote in a referendum. If `vote.is_aye()`, the vote is to enact the proposal;  otherwise it is a vote to keep the status quo.",
+                "args": [
+                    {
+                        "name": "referendumIndex",
+                        "type": "Compact<ReferendumIndex>",
+                        "baseType": "Compact<u32>"
+                    },
+                    {
+                        "name": "vote",
+                        "type": "Vote",
+                        "baseType": "GenericVote",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "proxyVote": {
+                "short": "prxyVt",
+                "documentation": " Vote in a referendum on behalf of a stash. If `vote.is_aye()`, the vote is to enact  the proposal; otherwise it is a vote to keep the status quo.",
+                "args": [
+                    {
+                        "name": "referendumIndex",
+                        "type": "Compact<ReferendumIndex>",
+                        "baseType": "Compact<u32>"
+                    },
+                    {
+                        "name": "vote",
+                        "type": "Vote",
+                        "baseType": "GenericVote",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "emergencyCancel": {
+                "short": "mrgncyCncl",
+                "documentation": " Schedule an emergency cancellation of a referendum. Cannot happen twice to the same  referendum.",
+                "args": [
+                    {
+                        "name": "referendumIndex",
+                        "type": "ReferendumIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "externalPropose": {
+                "short": "xtrnlPrps",
+                "documentation": " Schedule a referendum to be tabled once it is legal to schedule an external  referendum.",
+                "args": [
+                    {
+                        "name": "proposalHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "externalProposeMajority": {
+                "short": "xtrnlPrpsMjrty",
+                "documentation": " Schedule a majority-carries referendum to be tabled next once it is legal to schedule  an external referendum.",
+                "args": [
+                    {
+                        "name": "proposalHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "externalProposeDefault": {
+                "short": "xtrnlPrpsDflt",
+                "documentation": " Schedule a negative-turnout-bias referendum to be tabled next once it is legal to  schedule an external referendum.",
+                "args": [
+                    {
+                        "name": "proposalHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "fastTrack": {
+                "short": "fstTrck",
+                "documentation": " Schedule the currently externally-proposed majority-carries referendum to be tabled  immediately. If there is no externally-proposed referendum currently, or if there is one  but it is not a majority-carries referendum then it fails.",
+                "args": [
+                    {
+                        "name": "proposalHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "votingPeriod",
+                        "type": "BlockNumber",
+                        "baseType": "u32"
+                    },
+                    {
+                        "name": "delay",
+                        "type": "BlockNumber",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "vetoExternal": {
+                "short": "vtExtrnl",
+                "documentation": " Veto and blacklist the external proposal hash.",
+                "args": [
+                    {
+                        "name": "proposalHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "cancelReferendum": {
+                "short": "cnclRfrndm",
+                "documentation": " Remove a referendum.",
+                "args": [
+                    {
+                        "name": "referendumIndex",
+                        "type": "Compact<ReferendumIndex>",
+                        "baseType": "Compact<u32>"
+                    }
+                ]
+            },
+            "cancelQueued": {
+                "short": "cnclQd",
+                "documentation": " Cancel a proposal queued for enactment.",
+                "args": [
+                    {
+                        "name": "which",
+                        "type": "ReferendumIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "setProxy": {
+                "short": "stPrxy",
+                "documentation": " Specify a proxy. Called by the stash.",
+                "args": [
+                    {
+                        "name": "proxy",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "resignProxy": {
+                "short": "rsgnPrxy",
+                "documentation": " Clear the proxy. Called by the proxy.",
+                "args": []
+            },
+            "removeProxy": {
+                "short": "rmvPrxy",
+                "documentation": " Clear the proxy. Called by the stash.",
+                "args": [
+                    {
+                        "name": "proxy",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "delegate": {
+                "short": "dlgt",
+                "documentation": " Delegate vote.",
+                "args": [
+                    {
+                        "name": "to",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "conviction",
+                        "type": "Conviction",
+                        "baseType": "{\"_enum\":[\"None\",\"Locked1x\",\"Locked2x\",\"Locked3x\",\"Locked4x\",\"Locked5x\",\"Locked6x\"]}",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "undelegate": {
+                "short": "ndlgt",
+                "documentation": " Undelegate vote.",
+                "args": []
+            },
+            "clearPublicProposals": {
+                "short": "clrPblcPrpsls",
+                "documentation": " Veto and blacklist the proposal hash. Must be from Root origin.",
+                "args": []
+            },
+            "notePreimage": {
+                "short": "ntPrmg",
+                "documentation": " Register the preimage for an upcoming proposal. This doesn't require the proposal to be  in the dispatch queue but does require a deposit, returned once enacted.",
+                "args": [
+                    {
+                        "name": "encodedProposal",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "noteImminentPreimage": {
+                "short": "ntImmnntPrmg",
+                "documentation": " Register the preimage for an upcoming proposal. This requires the proposal to be  in the dispatch queue. No deposit is needed.",
+                "args": [
+                    {
+                        "name": "encodedProposal",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "reapPreimage": {
+                "short": "rpPrmg",
+                "documentation": " Remove an expired proposal preimage and collect the deposit.",
+                "args": [
+                    {
+                        "name": "proposalPash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "unlock": {
+                "short": "nlck",
+                "documentation": "",
+                "args": [
+                    {
+                        "name": "target",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            }
+        },
+        "short": "Dmcrcy"
+    },
+    "Council": {
+        "events": {
+            "Proposed": {
+                "short": "Prpsd",
+                "documentation": " A motion (given hash) has been proposed (by given account) with a threshold (given  `MemberCount`).",
+                "args": [
+                    {
+                        "name": "byAccountId",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "proposalIndex",
+                        "type": "ProposalIndex",
+                        "baseType": "u32"
+                    },
+                    {
+                        "name": "proposedMotionHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "thresholdMemberCount",
+                        "type": "MemberCount",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "Voted": {
+                "short": "Vtd",
+                "documentation": " A motion (given hash) has been voted on by given account, leaving  a tally (yes votes and no votes given respectively as `MemberCount`).",
+                "args": [
+                    {
+                        "name": "byAccountId",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "proposedMotionHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "bool",
+                        "type": "bool",
+                        "baseType": "bool"
+                    },
+                    {
+                        "name": "yesVotes",
+                        "type": "MemberCount",
+                        "baseType": "u32"
+                    },
+                    {
+                        "name": "noVotes",
+                        "type": "MemberCount",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "Approved": {
+                "short": "Apprvd",
+                "documentation": " A motion was approved by the required threshold.",
+                "args": [
+                    {
+                        "name": "hash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "Disapproved": {
+                "short": "Dspprvd",
+                "documentation": " A motion was not approved by the required threshold.",
+                "args": [
+                    {
+                        "name": "hash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "Executed": {
+                "short": "Exctd",
+                "documentation": " A motion was executed; `bool` is true if returned without error.",
+                "args": [
+                    {
+                        "name": "hash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "noErrors",
+                        "type": "bool",
+                        "baseType": "bool"
+                    }
+                ]
+            },
+            "MemberExecuted": {
+                "short": "MmbrExctd",
+                "documentation": " A single member did some action; `bool` is true if returned without error.",
+                "args": [
+                    {
+                        "name": "hash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "noErrors",
+                        "type": "bool",
+                        "baseType": "bool"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "setMembers": {
+                "short": "stMmbrs",
+                "documentation": " Set the collective's membership manually to `new_members`. Be nice to the chain and  provide it pre-sorted.",
+                "args": [
+                    {
+                        "name": "newNembers",
+                        "type": "Vec<AccountId>",
+                        "baseType": "Vec<GenericAccountId>"
+                    }
+                ]
+            },
+            "execute": {
+                "short": "xct",
+                "documentation": " Dispatch a proposal from a member using the `Member` origin.",
+                "args": [
+                    {
+                        "name": "proposal",
+                        "type": "Proposal",
+                        "baseType": "GenericCall",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "propose": {
+                "short": "prps",
+                "documentation": "",
+                "args": [
+                    {
+                        "name": "threshold",
+                        "type": "Compact<MemberCount>",
+                        "baseType": "Compact<u32>"
+                    },
+                    {
+                        "name": "proposal",
+                        "type": "Proposal",
+                        "baseType": "GenericCall",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "vote": {
+                "short": "vt",
+                "documentation": "",
+                "args": [
+                    {
+                        "name": "proposal",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "index",
+                        "type": "Compact<ProposalIndex>",
+                        "baseType": "Compact<u32>"
+                    },
+                    {
+                        "name": "approve",
+                        "type": "bool",
+                        "baseType": "bool"
+                    }
+                ]
+            }
+        },
+        "short": "Cncl"
+    },
+    "Elections": {
+        "events": {
+            "NewTerm": {
+                "short": "NwTrm",
+                "documentation": " A new term with new members. This indicates that enough candidates existed, not that  enough have has been elected. The inner value must be examined for this purpose.",
+                "args": [
+                    {
+                        "name": "newMembers",
+                        "type": "Vec<(AccountId,Balance)>",
+                        "baseType": "Vec<(AccountId,Balance)>",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "EmptyTerm": {
+                "short": "EmptyTrm",
+                "documentation": " No (or not enough) candidates existed for this round.",
+                "args": []
+            },
+            "MemberKicked": {
+                "short": "MmbrKckd",
+                "documentation": " A member has been removed. This should always be followed by either `NewTerm` ot  `EmptyTerm`.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "MemberRenounced": {
+                "short": "MmbrRnncd",
+                "documentation": " A member has renounced their candidacy.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "VoterReported": {
+                "short": "VtrRprtd",
+                "documentation": " A voter (first element) was reported (byt the second element) with the the report being  successful or not (third element).",
+                "args": [
+                    {
+                        "name": "voter",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "reporterd",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "isSuccessful",
+                        "type": "bool",
+                        "baseType": "bool"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "vote": {
+                "short": "vt",
+                "documentation": " Vote for a set of candidates for the upcoming round of election.",
+                "args": [
+                    {
+                        "name": "votes",
+                        "type": "Vec<AccountId>",
+                        "baseType": "Vec<GenericAccountId>"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Compact<BalanceOf>",
+                        "baseType": "Compact<u128>"
+                    }
+                ]
+            },
+            "removeVoter": {
+                "short": "rmvVtr",
+                "documentation": " Remove `origin` as a voter. This removes the lock and returns the bond.",
+                "args": []
+            },
+            "reportDefunctVoter": {
+                "short": "rprtDfnctVtr",
+                "documentation": " Report `target` for being an defunct voter. In case of a valid report, the reporter is  rewarded by the bond amount of `target`. Otherwise, the reporter itself is removed and  their bond is slashed.",
+                "args": [
+                    {
+                        "name": "target",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    }
+                ]
+            },
+            "submitCandidacy": {
+                "short": "sbmtCnddcy",
+                "documentation": " Submit oneself for candidacy.",
+                "args": []
+            },
+            "renounceCandidacy": {
+                "short": "rnncCnddcy",
+                "documentation": " Renounce one's intention to be a candidate for the next election round.",
+                "args": []
+            },
+            "removeMember": {
+                "short": "rmvMmbr",
+                "documentation": " Remove a particular member from the set. This is effective immediately and the bond of  the outgoing member is slashed.",
+                "args": [
+                    {
+                        "name": "who",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    }
+                ]
+            }
+        },
+        "short": "Elctns"
+    },
+    "FinalityTracker": {
+        "events": {},
+        "calls": {
+            "finalHint": {
+                "short": "fnlHnt",
+                "documentation": " Hint that the author of this block thinks the best finalized  block is the given number.",
+                "args": [
+                    {
+                        "name": "hint",
+                        "type": "Compact<BlockNumber>",
+                        "baseType": "Compact<u32>"
+                    }
+                ]
+            }
+        },
+        "short": "FnltyTrckr"
+    },
+    "Grandpa": {
+        "events": {
+            "NewAuthorities": {
+                "short": "NwAthrts",
+                "documentation": " New authority set has been applied.",
+                "args": [
+                    {
+                        "name": "authorityList",
+                        "type": "AuthorityList",
+                        "baseType": "Vec<(AuthorityId, AuthorityWeight)>",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "Paused": {
+                "short": "Psd",
+                "documentation": " Current authority set has been paused.",
+                "args": []
+            },
+            "Resumed": {
+                "short": "Rsmd",
+                "documentation": " Current authority set has been resumed.",
+                "args": []
+            }
+        },
+        "calls": {
+            "reportMisbehavior": {
+                "short": "rprtMsbhvr",
+                "documentation": " Report some misbehavior.",
+                "args": [
+                    {
+                        "name": "misbehaviorReport",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "short": "Grndp"
+    },
+    "Treasury": {
+        "events": {
+            "Proposed": {
+                "short": "Prpsd",
+                "documentation": " New proposal.",
+                "args": [
+                    {
+                        "name": "proposal",
+                        "type": "ProposalIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "Spending": {
+                "short": "Spndng",
+                "documentation": " We have ended a spend period and will now allocate funds.",
+                "args": [
+                    {
+                        "name": "value",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "Awarded": {
+                "short": "Awrdd",
+                "documentation": " Some funds have been allocated.",
+                "args": [
+                    {
+                        "name": "proposalIndex",
+                        "type": "ProposalIndex",
+                        "baseType": "u32"
+                    },
+                    {
+                        "name": "allocatedValue",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    },
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "Rejected": {
+                "short": "Rjctd",
+                "documentation": " A proposal was rejected; funds were slashed.",
+                "args": [
+                    {
+                        "name": "proposalIndex",
+                        "type": "ProposalIndex",
+                        "baseType": "u32"
+                    },
+                    {
+                        "name": "slashedValue",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "Burnt": {
+                "short": "Brnt",
+                "documentation": " Some of our funds have been burnt.",
+                "args": [
+                    {
+                        "name": "burntValue",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "Rollover": {
+                "short": "Rllvr",
+                "documentation": " Spending has finished; this is the amount that rolls over until next spend.",
+                "args": [
+                    {
+                        "name": "value",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "Deposit": {
+                "short": "Dpst",
+                "documentation": " Some funds have been deposited.",
+                "args": [
+                    {
+                        "name": "depositedValue",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "NewTip": {
+                "short": "NwTp",
+                "documentation": " A new tip suggestion has been opened.",
+                "args": [
+                    {
+                        "name": "tipHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "TipClosing": {
+                "short": "TpClsng",
+                "documentation": " A tip suggestion has reached threshold and is closing.",
+                "args": [
+                    {
+                        "name": "tipHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "TipClosed": {
+                "short": "TpClsd",
+                "documentation": " A tip suggestion has been closed.",
+                "args": [
+                    {
+                        "name": "tipHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "TipRetracted": {
+                "short": "TpRtrctd",
+                "documentation": " A tip suggestion has been retracted.",
+                "args": [
+                    {
+                        "name": "tipHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "proposeSpend": {
+                "short": "prpsSpnd",
+                "documentation": " Put forward a suggestion for spending. A deposit proportional to the value  is reserved and slashed if the proposal is rejected. It is returned once the  proposal is awarded.",
+                "args": [
+                    {
+                        "name": "value",
+                        "type": "Compact<BalanceOf>",
+                        "baseType": "Compact<u128>"
+                    },
+                    {
+                        "name": "beneficiary",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    }
+                ]
+            },
+            "rejectProposal": {
+                "short": "rjctPrpsl",
+                "documentation": " Reject a proposed spend. The original deposit will be slashed.",
+                "args": [
+                    {
+                        "name": "proposalId",
+                        "type": "Compact<ProposalIndex>",
+                        "baseType": "Compact<u32>"
+                    }
+                ]
+            },
+            "approveProposal": {
+                "short": "pprvPrpsl",
+                "documentation": " Approve a proposal. At a later time, the proposal will be allocated to the beneficiary  and the original deposit will be returned.",
+                "args": [
+                    {
+                        "name": "proposalId",
+                        "type": "Compact<ProposalIndex>",
+                        "baseType": "Compact<u32>"
+                    }
+                ]
+            },
+            "reportAwesome": {
+                "short": "rprtAwsm",
+                "documentation": " Report something `reason` that deserves a tip and claim any eventual the finder's fee.",
+                "args": [
+                    {
+                        "name": "reason",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "who",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "retractTip": {
+                "short": "rtrctTp",
+                "documentation": " Retract a prior tip-report from `report_awesome`, and cancel the process of tipping.",
+                "args": [
+                    {
+                        "name": "hash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "tipNew": {
+                "short": "tpNw",
+                "documentation": " Give a tip for something new; no finder's fee will be taken.",
+                "args": [
+                    {
+                        "name": "reason",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "who",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "tipValue",
+                        "type": "BalanceOf",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "tip": {
+                "short": "tp",
+                "documentation": " Declare a tip value for an already-open tip.",
+                "args": [
+                    {
+                        "name": "tipHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "tipValue",
+                        "type": "BalanceOf",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "closeTip": {
+                "short": "clsTp",
+                "documentation": " Close and payout a tip.",
+                "args": [
+                    {
+                        "name": "tipHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "short": "Trsry"
+    },
+    "Contracts": {
+        "events": {
+            "Transfer": {
+                "short": "Trnsfr",
+                "documentation": " Transfer happened `from` to `to` with given `value` as part of a `call` or `instantiate`.",
+                "args": [
+                    {
+                        "name": "from",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "to",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "Instantiated": {
+                "short": "Instnttd",
+                "documentation": " Contract deployed by address at the specified address.",
+                "args": [
+                    {
+                        "name": "from",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "to",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "Evicted": {
+                "short": "Evctd",
+                "documentation": " Contract has been evicted and is now in tombstone state.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "result",
+                        "type": "bool",
+                        "baseType": "bool"
+                    }
+                ]
+            },
+            "Restored": {
+                "short": "Rstrd",
+                "documentation": " Restoration for a contract has been initiated.",
+                "args": [
+                    {
+                        "name": "donor",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "dest",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "codeHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    },
+                    {
+                        "name": "isSuccessful",
+                        "type": "bool",
+                        "baseType": "bool"
+                    }
+                ]
+            },
+            "CodeStored": {
+                "short": "CdStrd",
+                "documentation": " Code with the specified hash has been stored.",
+                "args": [
+                    {
+                        "name": "hash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "ScheduleUpdated": {
+                "short": "SchdlUpdtd",
+                "documentation": " Triggered when the current schedule is updated.",
+                "args": [
+                    {
+                        "name": "u32",
+                        "type": "u32",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "Dispatched": {
+                "short": "Dsptchd",
+                "documentation": " A call was dispatched from the given account. The bool signals whether it was  successful execution or not.",
+                "args": [
+                    {
+                        "name": "from",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "isSuccessful",
+                        "type": "bool",
+                        "baseType": "bool"
+                    }
+                ]
+            },
+            "ContractExecution": {
+                "short": "CntrctExctn",
+                "documentation": " An event deposited upon execution of a contract from the account.",
+                "args": [
+                    {
+                        "name": "from",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "bytes",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "updateSchedule": {
+                "short": "pdtSchdl",
+                "documentation": " Updates the schedule for metering contracts.",
+                "args": [
+                    {
+                        "name": "schedule",
+                        "type": "Schedule",
+                        "baseType": "{\"version\":\"u32\",\"putCodePerByteCost\":\"Gas\",\"growMemCost\":\"Gas\",\"regularOpCost\":\"Gas\",\"returnDataPerByteCost\":\"Gas\",\"eventDataPerByteCost\":\"Gas\",\"eventPerTopicCost\":\"Gas\",\"eventBaseCost\":\"Gas\",\"sandboxDataReadCost\":\"Gas\",\"sandboxDataWriteCost\":\"Gas\",\"transferCost\":\"Gas\",\"maxEventTopics\":\"u32\",\"maxStackHeight\":\"u32\",\"maxMemoryPages\":\"u32\",\"enablePrintln\":\"bool\",\"maxSubjectLen\":\"u32\"}",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "putCode": {
+                "short": "ptCd",
+                "documentation": " Stores the given binary Wasm code into the chain's storage and returns its `codehash`.  You can instantiate contracts only with stored code.",
+                "args": [
+                    {
+                        "name": "gasLimit",
+                        "type": "Compact<Gas>",
+                        "baseType": "Compact<u64>"
+                    },
+                    {
+                        "name": "code",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "call": {
+                "short": "cll",
+                "documentation": " Makes a call to an account, optionally transferring some balance.",
+                "args": [
+                    {
+                        "name": "dest",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    },
+                    {
+                        "name": "optionallyValue",
+                        "type": "Compact<BalanceOf>",
+                        "baseType": "Compact<u128>"
+                    },
+                    {
+                        "name": "gasLimit",
+                        "type": "Compact<Gas>",
+                        "baseType": "Compact<u64>"
+                    },
+                    {
+                        "name": "data",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "instantiate": {
+                "short": "nstntt",
+                "documentation": " Instantiates a new contract from the `codehash` generated by `put_code`, optionally transferring some balance.",
+                "args": [
+                    {
+                        "name": "endowment",
+                        "type": "Compact<BalanceOf>",
+                        "baseType": "Compact<u128>"
+                    },
+                    {
+                        "name": "gasLimit",
+                        "type": "Compact<Gas>",
+                        "baseType": "Compact<u64>"
+                    },
+                    {
+                        "name": "codeHash",
+                        "type": "CodeHash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "data",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "claimSurcharge": {
+                "short": "clmSrchrg",
+                "documentation": " Allows block producers to claim a small reward for evicting a contract. If a block producer  fails to do so, a regular users will be allowed to claim the reward.",
+                "args": [
+                    {
+                        "name": "dest",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "auxSender",
+                        "type": "Option<AccountId>",
+                        "baseType": "Option<GenericAccountId>"
+                    }
+                ]
+            }
+        },
+        "short": "Cntrcts"
+    },
+    "Identity": {
+        "events": {
+            "IdentitySet": {
+                "short": "IdnttySt",
+                "documentation": " A name was set or reset (which will remove all judgements).",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "IdentityCleared": {
+                "short": "IdnttyClrd",
+                "documentation": " A name was cleared, and the given balance returned.",
+                "args": [
+                    {
+                        "name": "clearedAccountId",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "value",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "IdentityKilled": {
+                "short": "IdnttyKlld",
+                "documentation": " A name was removed and the given balance slashed.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "slashedValue",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "JudgementRequested": {
+                "short": "JdgmntRqstd",
+                "documentation": " A judgement was asked from a registrar.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "registrarIndex",
+                        "type": "RegistrarIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "JudgementUnrequested": {
+                "short": "JdgmntUnrqstd",
+                "documentation": " A judgement request was retracted.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "registrarIndex",
+                        "type": "RegistrarIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "JudgementGiven": {
+                "short": "JdgmntGvn",
+                "documentation": " A judgement was given by a registrar.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "registrarIndex",
+                        "type": "RegistrarIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "RegistrarAdded": {
+                "short": "RgstrrAddd",
+                "documentation": " A registrar was added.",
+                "args": [
+                    {
+                        "name": "registrarIndex",
+                        "type": "RegistrarIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "addRegistrar": {
+                "short": "ddRgstrr",
+                "documentation": " Add a registrar to the system.",
+                "args": [
+                    {
+                        "name": "registrar",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "setIdentity": {
+                "short": "stIdntty",
+                "documentation": " Set an account's identity information and reserve the appropriate deposit.",
+                "args": [
+                    {
+                        "name": "identityInfo",
+                        "type": "IdentityInfo",
+                        "baseType": "{\"additional\":\"Vec<IdentityInfoAdditional>\",\"display\":\"Data\",\"legal\":\"Data\",\"web\":\"Data\",\"riot\":\"Data\",\"email\":\"Data\",\"pgpFingerprint\":\"Option<H160>\",\"image\":\"Data\",\"twitter\":\"Data\"}",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "setSubs": {
+                "short": "stSbs",
+                "documentation": " Set the sub-accounts of the sender.",
+                "args": [
+                    {
+                        "name": "subs",
+                        "type": "Vec<(AccountId,Data)>",
+                        "baseType": "Vec<(AccountId,Data)>",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "clearIdentity": {
+                "short": "clrIdntty",
+                "documentation": " Clear an account's identity info and all sub-account and return all deposits.",
+                "args": []
+            },
+            "requestJudgement": {
+                "short": "rqstJdgmnt",
+                "documentation": " Request a judgement from a registrar.",
+                "args": [
+                    {
+                        "name": "regIndex",
+                        "type": "Compact<RegistrarIndex>",
+                        "baseType": "Compact<u32>"
+                    },
+                    {
+                        "name": "maxFee",
+                        "type": "Compact<BalanceOf>",
+                        "baseType": "Compact<u128>"
+                    }
+                ]
+            },
+            "cancelRequest": {
+                "short": "cnclRqst",
+                "documentation": " Cancel a previous request.",
+                "args": [
+                    {
+                        "name": "regIndex",
+                        "type": "RegistrarIndex",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "setFee": {
+                "short": "stF",
+                "documentation": " Set the fee required for a judgement to be requested from a registrar.",
+                "args": [
+                    {
+                        "name": "regIndex",
+                        "type": "Compact<RegistrarIndex>",
+                        "baseType": "Compact<u32>"
+                    },
+                    {
+                        "name": "fee",
+                        "type": "Compact<BalanceOf>",
+                        "baseType": "Compact<u128>"
+                    }
+                ]
+            },
+            "setAccountId": {
+                "short": "stAccntId",
+                "documentation": " Change the account associated with a registrar.",
+                "args": [
+                    {
+                        "name": "index",
+                        "type": "Compact<RegistrarIndex>",
+                        "baseType": "Compact<u32>"
+                    },
+                    {
+                        "name": "new",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "setFields": {
+                "short": "stFlds",
+                "documentation": " Set the field information for a registrar.",
+                "args": [
+                    {
+                        "name": "index",
+                        "type": "Compact<RegistrarIndex>",
+                        "baseType": "Compact<u32>"
+                    },
+                    {
+                        "name": "fields",
+                        "type": "IdentityFields",
+                        "baseType": "{\"_set\":{\"_bitLength\":64,\"Display\":1,\"Legal\":2,\"Web\":4,\"Riot\":8,\"Email\":16,\"PgpFingerprint\":32,\"Image\":64,\"Twitter\":128}}",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "provideJudgement": {
+                "short": "prvdJdgmnt",
+                "documentation": " Provide a judgement for an account's identity.",
+                "args": [
+                    {
+                        "name": "regIndex",
+                        "type": "Compact<RegistrarIndex>",
+                        "baseType": "Compact<u32>"
+                    },
+                    {
+                        "name": "target",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    },
+                    {
+                        "name": "judgement",
+                        "type": "IdentityJudgement",
+                        "baseType": "{\"_enum\":{\"Unknown\":\"Null\",\"FeePaid\":\"Balance\",\"Reasonable\":\"Null\",\"KnownGood\":\"Null\",\"OutOfDate\":\"Null\",\"LowQuality\":\"Null\",\"Erroneous\":\"Null\"}}",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "killIdentity": {
+                "short": "kllIdntty",
+                "documentation": " Remove an account's identity and sub-account information and slash the deposits.",
+                "args": [
+                    {
+                        "name": "target",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    }
+                ]
+            }
+        },
+        "short": "Idntty"
+    },
+    "ImOnline": {
+        "events": {
+            "HeartbeatReceived": {
+                "short": "HrtbtRcvd",
+                "documentation": " A new heartbeat was received from `AuthorityId`",
+                "args": [
+                    {
+                        "name": "authorityId",
+                        "type": "AuthorityId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "AllGood": {
+                "short": "AllGd",
+                "documentation": " At the end of the session, no offence was committed.",
+                "args": []
+            },
+            "SomeOffline": {
+                "short": "SmOffln",
+                "documentation": " At the end of the session, at least once validator was found to be offline.",
+                "args": [
+                    {
+                        "name": "vec<identificationTuple>",
+                        "type": "Vec<IdentificationTuple>",
+                        "baseType": "Vec<(ValidatorId, FullIdentification)>",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "heartbeat": {
+                "short": "hrtbt",
+                "documentation": "",
+                "args": [
+                    {
+                        "name": "heartbeat",
+                        "type": "Heartbeat",
+                        "baseType": "{\"blockNumber\":\"BlockNumber\",\"networkState\":\"OpaqueNetworkState\",\"sessionIndex\":\"SessionIndex\",\"authorityIndex\":\"AuthIndex\",\"validatorsLen\":\"u32\"}",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "signature",
+                        "type": "Signature",
+                        "baseType": "[u8; 64; H512]",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "short": "ImOnln"
+    },
+    "Offences": {
+        "events": {
+            "Offence": {
+                "short": "Offnc",
+                "documentation": " There is an offence reported of the given `kind` happened at the `session_index` and  (kind-specific) time slot. This event is not deposited for duplicate slashes.",
+                "args": [
+                    {
+                        "name": "kind",
+                        "type": "Kind",
+                        "baseType": "[u8; 16]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "opaqueTimeSlot",
+                        "type": "OpaqueTimeSlot",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "calls": {},
+        "short": "Offncs"
+    },
+    "Nicks": {
+        "events": {
+            "NameSet": {
+                "short": "NmSt",
+                "documentation": " A name was set.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "NameForced": {
+                "short": "NmFrcd",
+                "documentation": " A name was forcibly set.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "NameChanged": {
+                "short": "NmChngd",
+                "documentation": " A name was changed.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "NameCleared": {
+                "short": "NmClrd",
+                "documentation": " A name was cleared, and the given balance returned.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "returnedValue",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "NameKilled": {
+                "short": "NmKlld",
+                "documentation": " A name was removed and the given balance slashed.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "slashedValue",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "setName": {
+                "short": "stNm",
+                "documentation": " Set an account's name. The name should be a UTF-8-encoded string by convention, though  we don't check it.",
+                "args": [
+                    {
+                        "name": "name",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "clearName": {
+                "short": "clrNm",
+                "documentation": " Clear an account's name and return the deposit. Fails if the account was not named.",
+                "args": []
+            },
+            "killName": {
+                "short": "kllNm",
+                "documentation": " Remove an account's name and take charge of the deposit.",
+                "args": [
+                    {
+                        "name": "target",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    }
+                ]
+            },
+            "forceName": {
+                "short": "frcNm",
+                "documentation": " Set a third-party account's name with no deposit.",
+                "args": [
+                    {
+                        "name": "target",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    },
+                    {
+                        "name": "name",
+                        "type": "Bytes",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "short": "Ncks"
+    },
+    "Sudo": {
+        "events": {
+            "Sudid": {
+                "short": "Sdd",
+                "documentation": " A sudo just took place.",
+                "args": [
+                    {
+                        "name": "result",
+                        "type": "bool",
+                        "baseType": "bool"
+                    }
+                ]
+            },
+            "KeyChanged": {
+                "short": "KyChngd",
+                "documentation": " The sudoer just switched identity; the old key is supplied.",
+                "args": [
+                    {
+                        "name": "sudoer",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "SudoAsDone": {
+                "short": "SdAsDn",
+                "documentation": " A sudo just took place.",
+                "args": [
+                    {
+                        "name": "result",
+                        "type": "bool",
+                        "baseType": "bool"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "sudo": {
+                "short": "sd",
+                "documentation": " Authenticates the sudo key and dispatches a function call with `Root` origin.",
+                "args": [
+                    {
+                        "name": "proposal",
+                        "type": "Proposal",
+                        "baseType": "GenericCall",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "setKey": {
+                "short": "stKy",
+                "documentation": " Authenticates the current sudo key and sets the given AccountId (`new`) as the new sudo key.",
+                "args": [
+                    {
+                        "name": "new",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    }
+                ]
+            },
+            "sudoAs": {
+                "short": "sdAs",
+                "documentation": " Authenticates the sudo key and dispatches a function call with `Signed` origin from  a given account.",
+                "args": [
+                    {
+                        "name": "who",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    },
+                    {
+                        "name": "proposal",
+                        "type": "Proposal",
+                        "baseType": "GenericCall",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "short": "Sd"
+    },
+    "Vesting": {
+        "events": {
+            "VestingUpdated": {
+                "short": "VstngUpdtd",
+                "documentation": " The amount vested has been updated. This could indicate more funds are available. The  balance given is the amount which is left unvested (and thus locked).",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "unvested",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    }
+                ]
+            },
+            "VestingCompleted": {
+                "short": "VstngCmpltd",
+                "documentation": " An account (given) has become fully vested. No further vesting can happen.",
+                "args": [
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "vest": {
+                "short": "vst",
+                "documentation": " Unlock any vested funds of the sender account.",
+                "args": []
+            },
+            "vestOther": {
+                "short": "vstOthr",
+                "documentation": " Unlock any vested funds of a `target` account.",
+                "args": [
+                    {
+                        "name": "target",
+                        "type": "LookupSource",
+                        "baseType": "GenericAddress"
+                    }
+                ]
+            }
+        },
+        "short": "Vstng"
+    },
+    "Signaling": {
+        "events": {
+            "NewProposal": {
+                "short": "NwPrpsl",
+                "documentation": " Emitted at proposal creation: (Creator, ProposalHash)",
+                "args": [
+                    {
+                        "name": "creator",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "proposalHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "CommitStarted": {
+                "short": "CmmtStrtd",
+                "documentation": " Emitted when commit stage begins: (ProposalHash, VoteId, CommitEndTime)",
+                "args": [
+                    {
+                        "name": "proposalHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "voteId",
+                        "type": "u64",
+                        "baseType": "u64"
+                    },
+                    {
+                        "name": "commitEndTime",
+                        "type": "BlockNumber",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "VotingStarted": {
+                "short": "VtngStrtd",
+                "documentation": " Emitted when voting begins: (ProposalHash, VoteId, VotingEndTime)",
+                "args": [
+                    {
+                        "name": "proposalHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "voteId",
+                        "type": "u64",
+                        "baseType": "u64"
+                    },
+                    {
+                        "name": "votingEndTime",
+                        "type": "BlockNumber",
+                        "baseType": "u32"
+                    }
+                ]
+            },
+            "VotingCompleted": {
+                "short": "VtngCmpltd",
+                "documentation": " Emitted when voting is completed: (ProposalHash, VoteId, VoteResults)",
+                "args": [
+                    {
+                        "name": "proposalHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "voteId",
+                        "type": "u64",
+                        "baseType": "u64"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "createProposal": {
+                "short": "crtPrpsl",
+                "documentation": " Creates a new signaling proposal.",
+                "args": [
+                    {
+                        "name": "title",
+                        "type": "ProposalTitle",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "contents",
+                        "type": "ProposalContents",
+                        "baseType": "Bytes",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "outcomes",
+                        "type": "Vec<VoteOutcome>",
+                        "baseType": "Vec<[u8; 32]>",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "voteType",
+                        "type": "VoteType",
+                        "baseType": "{\"_enum\":[\"Binary\",\"MultiOption\",\"RankedChoice\"]}",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "tallyType",
+                        "type": "TallyType",
+                        "baseType": "{\"_enum\":[\"OnePerson\",\"OneCoin\"]}",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "advanceProposal": {
+                "short": "dvncPrpsl",
+                "documentation": " Advance a signaling proposal into the \"voting\" or \"commit\" stage.  Can only be performed by the original author of the proposal.",
+                "args": [
+                    {
+                        "name": "proposalHash",
+                        "type": "Hash",
+                        "baseType": "[u8; 32; H256]",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "short": "Sgnlng"
+    },
+    "Voting": {
+        "events": {
+            "VoteCreated": {
+                "short": "VtCrtd",
+                "documentation": " new vote (id, creator, type of vote)",
+                "args": [
+                    {
+                        "name": "id",
+                        "type": "u64",
+                        "baseType": "u64"
+                    },
+                    {
+                        "name": "creator",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "voteType",
+                        "type": "VoteType",
+                        "baseType": "{\"_enum\":[\"Binary\",\"MultiOption\",\"RankedChoice\"]}",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "VoteAdvanced": {
+                "short": "VtAdvncd",
+                "documentation": " vote stage transition (id, old stage, new stage)",
+                "args": [
+                    {
+                        "name": "id",
+                        "type": "u64",
+                        "baseType": "u64"
+                    },
+                    {
+                        "name": "oldStage",
+                        "type": "VoteStage",
+                        "baseType": "{\"_enum\":[\"PreVoting\",\"Commit\",\"Voting\",\"Completed\"]}",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "newStage",
+                        "type": "VoteStage",
+                        "baseType": "{\"_enum\":[\"PreVoting\",\"Commit\",\"Voting\",\"Completed\"]}",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "VoteCommitted": {
+                "short": "VtCmmttd",
+                "documentation": " user commits",
+                "args": [
+                    {
+                        "name": "id",
+                        "type": "u64",
+                        "baseType": "u64"
+                    },
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    }
+                ]
+            },
+            "VoteRevealed": {
+                "short": "VtRvld",
+                "documentation": " user reveals a vote",
+                "args": [
+                    {
+                        "name": "id",
+                        "type": "u64",
+                        "baseType": "u64"
+                    },
+                    {
+                        "name": "account",
+                        "type": "AccountId",
+                        "baseType": "GenericAccountId"
+                    },
+                    {
+                        "name": "vec<voteOutcome>",
+                        "type": "Vec<VoteOutcome>",
+                        "baseType": "Vec<[u8; 32]>",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "calls": {
+            "commit": {
+                "short": "cmmt",
+                "documentation": " A function for commit-reveal voting schemes that adds a vote commitment.",
+                "args": [
+                    {
+                        "name": "voteId",
+                        "type": "u64",
+                        "baseType": "u64"
+                    },
+                    {
+                        "name": "commit",
+                        "type": "VoteOutcome",
+                        "baseType": "[u8; 32]",
+                        "visible": "hide"
+                    }
+                ]
+            },
+            "reveal": {
+                "short": "rvl",
+                "documentation": " A function that reveals a vote commitment or serves as the general vote function.",
+                "args": [
+                    {
+                        "name": "voteId",
+                        "type": "u64",
+                        "baseType": "u64"
+                    },
+                    {
+                        "name": "voteOutcomes",
+                        "type": "Vec<VoteOutcome>",
+                        "baseType": "Vec<[u8; 32]>",
+                        "visible": "hide"
+                    },
+                    {
+                        "name": "secret",
+                        "type": "Option<VoteOutcome>",
+                        "baseType": "Option<[u8; 32]>",
+                        "visible": "hide"
+                    }
+                ]
+            }
+        },
+        "short": "Vtng"
+    },
+    "TreasuryReward": {
+        "events": {
+            "TreasuryMinting": {
+                "short": "TrsryMntng",
+                "documentation": "",
+                "args": [
+                    {
+                        "name": "balance",
+                        "type": "Balance",
+                        "baseType": "u128"
+                    },
+                    {
+                        "name": "balance2",
+                        "type": "Balance2",
+                        "baseType": "u128"
+                    },
+                    {
+                        "name": "blockNumber",
+                        "type": "BlockNumber",
+                        "baseType": "u32"
+                    }
+                ]
+            }
+        },
+        "calls": {},
+        "short": "TrsryRwrd"
+    }
+}
