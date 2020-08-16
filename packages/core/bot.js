@@ -246,24 +246,6 @@ module.exports.run = async function (params) {
   })
 
   /*
-   *   /userstats command handler
-   */
-  bot.command("userstats", ctx => {
-    if (ctx.chat.id == "-431481591") {
-      var users = botParams.db.get("users").value()
-      var notifications = botParams.db.get("notifications").value()
-      ctx.replyWithMarkdown(`
-users: ${users.length}; 
-active: ${
-        users.filter(
-          u => notifications.filter(n => n.chatid == u.chatid).length > 0
-        ).length
-      }
-notifications: ${notifications.length}`)
-    }
-  })
-
-  /*
    *   React bot on 'Add new alert' message
    */
   bot.hears("Add new alert", ctx => {

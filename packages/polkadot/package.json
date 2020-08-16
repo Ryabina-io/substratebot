@@ -1,7 +1,7 @@
 {
-  "name": "substratebot/kusama",
-  "main": "main.js",
+  "name": "polkadot",
   "version": "1.0.0",
+  "main": "main.js",
   "author": "ryabina-io",
   "license": "Apache-2.0",
   "dependencies": {

@@ -1,6 +1,6 @@
-const SubstrateBot = require("substratebot")
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const BigNumber = require("bignumber.js")
+const SubstrateBot = require("substratebot/index")
 const { metaConvertToConfig } = require("substratebot/tools/utils")
 const { formatBalance } = require("@polkadot/util")
 const bent = require("bent")
@@ -17,7 +17,6 @@ async function main() {
   setInterval(async () => {
     networkStats = await getNetworkStats(api)
   }, 10000)
-
   const substrateBot = new SubstrateBot(
     settings,
     api,
@@ -28,39 +27,8 @@ async function main() {
   substrateBot.run()
 }
 
-function getSettings() {
-  const settings = {
-    network: {
-      name: "Kusama",
-      prefix: "2",
-      decimals: "12",
-      token: "KSM",
-      tracker: "kusama",
-    },
-    startMsg:
-      "Created by Ryabina team.\n\nIf you like this bot, you can thank us by voting for our /validators\nFeel free to describe any issues, typo, errors at @RyabinaValidator",
-    validatorsMessage:
-      'To nominate us:\nGo to https://polkadot.js.org/apps/#/staking/actions\nType RYABINA in the search of "Set nominees".\nWait a while until the addreses load and select all RYABINA nodes.\nThank you!',
-    governanceLinks: ["commonwealth", "polkassembly", "subscan", "polkascan"],
-    commonLinks: ["subscan", "polkascan"],
-    groupAlerts: {
-      events: [
-        ["democracy", "Proposed"],
-        ["democracy", "Started"],
-        ["treasury", "Proposed"],
-      ],
-      calls: [
-        ["treasury", "tipNew"],
-        ["treasury", "reportAwesome"],
-      ],
-    },
-    BOT_TOKEN: process.env.BOT_TOKEN,
-  }
-  return settings
-}
-
 async function getAPI() {
-  const nodeUri = process.env.NODE_URI || "ws://127.0.0.1:9955/"
+  const nodeUri = process.env.NODE_URI || "ws://127.0.0.1:9944/"
   const provider = new WsProvider(nodeUri)
   const api = await ApiPromise.create({ provider })
   Promise.all([
@@ -236,8 +204,57 @@ function getNodeModules(api) {
   return modules
 }
 
+function getSettings() {
+  const settings = {
+    network: {
+      name: "Polkadot",
+      prefix: "0",
+      decimals: "12",
+      token: "DOT",
+    },
+    startMsg:
+      "Created by Ryabina team.\n\nIf you like this bot, you can thank by voting for our /validators\nFeel free to describe any issues, typo, errors at @RyabinaValidator",
+    validatorsMessage: `Please nominate to our validators:
+Go to https://polkadot.js.org/apps/#/staking/actions
+Type RYABINA in the search of "Set nominees".
+Wait a while until the addresses load and select all RYABINA nodes.
+If the search doesn't work, use the addresses.
+Choose 16 validators from active and waiting sets to increase expected rewards.
+Thank you!
+    
+      RYABINA
+      13T9UGfntid52aHuaxX1j6uh3zTYzMPMG1Des9Cmvf7K4xfq
+      RYABINA/ 2
+      14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp
+      RYABINA/ 3
+      1vEVWfqoLErB6MhhtDijrnmnHqjhrrFA5GzXGNL2HwESQ5r
+      RYABINA/ 4
+      1EmFhcsr7xt4HiMc8KZz6W6QcjYSFukKGKeDZeBjSmjjpNM
+      RYABINA/ 5
+      1HZMocNpdw6VYS1aKyrdu1V7kHpbdCvhL8VKayvzVzqTf6H
+      RYABINA/ 8
+      13asdY4e7sWdJ4hbGW9n2rkNro1mx5YKB6WBCC9gvqKmLvNH`,
+    /*"Please nominate to our validators:\n                                                    `12Nwxo`\n                                                    `12PctN`\n                                                    `12NcTS`\n                                                    `12MGaB`\n                                                    `12NH2C`\n                                                    `12Mbzq`\n                                                    `12DYhk`\n                                                    `12DDES`\n                                                    `12MwX5`\n                                                    `12PHQt`\n`13T9UGfntid52aHuaxX1j6uh3zTYzMPMG1Des9Cmvf7K4xfq`",*/
+    governanceLinks: ["polkassembly", "subscan", "polkascan"],
+    commonLinks: ["subscan", "polkascan"],
+    groupAlerts: {
+      events: [
+        ["democracy", "Proposed"],
+        ["democracy", "Started"],
+        ["treasury", "Proposed"],
+      ],
+      calls: [
+        ["treasury", "tipNew"],
+        ["treasury", "reportAwesome"],
+      ],
+    },
+    BOT_TOKEN: process.env.BOT_TOKEN,
+  }
+  return settings
+}
+
 function getNetworkStatsMessage(priceIncluded = true, isGroup = false) {
-  var result = `Kusama network Stats:\n\n`
+  var result = `Polkadot network Stats:\n\n`
   if (priceIncluded) {
     result += `Current Price: ${networkStats.price}
 Market Capitalisation: ${networkStats.marketcap}
@@ -261,7 +278,7 @@ async function getNetworkStats(api) {
   var token_data
   try {
     var token_data = await getJSON(
-      `https://api.coingecko.com/api/v3/coins/kusama`
+      `https://api.coingecko.com/api/v3/coins/polkadot`
     )
   } catch (error) {
     token_data = "NA"
