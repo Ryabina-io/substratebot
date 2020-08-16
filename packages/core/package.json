@@ -14,7 +14,7 @@
     "type": "git",
     "url": "git://github.com/Ryabina-io/substratebot.git"
   },
-  "author": "Ryabina-io",
+  "author": "ryabina-io",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/Ryabina-io/substratebot/issues"
