@@ -11,17 +11,17 @@ npm i @ryabina-io/substratebot
 ## Use
 
 ```js
-const substrateBot = new SubstrateBot(
+const substrateBot = new SubstrateBot({
   settings,
   api,
   modules,
   modes,
   getNetworkStatsMessage
-)
+})
 substrateBot.run()
 ```
 
-### `@settings`
+### `config.settings`
 
 main bot settings, should contain substrate network params (name, prefix, decimals, token), telegram bot token, start & validators messages, links (governance, common), list of group alerts.
 
@@ -91,7 +91,7 @@ groupAlerts: {
 }
 ```
 
-### `@api`
+### `config.api`
 
 [polkadot-api](https://github.com/polkadot-js/api) instance for connect to node.
 API functions that uses by bot:
@@ -108,7 +108,7 @@ API functions that uses by bot:
 
 If API instance do not support any function from this list, the bot is not compatible with your Substrate version of the network.
 
-### `@modules`
+### `config.modules`
 
 this parameter describes the structure of events in the node. A Substrate node consists of modules that consist of constants, storages data, events and extrinsincs. Two components of the module are important to the bot: events and extrinsincs.
 
@@ -189,7 +189,7 @@ const ingoreList = {
    then the names of the arguments correspond to those described in square brackets.
 2. if not, we convert the type name in the camel-case and in case of repeated types we add a serial number to the event. (In this case, you'll most likely need a manual correction)
 
-### `@modes`
+### `config.modes`
 
 By default, the bot has only one event and call mode - `Advanced`. It contains everything you have described in the modules. But it is very difficult to navigate through all the event/calls lists of all the modules. For simplicity, we have added the option to group events into additional modes. Sample:
 
@@ -226,6 +226,6 @@ By default, the bot has only one event and call mode - `Advanced`. It contains e
     }
 ```
 
-### `@getNetworkStatsMessage`
+### `config.getNetworkStatsMessage`
 
 This is the function that the bot calls when it needs to respond to the query "show current network statistics".
