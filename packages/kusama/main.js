@@ -1,4 +1,4 @@
-const SubstrateBot = require("substratebot")
+const SubstrateBot = require("@ryabina/substratebot")
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const BigNumber = require("bignumber.js")
 const { metaConvertToConfig } = require("substratebot/tools/utils")
@@ -18,13 +18,13 @@ async function main() {
     networkStats = await getNetworkStats(api)
   }, 10000)
 
-  const substrateBot = new SubstrateBot(
+  const substrateBot = new SubstrateBot({
     settings,
     api,
     modules,
     modes,
-    getNetworkStatsMessage
-  )
+    getNetworkStatsMessage,
+  })
   substrateBot.run()
 }
 

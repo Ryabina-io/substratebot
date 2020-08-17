@@ -17,13 +17,13 @@ async function main() {
   setInterval(async () => {
     networkStats = await getNetworkStats(api)
   }, 10000)
-  const substrateBot = new SubstrateBot(
+  const substrateBot = new SubstrateBot({
     settings,
     api,
     modules,
     modes,
-    getNetworkStatsMessage
-  )
+    getNetworkStatsMessage,
+  })
   substrateBot.run()
 }
 

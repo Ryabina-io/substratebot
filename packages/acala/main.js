@@ -1,7 +1,7 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const { options } = require("@acala-network/api")
 const BigNumber = require("bignumber.js")
-const SubstrateBot = require("substratebot")
+const SubstrateBot = require("@ryabina/substratebot")
 const { metaConvertToConfig } = require("substratebot/tools/utils")
 const { formatBalance } = require("@polkadot/util")
 const bent = require("bent")
@@ -21,13 +21,13 @@ async function main() {
     networkStats = await getNetworkStats(api)
   }, 10000)
   totalCollaterals = await getAllCollaterals(api)
-  const substrateBot = new SubstrateBot(
+  const substrateBot = new SubstrateBot({
     settings,
     api,
     modules,
     modes,
-    getNetworkStatsMessage
-  )
+    getNetworkStatsMessage,
+  })
   substrateBot.run()
 
   api.query.system.events(events => {
