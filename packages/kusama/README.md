@@ -1,4 +1,12 @@
 ## Kusama Telegram Bot.
+
+### Launching:
+```
+export BOT_TOKEN=telegram_bot_token
+export DB_FILE_PATH=path_to_dbjson_file
+node main.js
+```
+
 ![Logo](https://miro.medium.com/max/1400/1*xFT5MT_GuyzdwMuc-qddhQ.png)
 
 Their main functions are to alert about events that take place in the networks and to collect statistic about networks status. However the variety of possible single notifications and combination of notifications is huge, that makes these bots very useful and powerful tools.
