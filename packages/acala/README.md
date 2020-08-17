@@ -1,13 +1,13 @@
 # Acala_Ryabina_bot
 
+Telegram 🤖️ for Acala users to monitor their financial status - loan positions, liquidation events, balance changes, liquidity provision and returns.
+
 ### Launching:
 ```
 export BOT_TOKEN=telegram_bot_token
 export DB_FILE_PATH=path_to_dbjson_file
 node main.js
 ```
-
-Telegram 🤖️ for Acala users to monitor their financial status - loan positions, liquidation events, balance changes, liquidity provision and returns.
 
 # Mini Guide for Acala Network telegram bot by Ryabina.
 
