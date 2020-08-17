@@ -17,13 +17,13 @@ async function main() {
   setInterval(async () => {
     networkStats = await getNetworkStats(api)
   }, 10000)
-  const substrateBot = new SubstrateBot(
+  const substrateBot = new SubstrateBot({
     settings,
     api,
     modules,
     modes,
-    getNetworkStatsMessage
-  )
+    getNetworkStatsMessage,
+  })
   substrateBot.run()
 }
 
@@ -249,7 +249,7 @@ Thank you!
       ],
     },
     botToken: process.env.BOT_TOKEN,
-    dbFilePath: process.env.DB_FILE_PATH
+    dbFilePath: process.env.DB_FILE_PATH,
   }
   return settings
 }

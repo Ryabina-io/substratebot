@@ -3,6 +3,7 @@
 Telegram 🤖️ for Acala users to monitor their financial status - loan positions, liquidation events, balance changes, liquidity provision and returns.
 
 ### Launching:
+
 ```
 export BOT_TOKEN=telegram_bot_token
 export DB_FILE_PATH=path_to_dbjson_file
@@ -19,28 +20,28 @@ There are two main functions: to alert about events that take place with account
 
 Bot can be used in two ways:
 
-* as a **personal** informational bot, sending alerts in a private chat;
+- as a **personal** informational bot, sending alerts in a private chat;
 
-* as informational bot for **Telegram groups** showing statistic of network and current prices of currencies(ACA, DOT, LDOT, RenBTC, XBTC and others).
+- as informational bot for **Telegram groups** showing statistic of network and current prices of currencies(ACA, DOT, LDOT, RenBTC, XBTC and others).
 
 ## **Personal informational bot.**
 
 You can find it here: [https://t.me/Acala_Ryabina_bot](https://t.me/Acala_Ryabina_bot)
 All notifications are divided into 6 groups:
 
-* **Accounts alerts** is a block of notifications about Transfers and Ren Mint/Burn.
+- **Accounts alerts** is a block of notifications about Transfers and Ren Mint/Burn.
 
-* **CDP Loans**💰**— **all alerts about loans, Collateralized Debt Positions(CDP)
+- **CDP Loans**💰**— **all alerts about loans, Collateralized Debt Positions(CDP)
 
-    You can find here one of the most useful alerts - "***liquidate CDP warning***", that means that tracked CDP is dangerously close to liquidation (115% of liquidation price) and, perhaps, need some actions to be done.
+  You can find here one of the most useful alerts - "**_liquidate CDP warning_**", that means that tracked CDP is dangerously close to liquidation (115% of liquidation price) and, perhaps, need some actions to be done.
 
-* **Liquidation Auction** — about auction bids and auctions.
+- **Liquidation Auction** — about auction bids and auctions.
 
-* **Honzon Parameters**. Honzon — The Stablecoin Protocol. No address required.
+- **Honzon Parameters**. Honzon — The Stablecoin Protocol. No address required.
 
-* **Dex — Swap, Deposit and Earn**. All events related to swap, Deposit & Earn, add/withdraw liquidity.
+- **Dex — Swap, Deposit and Earn**. All events related to swap, Deposit & Earn, add/withdraw liquidity.
 
-* 🔥**Advanced**🔥 collected all the events and extrinsics of all the modules. It’s a big list.
+- 🔥**Advanced**🔥 collected all the events and extrinsics of all the modules. It’s a big list.
 
 ### Usage
 
@@ -48,7 +49,7 @@ Click Add new alert
 
 ![](https://cdn-images-1.medium.com/max/4440/1*DQge566sOSyovWIoRwYJHQ.png)
 
-Select one of the groups, you will see a list of alerts. 
+Select one of the groups, you will see a list of alerts.
 You can 🟢select/⚪deselect only those points you need. After selecting, choose Enter address.
 
 ![](https://cdn-images-1.medium.com/max/2000/1*bWUyn4Z6j_kXzYWQyUXPew.png)
@@ -81,7 +82,7 @@ After selecting a module you are required to select a type of alert: Extrinsics 
 
 Next step is to set up Filters. Please be noted that correct use of Filters is very important stage and helps you to avoid unnecessary information.
 
-*For example: in case Filter Target is not selected for Event Transfer bot will send information about ALL transfers in the network.
+\*For example: in case Filter Target is not selected for Event Transfer bot will send information about ALL transfers in the network.
 
 ![](https://cdn-images-1.medium.com/max/2140/1*qrEgWap23G6M8Kmo5Fmmgw.png)
 
@@ -106,7 +107,7 @@ Use /stats — to show statistic
 
 In case you have any questions or need help, please do not hesitate to contact **Ryabina** team by:
 
-* telegram: [@RyabinaValidator](https://t.me/RyabinaValidator)
-* [@Acala_Ryabina_bot](https://t.me/Acala_Ryabina_bot)
+- telegram: [@RyabinaValidator](https://t.me/RyabinaValidator)
+- [@Acala_Ryabina_bot](https://t.me/Acala_Ryabina_bot)
 
 Our Acala address: 5FEoLBq9BP8X3iU6iPmW2KWJahcCazeSaLPd2CamVfdwsCc1

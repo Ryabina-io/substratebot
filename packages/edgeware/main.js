@@ -2,7 +2,7 @@ const { ApiPromise, WsProvider } = require("@polkadot/api")
 const { TypeRegistry } = require("@polkadot/types")
 const edgewareDefinitions = require("edgeware-node-types/interfaces/definitions")
 const BigNumber = require("bignumber.js")
-const SubstrateBot = require("substratebot")
+const SubstrateBot = require("@ryabina/substratebot")
 const _ = require("lodash")
 const { formatBalance } = require("@polkadot/util")
 const bent = require("bent")
@@ -27,13 +27,13 @@ async function main() {
     networkStats = await getNetworkStats(api)
   }, 10000)
 
-  const substrateBot = new SubstrateBot(
+  const substrateBot = new SubstrateBot({
     settings,
     api,
     modules,
     modes,
-    getNetworkStatsMessage
-  )
+    getNetworkStatsMessage,
+  })
   substrateBot.run()
 }
 
@@ -233,7 +233,7 @@ function getSettings() {
       ],
     },
     botToken: process.env.BOT_TOKEN,
-    dbFilePath: process.env.DB_FILE_PATH
+    dbFilePath: process.env.DB_FILE_PATH,
   }
   return settings
 }

@@ -746,20 +746,21 @@ function getDB(path) {
 module.exports = class SubstrateBot {
   /**
    * Create SubstrateBot instance
-   * @settings main bot settings, should contain substrate network params (name, prefix, decimals, token),
+   * @param config - SubstrateBot config
+   * @param config.settings - main bot settings, should contain substrate network params (name, prefix, decimals, token),
    * telegram bot token, start & validators messages, links (governance, common), list of group alerts. See sample in examples
-   * @api polkadot-api instance for connect to node
-   * @modules substrate metadata
-   * @modes custom modes in main menu
-   * @getNetworkStats external function for getting substrate network stats
+   * @param config.api - polkadot-api instance for connect to node
+   * @param config.modules - substrate metadata
+   * @param config.modes - custom modes in main menu
+   * @param config.getNetworkStats - external function for getting substrate network stats
    */
-  constructor(settings, api, modules, modes, getNetworkStatsMessage) {
+  constructor({ settings, api, modules, modes, getNetworkStatsMessage }) {
     this.settings = settings
     this.api = api
     this.modules = modules
     this.modes = modes
-    this.db = getDB(settings.dbFilePath)
     this.getNetworkStatsMessage = getNetworkStatsMessage
+    this.db = getDB(settings.dbFilePath)
   }
 
   async run() {

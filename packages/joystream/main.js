@@ -2,7 +2,7 @@ const { ApiPromise, WsProvider } = require("@polkadot/api")
 const { registerJoystreamTypes } = require("@joystream/types")
 const { getTypeRegistry } = require("@polkadot/types")
 const BigNumber = require("bignumber.js")
-const SubstrateBot = require("substratebot")
+const SubstrateBot = require("@ryabina/substratebot")
 const { metaConvertToConfig } = require("substratebot/tools/utils")
 const { formatBalance } = require("@polkadot/util")
 const bent = require("bent")
@@ -28,13 +28,13 @@ async function main() {
   setInterval(async () => {
     networkStats = await getNetworkStats(api)
   }, 10000)
-  const substrateBot = new SubstrateBot(
+  const substrateBot = new SubstrateBot({
     settings,
     api,
     modules,
     modes,
-    getNetworkStatsMessage
-  )
+    getNetworkStatsMessage,
+  })
   substrateBot.run()
 }
 
@@ -62,7 +62,7 @@ function getSettings() {
       ],
     },
     botToken: process.env.BOT_TOKEN,
-    dbFilePath: process.env.DB_FILE_PATH
+    dbFilePath: process.env.DB_FILE_PATH,
   }
   return settings
 }
