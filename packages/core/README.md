@@ -49,6 +49,7 @@ const settings = {
       ],
     },
     BOT_TOKEN: process.env.BOT_TOKEN,
+    DB_FILE_PATH: process.env.DB_FILE_PATH
 }
 ```
 
@@ -78,6 +79,14 @@ groupAlerts: {
 ```
 
 `BOT_TOKEN` - telegram bot token. Information about how to authorize your own bot, you can find [here](https://core.telegram.org/bots/api#authorizing-your-bot).
+
+`DB_FILE_PATH` - path to db.json file 
+```json
+{
+  "notifications": [],
+  "users": []
+}
+```
 
 ### `@api`
 [polkadot-api](https://github.com/polkadot-js/api) instance for connect to node.
