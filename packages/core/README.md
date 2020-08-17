@@ -5,7 +5,7 @@ Core Lib for Substrate Telegram Bot.
 ## Install
 
 ```
-npm i substratebot
+npm i @ryabina-io/substratebot
 ```
 
 ## Use
