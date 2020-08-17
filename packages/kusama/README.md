@@ -104,7 +104,7 @@ You can easily manage added addresses, delete and rename .
 ## Usage within telegram groups.
 Additional way to use bot is to get alerts about statistic, prices and democracy events into Telegram group.Information about validators, nominators, supply is shown by default, about price, volume, market cap and democracy events is optional.
 
-![groups](telegramhttps://cdn-images-1.medium.com/max/1600/0*kPGRvHIMePjx5Pl0)
+![groups](https://cdn-images-1.medium.com/max/1600/0*kPGRvHIMePjx5Pl0)
 
 To start using bot in the group just invite bot as a group member.
 
