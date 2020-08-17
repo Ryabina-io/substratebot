@@ -89,8 +89,7 @@ If there no need in filters choose `Create Alert` button and get confirmation.
 
 1.In case you want to be notified when transfer on more than 100000 $KSM takes place, following path should be done:
 
-`Advanced > Balances > Events > Transfer > Filters > Value > 
-> 100000 > Exit filtering mode > Create alert`
+`Advanced > Balances > Events > Transfer > Filters > Value > (>100000) > Exit filtering mode > Create alert`
 
 ![transfer10k](https://cdn-images-1.medium.com/max/1600/1*9d9Usv60fjHmWLG1qtkAmA.png)
 
