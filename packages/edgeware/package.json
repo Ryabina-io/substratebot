@@ -1,5 +1,5 @@
 {
-  "name": "@ryabina/edgewarebot",
+  "name": "@ryabina-io/edgewarebot",
   "main": "main.js",
   "version": "1.0.0",
   "author": "ryabina-io",
@@ -9,7 +9,7 @@
     "@polkadot/api": "^1.25.1",
     "@polkadot/types": "^1.25.1",
     "@polkadot/util": "^2.18.1",
-    "substratebot": "^1.0.0",
+    "@ryabina-io/substratebot": "^1.0.0",
     "bent": "^7.3.7",
     "bignumber.js": "^9.0.0",
     "edgeware-node-types": "^2.3.4",

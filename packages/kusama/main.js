@@ -1,4 +1,4 @@
-const SubstrateBot = require("@ryabina/substratebot")
+const SubstrateBot = require("@ryabina-io/substratebot")
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const BigNumber = require("bignumber.js")
 const { metaConvertToConfig } = require("substratebot/tools/utils")

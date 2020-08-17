@@ -1,7 +1,7 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const { options } = require("@acala-network/api")
 const BigNumber = require("bignumber.js")
-const SubstrateBot = require("@ryabina/substratebot")
+const SubstrateBot = require("@ryabina-io/substratebot")
 const { metaConvertToConfig } = require("substratebot/tools/utils")
 const { formatBalance } = require("@polkadot/util")
 const bent = require("bent")

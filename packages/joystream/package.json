@@ -1,5 +1,5 @@
 {
-  "name": "@ryabina/joystream",
+  "name": "@ryabina-io/joystream",
   "private": true,
   "version": "1.0.0",
   "main": "main.js",
@@ -12,7 +12,7 @@
     "@polkadot/util": "^1.7.0-beta.5",
     "@polkadot/util-crypto": "^1.7.0-beta.5",
     "@polkadot/keyring": "^1.7.0-beta.5",
-    "substratebot": "^1.0.0",
+    "@ryabina-io/substratebot": "^1.0.0",
     "bent": "^7.3.7",
     "bignumber.js": "^9.0.0",
     "@types/bn.js": "^4.11.5",
