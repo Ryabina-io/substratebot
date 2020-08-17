@@ -10,3 +10,4 @@ The rest of the packages are examples of bot implementation for projects such as
 - [Acala](https://github.com/Ryabina-io/substratebot/tree/master/packages/acala)
 - [Edgeware](https://github.com/Ryabina-io/substratebot/tree/master/packages/edgeware)
 - [Joystream](https://github.com/Ryabina-io/substratebot/tree/master/packages/joystream)
+![Logo](https://miro.medium.com/max/1400/1*xFT5MT_GuyzdwMuc-qddhQ.png)
