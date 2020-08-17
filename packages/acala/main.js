@@ -235,7 +235,7 @@ function getSettings() {
       events: [],
       calls: [],
     },
-    BOT_TOKEN: process.env.BOT_TOKEN,
+    botToken: process.env.BOT_TOKEN,
   }
   return settings
 }

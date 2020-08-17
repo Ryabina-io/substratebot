@@ -737,8 +737,8 @@ async function checkFilter(filter, action, actionType, config) {
   }
 }
 
-function getDB() {
-  const adapter = new FileSync(process.env.DB_FILE_PATH || "/db/db.json")
+function getDB(path) {
+  const adapter = new FileSync(path || "/db/db.json")
   const db = low(adapter)
   return db
 }
@@ -758,7 +758,7 @@ module.exports = class SubstrateBot {
     this.api = api
     this.modules = modules
     this.modes = modes
-    this.db = getDB()
+    this.db = getDB(settings.dbFilePath)
     this.getNetworkStatsMessage = getNetworkStatsMessage
   }
 

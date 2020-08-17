@@ -16,7 +16,7 @@ module.exports.run = async function (params) {
   /*
    *   BOT initialization
    */
-  const bot = new Telegraf(botParams.settings.BOT_TOKEN)
+  const bot = new Telegraf(botParams.settings.botToken)
   bot.use(session())
 
   /*

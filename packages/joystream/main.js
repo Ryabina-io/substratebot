@@ -61,7 +61,8 @@ function getSettings() {
         ["treasury", "reportAwesome"],
       ],
     },
-    BOT_TOKEN: process.env.BOT_TOKEN,
+    botToken: process.env.BOT_TOKEN,
+    dbFilePath: process.env.DB_FILE_PATH
   }
   return settings
 }
