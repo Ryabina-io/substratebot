@@ -249,7 +249,7 @@ Thank you!
       ],
     },
     botToken: process.env.BOT_TOKEN,
-    dbFilePath: process.env.DB_FILE_PATH
+    dbFilePath: process.env.DB_FILE_PATH,
   }
   return settings
 }

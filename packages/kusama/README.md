@@ -1,6 +1,7 @@
 ## Kusama Telegram Bot.
 
 ### Launching:
+
 ```
 export BOT_TOKEN=telegram_bot_token
 export DB_FILE_PATH=path_to_dbjson_file
@@ -15,6 +16,7 @@ as a personal informational bot, sending alerts in a private chat;
 as informational bot for Telegram groups showing statistic of network, current price (optional) and sending democracy alerts (optional).
 
 ## Personal informational bot.
+
 All notifications are divided into 3 groups: `Address alerts`, `Democracy and Treasury` alerts and alerts of `Advanced mode`.
 
 ![selectone](https://cdn-images-1.medium.com/max/1600/1*fZajClfmBTJHtwp8mjUEGw.png)
@@ -43,15 +45,17 @@ After sending the name to bot, you will get second confirmation on alert set.
 ![done](https://cdn-images-1.medium.com/max/1600/0*Ha-UIFcjtSQCNKe-)
 
 ## Democracy and Treasury alerts.
+
 This set of notifications let users never miss events in the networks. Following alerts can be set up here:
-* `A motion has been proposed`
-* `A referendum has begun`
-* `A Proposal has been passed`
-* `A Proposal has been No passed`
-* `A Proposal has been cancelled`
-* `A Proposal has been executed`
-* `New Treasury Tip`
-* `New Treasury Proposal`
+
+- `A motion has been proposed`
+- `A referendum has begun`
+- `A Proposal has been passed`
+- `A Proposal has been No passed`
+- `A Proposal has been cancelled`
+- `A Proposal has been executed`
+- `New Treasury Tip`
+- `New Treasury Proposal`
 
 ![democracy list](https://cdn-images-1.medium.com/max/1600/0*tbyVz9p5EqKLxSvl)
 
@@ -61,6 +65,7 @@ You will get a confirmation:
 ![done2](https://cdn-images-1.medium.com/max/1600/0*x3Mp5LMYU4HqsE7I)
 
 ## Advanced mode.
+
 If pre-configured notifications are not enough, please choose `Advanced mode`. Please be noted that you should understand what [Substrate](https://www.substrate.io/) is to get maximum value from this mode.
 All [Events](https://substrate.dev/docs/en/knowledgebase/runtime/events) and [Extrinsics](https://substrate.dev/docs/en/knowledgebase/learn-substrate/extrinsics) are collected here. In short, Extrinsics - are methods that either users or smart contracts call in the network, Events - are the events that these methods trigger.
 
@@ -74,7 +79,7 @@ After selecting a module you are required to select a type of alert: Extrinsics 
 
 Next step is to set up `Filters`. Please be noted that correct use of `Filters` is very important stage and helps you to avoid unnecessary information.
 
-*For example: in case Filter `Target` is not selected for Event `Transfer` bot will send information about ALL transfers in the network.
+\*For example: in case Filter `Target` is not selected for Event `Transfer` bot will send information about ALL transfers in the network.
 
 ![event transfer](https://cdn-images-1.medium.com/max/1600/0*slNq3pV6KjPU5wKp)
 
@@ -84,7 +89,7 @@ If there no need in filters choose `Create Alert` button and get confirmation.
 
 ## Examples of notification in advanced mode.
 
-1.In case you want to be notified when transfer on more than 100000 $KSM takes place, following path should be done:
+1.In case you want to be notified when transfer on more than 100000 \$KSM takes place, following path should be done:
 
 `Advanced > Balances > Events > Transfer > Filters > Value > (>100000) > Exit filtering mode > Create alert`
 
@@ -103,6 +108,7 @@ If there no need in filters choose `Create Alert` button and get confirmation.
 ![set identity](https://cdn-images-1.medium.com/max/1600/0*YnoBlCcMTQ6voEkM.png)
 
 ## Alerts managements. My addresses/alerts.
+
 All your alerts are grouped by the accounts they're linked to. If an alert is not linked to any of your accounts, it is added to 'Other Alerts' group.
 
 ![my alerts](https://cdn-images-1.medium.com/max/1600/1*H9lq41YjE77nP0SReXMP7w.png)
@@ -110,6 +116,7 @@ All your alerts are grouped by the accounts they're linked to. If an alert is no
 You can easily manage added addresses, delete and rename .
 
 ## Usage within telegram groups.
+
 Additional way to use bot is to get alerts about statistic, prices and democracy events into Telegram group.Information about validators, nominators, supply is shown by default, about price, volume, market cap and democracy events is optional.
 
 ![groups](https://cdn-images-1.medium.com/max/1600/0*kPGRvHIMePjx5Pl0)
@@ -117,19 +124,21 @@ Additional way to use bot is to get alerts about statistic, prices and democracy
 To start using bot in the group just invite bot as a group member.
 
 Command to control bot:
-* /stats - to show statistic
-* /alertson - to turn on alerts on democracy events
-* /alertsoff - to turn off alerts on democracy event
-* /priceon - to show current price
-* /priceoff - not to show current price
+
+- /stats - to show statistic
+- /alertson - to turn on alerts on democracy events
+- /alertsoff - to turn off alerts on democracy event
+- /priceon - to show current price
+- /priceoff - not to show current price
 
 Democracy and price information is disabled by default. Activate them if needed.
 
 List of Ryabina bots:
-* [@Polkadot_Ryabina_bot](https://t.me/Polkadot_Ryabina_bot)
-* [@Kusasma_bot](https://t.me/Kusasma_bot)
-* [@Edgeware_bot](https://t.me/Edgeware_bot)
-* [@Acala_Ryabina_bot](https://t.me/Acala_Ryabina_bot)
+
+- [@Polkadot_Ryabina_bot](https://t.me/Polkadot_Ryabina_bot)
+- [@Kusasma_bot](https://t.me/Kusasma_bot)
+- [@Edgeware_bot](https://t.me/Edgeware_bot)
+- [@Acala_Ryabina_bot](https://t.me/Acala_Ryabina_bot)
 
 If you liked our bots, nominate **Ryabina validators**.
 Thank you!

@@ -1,5 +1,5 @@
 {
-  "name": "substratebot",
+  "name": "@ryabina/substratebot",
   "version": "1.0.0",
   "description": "Library for creating Telegram bot for Substrate-like networks.",
   "keywords": [
