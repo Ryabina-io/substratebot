@@ -768,7 +768,19 @@ module.exports = class SubstrateBot {
     botParams.ui.modules = this.modules
     botParams.ui.modes = this.modes
     botParams.db = this.db
+
+    var networkProperties = await this.api.rpc.system.properties()
+    if(networkProperties.ss58Format){
+      this.settings.network.prefix = networkProperties.ss58Format.toString()
+    }
+    if(networkProperties.tokenDecimals){
+      this.settings.network.decimals = networkProperties.tokenDecimals.toString()
+    }
+    if(networkProperties.tokenSymbol){
+      this.settings.network.token  = networkProperties.tokenSymbol.toString()
+    }
     botParams.settings = this.settings
+    if(this.api.registry.chain)
     botParams.getNetworkStatsMessage = this.getNetworkStatsMessage
 
     botParams.bot = await bot.run(this)

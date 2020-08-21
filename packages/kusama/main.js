@@ -1,7 +1,7 @@
 const SubstrateBot = require("@ryabina-io/substratebot")
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const BigNumber = require("bignumber.js")
-const { metaConvertToConfig } = require("substratebot/tools/utils")
+const { metaConvertToConfig } = require("@ryabina-io/substratebot/tools/utils")
 const { formatBalance } = require("@polkadot/util")
 const bent = require("bent")
 const getJSON = bent("json")
