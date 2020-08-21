@@ -1,8 +1,9 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const { TypeRegistry } = require("@polkadot/types")
-const edgewareDefinitions = require("edgeware-node-types/interfaces/definitions")
+const edgewareDefinitions = require('@edgeware/node-types/dist/interfaces/definitions')//  ("@edgeware/node-types/interfaces/definitions")
 const BigNumber = require("bignumber.js")
 const SubstrateBot = require("@ryabina-io/substratebot")
+const { metaConvertToConfig } = require("@ryabina-io/substratebot/tools/utils")
 const _ = require("lodash")
 const { formatBalance } = require("@polkadot/util")
 const bent = require("bent")
@@ -75,6 +76,8 @@ async function createSubstrateApi(provider) {
       ReferendumInfo: "ReferendumInfoTo239",
       Weight: "u32",
     },
+    // override duplicate type name
+    typesAlias: { voting: { Tally: 'VotingTally' } },
     registry,
   })
 }
