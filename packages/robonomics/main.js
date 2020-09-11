@@ -28,9 +28,27 @@ async function main() {
 }
 
 async function getAPI() {
-  const nodeUri = process.env.NODE_URI || "wss://rpc.rococo.robonomics.network"
+  const nodeUri = process.env.NODE_URI || "wss://substrate.ipci.io"
   const provider = new WsProvider(nodeUri)
-  const api = await ApiPromise.create({ provider })
+  const api = await ApiPromise.create({
+    provider,
+    types: {
+      Record: 'Vec<u8>',
+      TechnicalParam: 'Vec<u8>',
+      TechnicalReport: 'Vec<u8>',
+      EconomicalParam: '{}',
+      ProofParam: 'MultiSignature',
+      LiabilityIndex: 'u64',
+      ValidationFunctionParams: {
+        max_code_size: 'u32',
+        relay_chain_height: 'u32',
+        code_upgrade_allowed: 'Option<u32>'
+      }
+    }
+  })
+
+
+
   Promise.all([
     api.rpc.system.chain(),
     api.rpc.system.name(),
@@ -235,8 +253,8 @@ Thank you!
       RYABINA/ 8
       13asdY4e7sWdJ4hbGW9n2rkNro1mx5YKB6WBCC9gvqKmLvNH`,
     /*"Please nominate to our validators:\n                                                    `12Nwxo`\n                                                    `12PctN`\n                                                    `12NcTS`\n                                                    `12MGaB`\n                                                    `12NH2C`\n                                                    `12Mbzq`\n                                                    `12DYhk`\n                                                    `12DDES`\n                                                    `12MwX5`\n                                                    `12PHQt`\n`13T9UGfntid52aHuaxX1j6uh3zTYzMPMG1Des9Cmvf7K4xfq`",*/
-    governanceLinks: ["polkassembly", "subscan", "polkascan"],
-    commonLinks: ["subscan", "polkascan"],
+    governanceLinks: [],
+    commonLinks: ["subscan", "ipfs"],
     groupAlerts: {
       events: [
         ["democracy", "Proposed"],
@@ -290,17 +308,17 @@ async function getNetworkStats(api) {
   const marketcap =
     token_data != "NA"
       ? formatBalance(
-          new BigNumber(totalIssuance.toString())
-            .multipliedBy(
-              new BigNumber(token_data.market_data.current_price.usd)
-            )
-            .toFixed(0),
-          {
-            decimals: api.registry.chainDecimals,
-            withSi: true,
-            withUnit: "USD",
-          }
-        )
+        new BigNumber(totalIssuance.toString())
+          .multipliedBy(
+            new BigNumber(token_data.market_data.current_price.usd)
+          )
+          .toFixed(0),
+        {
+          decimals: api.registry.chainDecimals,
+          withSi: true,
+          withUnit: "USD",
+        }
+      )
       : token_data
 
   networkStats.price =
@@ -310,8 +328,8 @@ async function getNetworkStats(api) {
   networkStats.volume =
     token_data != "NA"
       ? new BigNumber(token_data.market_data.total_volume.usd.toString())
-          .dividedBy(new BigNumber("1e6"))
-          .toFixed(2) + "M USD"
+        .dividedBy(new BigNumber("1e6"))
+        .toFixed(2) + "M USD"
       : token_data
   networkStats.marketcap = marketcap
   networkStats.totalIssuance = totalIssuance.toHuman()

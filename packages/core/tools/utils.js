@@ -173,6 +173,11 @@ async function getTargets(address) {
   } else return []
 }
 
+async function getStashAccount(address){
+  var ledger = await botParams.api.query.staking.ledger(address)
+  return ledger;
+}
+
 function isIterable(obj) {
   if (obj == null) {
     return false
