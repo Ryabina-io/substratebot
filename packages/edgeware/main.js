@@ -1,6 +1,6 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const { TypeRegistry } = require("@polkadot/types")
-const edgewareDefinitions = require('@edgeware/node-types/dist/interfaces/definitions')//  ("@edgeware/node-types/interfaces/definitions")
+const edgewareDefinitions = require("@edgeware/node-types/dist/interfaces/definitions") //  ("@edgeware/node-types/interfaces/definitions")
 const BigNumber = require("bignumber.js")
 const SubstrateBot = require("@ryabina-io/substratebot")
 const { metaConvertToConfig } = require("@ryabina-io/substratebot/tools/utils")
@@ -77,7 +77,7 @@ async function createSubstrateApi(provider) {
       Weight: "u32",
     },
     // override duplicate type name
-    typesAlias: { voting: { Tally: 'VotingTally' } },
+    typesAlias: { voting: { Tally: "VotingTally" } },
     registry,
   })
 }
@@ -262,7 +262,12 @@ Feedback and support @RyabinaValidator`
 }
 
 async function getNetworkStats(api) {
-  var networkStats = {}
+  var networkStats = {
+    name: "Edgware",
+    prefix: "7",
+    decimals: "18",
+    token: "EDG",
+  }
   var token_data
   try {
     var token_data = await getJSON(

@@ -1,7 +1,7 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const BigNumber = require("bignumber.js")
-const SubstrateBot = require('@ryabina-io/substratebot')
-const { metaConvertToConfig } = require('@ryabina-io/substratebot/tools/utils')
+const SubstrateBot = require("@ryabina-io/substratebot")
+const { metaConvertToConfig } = require("@ryabina-io/substratebot/tools/utils")
 const { formatBalance } = require("@polkadot/util")
 const bent = require("bent")
 const getJSON = bent("json")
@@ -209,7 +209,7 @@ function getSettings() {
     network: {
       name: "Polkadot",
       prefix: "0",
-      decimals: "12",
+      decimals: "10",
       token: "DOT",
     },
     startMsg:
@@ -301,7 +301,7 @@ async function getNetworkStats(api) {
             )
             .toFixed(0),
           {
-            decimals: api.registry.chainDecimals,
+            decimals: 10,
             withSi: true,
             withUnit: "USD",
           }
@@ -319,8 +319,24 @@ async function getNetworkStats(api) {
           .toFixed(2) + "M USD"
       : token_data
   networkStats.marketcap = marketcap
-  networkStats.totalIssuance = totalIssuance.toHuman()
-  networkStats.totalStaked = totalStake.toHuman()
+  networkStats.totalIssuance = formatBalance(
+    new BigNumber(totalIssuance.toString()).toFixed(0),
+    {
+      decimals: 10,
+      withSi: true,
+      withUnit: "DOT",
+    }
+  )
+
+  networkStats.totalStaked = formatBalance(
+    new BigNumber(totalStake.toString()).toFixed(0),
+    {
+      decimals: 10,
+      withSi: true,
+      withUnit: "DOT",
+    }
+  )
+
   networkStats.percentStaked = new BigNumber(totalStake.toString())
     .dividedBy(new BigNumber(totalIssuance.toString()))
     .multipliedBy(new BigNumber(100))
