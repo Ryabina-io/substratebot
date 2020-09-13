@@ -163,20 +163,28 @@ async function sendExtrinsic(extrinsic, extrinsicIndex, token, decimals) {
             .find({ chatid: n.chatid })
             .value()
           if (!filters.includes(false) && user.enabled) {
-            var signer, stash
+            var signer, stashName
             if (extrinsic.signer) {
               signer = await getAccountName(extrinsic.signer, user)
-              stash = await getStashAccount(extrinsic.signer)
+              var stash = await getStashAccount(extrinsic.signer)
+              if (stash.isSome) {
+                stashName = await getAccountName(
+                  stash.value.stash.toString(),
+                  user
+                )
+              }
             }
             var message = `Extrinsic: <b>#${stringUpperFirst(method)}</b>
   \n<i>${
-              extrinsicDB.documentation == ""
-                ? "A new extrinsic has occurred."
-                : extrinsicDB.documentation
-              }</i>\n
+    extrinsicDB.documentation == ""
+      ? "A new extrinsic has occurred."
+      : extrinsicDB.documentation
+  }</i>\n
 Block: ${currentBlock}
 Index: ${extrinsicIndex}
-Module: #${module}${signer ? "\nSigner: " + signer : ""}${stash.isEmpty ? '' : "\nStash: " + stash.value.stash.toString()}`
+Module: #${module}${signer ? "\nSigner: " + signer : ""}${
+              stashName && signer != stashName ? "\nStash: " + stashName : ""
+            }`
             if (Object.keys(extrinsic.args).length > 0) {
               message += `\nParameters:\n<code>`
               for (var argName in extrinsic.args) {
@@ -217,16 +225,18 @@ Module: #${module}${signer ? "\nSigner: " + signer : ""}${stash.isEmpty ? '' : "
                       .toFixed(4) +
                     " " +
                     token
-                    }`
+                  }`
                 } else {
-                  var ledger = await getStashAccount(extrinsic.signer.toString())
+                  var ledger = await getStashAccount(
+                    extrinsic.signer.toString()
+                  )
                   message += `  bond ${
                     new BigNumber(ledger.value.active.toString())
                       .dividedBy(new BigNumber("1e" + decimals))
                       .toFixed(4) +
                     " " +
                     token
-                    }`
+                  }`
                 }
               }
               message += `</code>`
@@ -317,7 +327,7 @@ async function sendEvent(record) {
             eventDB.documentation == ""
               ? "A new event has occurred."
               : eventDB.documentation.replace("`(", "(").replace(")`", ")")
-            }</i>\n
+          }</i>\n
 Block: ${currentBlock}
 Module: #${stringUpperFirst(event.section)}`
 
@@ -559,7 +569,7 @@ async function sendCustomAlert(event) {
             eventDB.documentation == ""
               ? "A new event has occurred."
               : eventDB.documentation.replace("`(", "(").replace(")`", ")")
-            }</i>\n
+          }</i>\n
 Module: #${stringUpperFirst(event.section)}`
           if (event.data.length > 0) {
             message += `\nParameters:\n<code>`
@@ -664,20 +674,28 @@ async function checkFilter(filter, action, actionType, config) {
     if (!action.signer) {
       return false
     }
-    var sender = action.signer;
-    var stash = await getStashAccount(sender)
-    var compareResult = filter.isEqual && filter.value == sender
+    var signer = action.signer
+    var stash = await getStashAccount(signer.toString())
+    var compareResult = filter.isEqual && filter.value == signer
     if (compareResult) return true
     else {
       if (stash.isSome) {
-        sender = stash.value.stash.toString()
-        compareResult = filter.isEqual && filter.value == sender
+        compareResult =
+          filter.isEqual && filter.value == stash.value.stash.toString()
         if (compareResult) return true
+        else if (filter.source && filter.source == "nominator") {
+          var targets = await getTargets(filter.value)
+          if (
+            targets.includes(signer.toString()) ||
+            targets.includes(stash.value.stash.toString())
+          ) {
+            return true
+          }
+        }
       }
       return false
     }
   }
-
 
   if (actionType == "call") {
     arg = config.args.find(a => a.name == filter.name)
@@ -714,28 +732,15 @@ async function checkFilter(filter, action, actionType, config) {
     })
     if (item) return true
     else return false
-  } else {
-    if (filter.source) {
-      if (filter.source == "nominator") {
-        var targets = await getTargets(filter.value)
-        if (targets.includes(data.toString())) {
-          return true
-        } else return false
-      }
-    } else if (
-      (filter.isEqual && filter.value == data.toString()) ||
-      (filter.isLess &&
-        new BigNumber(data.toString()).isLessThan(
-          new BigNumber(filter.value)
-        )) ||
-      (filter.isMore &&
-        new BigNumber(data.toString()).isGreaterThan(
-          new BigNumber(filter.value)
-        ))
-    ) {
-      return true
-    } else return false
-  }
+  } else if (
+    (filter.isEqual && filter.value == data.toString()) ||
+    (filter.isLess &&
+      new BigNumber(data.toString()).isLessThan(new BigNumber(filter.value))) ||
+    (filter.isMore &&
+      new BigNumber(data.toString()).isGreaterThan(new BigNumber(filter.value)))
+  ) {
+    return true
+  } else return false
 }
 
 function getDB(path) {
@@ -781,7 +786,7 @@ module.exports = class SubstrateBot {
       this.settings.network.token = networkProperties.tokenSymbol.toString()
     }
     botParams.settings = this.settings
-    if (this.api.registry.chain)
+    if (this.api.registry.chainToken)
       botParams.getNetworkStatsMessage = this.getNetworkStatsMessage
 
     botParams.bot = await bot.run(this)
