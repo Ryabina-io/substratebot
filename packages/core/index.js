@@ -241,24 +241,13 @@ Module: #${module}${signer ? "\nSigner: " + signer : ""}${
               }
               message += `</code>`
             }
-            var links = []
-            var network = botParams.settings.network.name.toLowerCase()
-            if (botParams.settings.commonLinks.includes("subscan")) {
-              links.push(
-                Markup.urlButton(
-                  "subscan",
-                  `https://${network}.subscan.io/extrinsic/${currentBlock}-${extrinsicIndex}`
-                )
-              )
-            }
-            if (botParams.settings.commonLinks.includes("polkascan")) {
-              links.push(
-                Markup.urlButton(
-                  "polkascan",
-                  `https://polkascan.io/${network}/transaction/${currentBlock}-${extrinsicIndex}`
-                )
-              )
-            }
+            var links = botParams.settings
+              .getExtrinsicLinks(extrinsicIndex, currentBlock)
+              .map(row => {
+                return row.map(link => {
+                  return Markup.urlButton(link[0], link[1])
+                })
+              })
             try {
               await botParams.bot.telegram.sendMessage(n.chatid, message, {
                 parse_mode: "HTML",
@@ -298,9 +287,6 @@ async function sendEvent(record) {
     )
   }
   const { event, phase } = record
-  const types = event.typeDef
-  const decimals = botParams.settings.network.decimals
-  const token = botParams.settings.network.token
   if (
     botParams.ui.modules[stringUpperFirst(event.section)] &&
     botParams.ui.modules[stringUpperFirst(event.section)].events[event.method]
@@ -362,166 +348,19 @@ Module: #${stringUpperFirst(event.section)}`
             }
             message += `</code>`
           }
-          var links = []
-          if (event.section == "democracy" && event.method == "Proposed") {
-            var argIndex = _.findIndex(
-              eventDB.args,
-              a => a.name == "proposalIndex"
-            )
-            var proposalId = event.data[argIndex].toNumber()
-            var network = botParams.settings.network.name.toLowerCase()
-            links.push([])
-            if (botParams.settings.governanceLinks.includes("commonwealth")) {
-              links[0].push(
-                Markup.urlButton(
-                  "commonwealth",
-                  `https://commonwealth.im/${network}/proposal/democracyproposal/${proposalId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("polkassembly")) {
-              links[0].push(
-                Markup.urlButton(
-                  "polkassembly",
-                  `https://${network}.polkassembly.io/proposal/${proposalId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("polkascan")) {
-              links.push([])
-              links[1].push(
-                Markup.urlButton(
-                  "polkascan",
-                  `https://polkascan.io/${network}/democracy/proposal/${proposalId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("subscan")) {
-              links[1].push(
-                Markup.urlButton(
-                  "subscan",
-                  `https://${network}.subscan.io/democracy_proposal/${proposalId}`
-                )
-              )
-            }
-          } else if (
-            (event.section == "democracy" && event.method == "Started") ||
-            (event.section == "democracy" && event.method == "Cancelled") ||
-            (event.section == "democracy" && event.method == "Passed") ||
-            (event.section == "democracy" && event.method == "NotPassed") ||
-            (event.section == "democracy" && event.method == "Executed")
-          ) {
-            var argIndex = _.findIndex(eventDB.args, a => a.name == "refIndex")
-            var referendumId = event.data[argIndex].toNumber()
-            var network = botParams.settings.network.name.toLowerCase()
-            links.push([])
-            if (botParams.settings.governanceLinks.includes("commonwealth")) {
-              links[0].push(
-                Markup.urlButton(
-                  "commonwealth",
-                  `https://commonwealth.im/${network}/proposal/referendum/${referendumId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("polkassembly")) {
-              links[0].push(
-                Markup.urlButton(
-                  "polkassembly",
-                  `https://${network}.polkassembly.io/referendum/${referendumId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("polkascan")) {
-              links.push([])
-              links[1].push(
-                Markup.urlButton(
-                  "polkascan",
-                  `https://polkascan.io/${network}/democracy/referendum/${referendumId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("subscan")) {
-              links[1].push(
-                Markup.urlButton(
-                  "subscan",
-                  `https://${network}.subscan.io/referenda/${referendumId}`
-                )
-              )
-            }
-          } else if (
-            (event.section == "treasury" && event.method == "Proposed") ||
-            (event.section == "treasury" && event.method == "Awarded") ||
-            (event.section == "treasury" && event.method == "Rejected")
-          ) {
-            var argIndex = _.findIndex(
-              eventDB.args,
-              a => a.name == "proposalIndex"
-            )
-            var proposalId = event.data[argIndex].toNumber()
-            var network = botParams.settings.network.name.toLowerCase()
-            links.push([])
-            if (botParams.settings.governanceLinks.includes("commonwealth")) {
-              links[0].push(
-                Markup.urlButton(
-                  "commonwealth",
-                  `https://commonwealth.im/${network}/proposal/treasuryproposal/${proposalId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("polkassembly")) {
-              links[0].push(
-                Markup.urlButton(
-                  "polkassembly",
-                  `https://${network}.polkassembly.io/treasury/${proposalId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("polkascan")) {
-              links.push([])
-              links[1].push(
-                Markup.urlButton(
-                  "polkascan",
-                  `https://polkascan.io/${network}/treasury/proposal/${proposalId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("subscan")) {
-              links[1].push(
-                Markup.urlButton(
-                  "subscan",
-                  `https://${network}.subscan.io/treasury/${proposalId}`
-                )
-              )
-            }
-          } else if (phase.value["toNumber"]) {
-            var network = botParams.settings.network.name.toLowerCase()
-            if (botParams.settings.commonLinks.includes("subscan")) {
-              links.push(
-                Markup.urlButton(
-                  "subscan",
-                  `https://${network}.subscan.io/extrinsic/${currentBlock}-${phase.value.toNumber()}`
-                )
-              )
-            }
-            if (botParams.settings.commonLinks.includes("polkascan")) {
-              links.push(
-                Markup.urlButton(
-                  "polkascan",
-                  `https://polkascan.io/${network}/transaction/${currentBlock}-${phase.value.toNumber()}`
-                )
-              )
-            }
-          }
+          var links = botParams.settings
+            .getEventLinks(event, eventDB, phase.value.toNumber(), currentBlock)
+            .map(row => {
+              return row.map(link => {
+                return Markup.urlButton(link[0], link[1])
+              })
+            })
           try {
-            var result = await botParams.bot.telegram.sendMessage(
-              n.chatid,
-              message,
-              {
-                parse_mode: "html",
-                disable_web_page_preview: "true",
-                reply_markup: Markup.inlineKeyboard(links),
-              }
-            )
+            await botParams.bot.telegram.sendMessage(n.chatid, message, {
+              parse_mode: "html",
+              disable_web_page_preview: "true",
+              reply_markup: Markup.inlineKeyboard(links),
+            })
           } catch (error) {
             if (error.message.includes("bot was blocked by the user")) {
               botParams.db
@@ -617,15 +456,11 @@ Module: #${stringUpperFirst(event.section)}`
             })
           }
           try {
-            var result = await botParams.bot.telegram.sendMessage(
-              n.chatid,
-              message,
-              {
-                parse_mode: "html",
-                disable_web_page_preview: "true",
-                reply_markup: Markup.inlineKeyboard(links),
-              }
-            )
+            await botParams.bot.telegram.sendMessage(n.chatid, message, {
+              parse_mode: "html",
+              disable_web_page_preview: "true",
+              reply_markup: Markup.inlineKeyboard(links),
+            })
           } catch (error) {
             if (error.message.includes("bot was blocked by the user")) {
               botParams.db
@@ -775,16 +610,19 @@ module.exports = class SubstrateBot {
     botParams.ui.modes = this.modes
     botParams.db = this.db
 
-    //var networkProperties = await this.api.rpc.system.properties()
-    //if (networkProperties.ss58Format) {
-    //  this.settings.network.prefix = networkProperties.ss58Format.toString()
-    //}
-    //if (networkProperties.tokenDecimals) {
-    //  this.settings.network.decimals = networkProperties.tokenDecimals.toString()
-    //}
-    //if (networkProperties.tokenSymbol) {
-    //  this.settings.network.token = networkProperties.tokenSymbol.toString()
-    //}
+    var networkProperties = await this.api.rpc.system.properties()
+    if (!this.settings.network.prefix && networkProperties.ss58Format) {
+      this.settings.network.prefix = networkProperties.ss58Format.toString()
+    }
+    if (!this.settings.network.decimals && networkProperties.tokenDecimals) {
+      this.settings.network.decimals = networkProperties.tokenDecimals.toString()
+    }
+    if (
+      this.settings.network.token === undefined &&
+      networkProperties.tokenSymbol
+    ) {
+      this.settings.network.token = networkProperties.tokenSymbol.toString()
+    }
     botParams.settings = this.settings
     if (this.api.registry.chainToken)
       botParams.getNetworkStatsMessage = this.getNetworkStatsMessage

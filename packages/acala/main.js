@@ -224,18 +224,20 @@ function getSettings() {
       name: "Acala-Testnet",
       prefix: "42",
       decimals: "18",
+      token: "",
     },
     startMsg:
       "Created by Ryabina team.\n\nIf you like this bot, you can thank by voting for our /validators\nFeel free to describe any issues, typo, errors at @RyabinaValidator",
     validatorsMessage:
       "If you liked our bots, nominate Ryabina validators on Polkadot, Kusama and Edgeware!",
-    governanceLinks: ["subscan"],
-    commonLinks: ["subscan"],
+    getEventLinks: getEventLinks,
+    getExtrinsicLinks: getExtrinsicLinks,
     groupAlerts: {
       events: [],
       calls: [],
     },
     botToken: process.env.BOT_TOKEN,
+    dbFilePath: process.env.DB_FILE_PATH,
   }
   return settings
 }
@@ -272,6 +274,26 @@ Nominate our /validators
 Feedback and support @RyabinaValidator`
   }
   return result
+}
+
+function getEventLinks(event, eventDB, index, block) {
+  var links = []
+  var network = "acala-testnet"
+  if (index) {
+    links.push([
+      ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
+    ])
+  }
+  return links
+}
+
+function getExtrinsicLinks(extrinsic, extrinsicDB, index, block) {
+  var links = []
+  var network = "acala-testnet"
+  links.push([
+    ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
+  ])
+  return links
 }
 
 async function getNetworkStats(api) {

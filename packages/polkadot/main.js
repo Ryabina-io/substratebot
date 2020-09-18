@@ -7,6 +7,7 @@ const bent = require("bent")
 const getJSON = bent("json")
 
 let networkStats = {}
+let network = "polkadot"
 
 async function main() {
   var settings = getSettings()
@@ -234,9 +235,8 @@ Thank you!
       1HZMocNpdw6VYS1aKyrdu1V7kHpbdCvhL8VKayvzVzqTf6H
       RYABINA/ 8
       13asdY4e7sWdJ4hbGW9n2rkNro1mx5YKB6WBCC9gvqKmLvNH`,
-    /*"Please nominate to our validators:\n                                                    `12Nwxo`\n                                                    `12PctN`\n                                                    `12NcTS`\n                                                    `12MGaB`\n                                                    `12NH2C`\n                                                    `12Mbzq`\n                                                    `12DYhk`\n                                                    `12DDES`\n                                                    `12MwX5`\n                                                    `12PHQt`\n`13T9UGfntid52aHuaxX1j6uh3zTYzMPMG1Des9Cmvf7K4xfq`",*/
-    governanceLinks: ["polkassembly", "subscan", "polkascan"],
-    commonLinks: ["subscan", "polkascan"],
+    getEventLinks: getEventLinks,
+    getExtrinsicLinks: getExtrinsicLinks,
     groupAlerts: {
       events: [
         ["democracy", "Proposed"],
@@ -272,6 +272,93 @@ Nominate our /validators
 Feedback and support @RyabinaValidator`
   }
   return result
+}
+
+function getEventLinks(event, eventDB, index, block) {
+  var links = []
+  if (event.section == "democracy" && event.method == "Proposed") {
+    var argIndex = _.findIndex(eventDB.args, a => a.name == "proposalIndex")
+    var proposalId = event.data[argIndex].toNumber()
+    links.push([
+      [
+        "polkassembly",
+        `https://${network}.polkassembly.io/proposal/${proposalId}`,
+      ],
+    ])
+    links.push(
+      [
+        "polkascan",
+        `https://polkascan.io/${network}/democracy/proposal/${proposalId}`,
+      ],
+      [
+        "subscan",
+        `https://${network}.subscan.io/democracy_proposal/${proposalId}`,
+      ]
+    )
+  } else if (
+    (event.section == "democracy" && event.method == "Started") ||
+    (event.section == "democracy" && event.method == "Cancelled") ||
+    (event.section == "democracy" && event.method == "Passed") ||
+    (event.section == "democracy" && event.method == "NotPassed") ||
+    (event.section == "democracy" && event.method == "Executed")
+  ) {
+    var argIndex = _.findIndex(eventDB.args, a => a.name == "refIndex")
+    var referendumId = event.data[argIndex].toNumber()
+    links.push([
+      [
+        "polkassembly",
+        `https://${network}.polkassembly.io/referendum/${referendumId}`,
+      ],
+    ])
+    links.push(
+      [
+        "polkascan",
+        `https://polkascan.io/${network}/democracy/referendum/${referendumId}`,
+      ],
+      ["subscan", `https://${network}.subscan.io/referenda/${referendumId}`]
+    )
+  } else if (
+    (event.section == "treasury" && event.method == "Proposed") ||
+    (event.section == "treasury" && event.method == "Awarded") ||
+    (event.section == "treasury" && event.method == "Rejected")
+  ) {
+    var argIndex = _.findIndex(eventDB.args, a => a.name == "proposalIndex")
+    var proposalId = event.data[argIndex].toNumber()
+    links.push([
+      [
+        "polkassembly",
+        `https://${network}.polkassembly.io/treasury/${proposalId}`,
+      ],
+    ])
+    links.push(
+      [
+        "polkascan",
+        `https://polkascan.io/${network}/treasury/proposal/${proposalId}`,
+      ],
+      ["subscan", `https://${network}.subscan.io/treasury/${proposalId}`]
+    )
+  } else if (index) {
+    links.push([
+      ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
+      [
+        "polkascan",
+        `https://polkascan.io/${network}/transaction/${block}-${index}`,
+      ],
+    ])
+  }
+  return links
+}
+
+function getExtrinsicLinks(index, block) {
+  var links = []
+  links.push([
+    ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
+    [
+      "polkascan",
+      `https://polkascan.io/${network}/transaction/${block}-${index}`,
+    ],
+  ])
+  return links
 }
 
 async function getNetworkStats(api) {

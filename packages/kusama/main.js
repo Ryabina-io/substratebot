@@ -41,8 +41,8 @@ function getSettings() {
       "Created by Ryabina team.\n\nIf you like this bot, you can thank us by voting for our /validators\nFeel free to describe any issues, typo, errors at @RyabinaValidator",
     validatorsMessage:
       'To nominate us:\nGo to https://polkadot.js.org/apps/#/staking/actions\nType RYABINA in the search of "Set nominees".\nWait a while until the addreses load and select all RYABINA nodes.\nThank you!',
-    governanceLinks: ["commonwealth", "polkassembly", "subscan", "polkascan"],
-    commonLinks: ["subscan", "polkascan"],
+    getEventLinks: getEventLinks,
+    getExtrinsicLinks: getExtrinsicLinks,
     groupAlerts: {
       events: [
         ["democracy", "Proposed"],
@@ -255,6 +255,107 @@ Nominate our /validators
 Feedback and support @RyabinaValidator`
   }
   return result
+}
+
+function getEventLinks(event, eventDB, index, block) {
+  var links = []
+  var network = "kusama"
+  if (event.section == "democracy" && event.method == "Proposed") {
+    var argIndex = _.findIndex(eventDB.args, a => a.name == "proposalIndex")
+    var proposalId = event.data[argIndex].toNumber()
+    links.push([
+      [
+        "commonwealth",
+        `https://commonwealth.im/${network}/proposal/democracyproposal/${proposalId}`,
+      ],
+      [
+        "polkassembly",
+        `https://${network}.polkassembly.io/proposal/${proposalId}`,
+      ],
+    ])
+    links.push(
+      [
+        "polkascan",
+        `https://polkascan.io/${network}/democracy/proposal/${proposalId}`,
+      ],
+      [
+        "subscan",
+        `https://${network}.subscan.io/democracy_proposal/${proposalId}`,
+      ]
+    )
+  } else if (
+    (event.section == "democracy" && event.method == "Started") ||
+    (event.section == "democracy" && event.method == "Cancelled") ||
+    (event.section == "democracy" && event.method == "Passed") ||
+    (event.section == "democracy" && event.method == "NotPassed") ||
+    (event.section == "democracy" && event.method == "Executed")
+  ) {
+    var argIndex = _.findIndex(eventDB.args, a => a.name == "refIndex")
+    var referendumId = event.data[argIndex].toNumber()
+    links.push([
+      [
+        "commonwealth",
+        `https://commonwealth.im/${network}/proposal/referendum/${referendumId}`,
+      ],
+      [
+        "polkassembly",
+        `https://${network}.polkassembly.io/referendum/${referendumId}`,
+      ],
+    ])
+    links.push(
+      [
+        "polkascan",
+        `https://polkascan.io/${network}/democracy/referendum/${referendumId}`,
+      ],
+      ["subscan", `https://${network}.subscan.io/referenda/${referendumId}`]
+    )
+  } else if (
+    (event.section == "treasury" && event.method == "Proposed") ||
+    (event.section == "treasury" && event.method == "Awarded") ||
+    (event.section == "treasury" && event.method == "Rejected")
+  ) {
+    var argIndex = _.findIndex(eventDB.args, a => a.name == "proposalIndex")
+    var proposalId = event.data[argIndex].toNumber()
+    links.push([
+      [
+        "commonwealth",
+        `https://commonwealth.im/${network}/proposal/treasuryproposal/${proposalId}`,
+      ],
+      [
+        "polkassembly",
+        `https://${network}.polkassembly.io/treasury/${proposalId}`,
+      ],
+    ])
+    links.push(
+      [
+        "polkascan",
+        `https://polkascan.io/${network}/treasury/proposal/${proposalId}`,
+      ],
+      ["subscan", `https://${network}.subscan.io/treasury/${proposalId}`]
+    )
+  } else if (index) {
+    links.push([
+      ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
+      [
+        "polkascan",
+        `https://polkascan.io/${network}/transaction/${block}-${index}`,
+      ],
+    ])
+  }
+  return links
+}
+
+function getExtrinsicLinks(index, block) {
+  var links = []
+  var network = "kusama"
+  links.push([
+    ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
+    [
+      "polkascan",
+      `https://polkascan.io/${network}/transaction/${block}-${index}`,
+    ],
+  ])
+  return links
 }
 
 async function getNetworkStats(api) {
