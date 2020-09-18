@@ -1,0 +1,16 @@
+{
+  "name": "@ryabina-io/robonomicbot",
+  "version": "1.0.0",
+  "main": "main.js",
+  "author": "ryabina-io",
+  "private": true,
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@polkadot/api": "^1.31.2",
+    "@polkadot/util": "^2.18.1",
+    "@ryabina-io/substratebot": "^1.0.1",
+    "bent": "^7.3.7",
+    "bignumber.js": "^9.0.0",
+    "lodash": "^4.17.19"
+  }
+}

@@ -96,6 +96,8 @@ async function parse(value, type, baseType, depth) {
     return await compactToString(value, type, baseType, depth)
   } else if (baseType.startsWith("Option<")) {
     return await optionToString(value, type, baseType, depth)
+  } else if (baseType == "Vec<u8>") {
+    return await hexToString(value, type, baseType, depth)
   } else if (baseType.startsWith("Vec<")) {
     return await vecToString(value, type, baseType, depth)
   } else if (baseType.startsWith("(")) {
