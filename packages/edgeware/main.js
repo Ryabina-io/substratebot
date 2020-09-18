@@ -1,8 +1,9 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const { TypeRegistry } = require("@polkadot/types")
-const edgewareDefinitions = require("edgeware-node-types/interfaces/definitions")
+const edgewareDefinitions = require("@edgeware/node-types/dist/interfaces/definitions") //  ("@edgeware/node-types/interfaces/definitions")
 const BigNumber = require("bignumber.js")
 const SubstrateBot = require("@ryabina-io/substratebot")
+const { metaConvertToConfig } = require("@ryabina-io/substratebot/tools/utils")
 const _ = require("lodash")
 const { formatBalance } = require("@polkadot/util")
 const bent = require("bent")
@@ -75,6 +76,8 @@ async function createSubstrateApi(provider) {
       ReferendumInfo: "ReferendumInfoTo239",
       Weight: "u32",
     },
+    // override duplicate type name
+    typesAlias: { voting: { Tally: "VotingTally" } },
     registry,
   })
 }
@@ -219,8 +222,8 @@ function getSettings() {
       "Created by Ryabina team.\n\nIf you like this bot, you can thank by voting for our /validators\nFeel free to describe any issues, typo, errors at @RyabinaValidator",
     validatorsMessage:
       'To nominate us:\nGo to https://polkadot.js.org/apps/#/staking/actions\nType RYABINA in the search of "Set nominees".\nWait a while until the addreses load and select all RYABINA nodes.\nThank you!',
-    governanceLinks: ["commonwealth", "subscan"],
-    commonLinks: ["subscan"],
+    getEventLinks: getEventLinks,
+    getExtrinsicLinks: getExtrinsicLinks,
     groupAlerts: {
       events: [
         ["democracy", "Proposed"],
@@ -258,8 +261,76 @@ Feedback and support @RyabinaValidator`
   return result
 }
 
+function getEventLinks(event, eventDB, index, block) {
+  var links = []
+  var network = "edgeware"
+  if (event.section == "democracy" && event.method == "Proposed") {
+    var argIndex = _.findIndex(eventDB.args, a => a.name == "proposalIndex")
+    var proposalId = event.data[argIndex].toNumber()
+    links.push([
+      [
+        "commonwealth",
+        `https://commonwealth.im/${network}/proposal/democracyproposal/${proposalId}`,
+      ],
+      [
+        "subscan",
+        `https://${network}.subscan.io/democracy_proposal/${proposalId}`,
+      ],
+    ])
+  } else if (
+    (event.section == "democracy" && event.method == "Started") ||
+    (event.section == "democracy" && event.method == "Cancelled") ||
+    (event.section == "democracy" && event.method == "Passed") ||
+    (event.section == "democracy" && event.method == "NotPassed") ||
+    (event.section == "democracy" && event.method == "Executed")
+  ) {
+    var argIndex = _.findIndex(eventDB.args, a => a.name == "refIndex")
+    var referendumId = event.data[argIndex].toNumber()
+    links.push([
+      [
+        "commonwealth",
+        `https://commonwealth.im/${network}/proposal/referendum/${referendumId}`,
+      ],
+      ["subscan", `https://${network}.subscan.io/referenda/${referendumId}`],
+    ])
+  } else if (
+    (event.section == "treasury" && event.method == "Proposed") ||
+    (event.section == "treasury" && event.method == "Awarded") ||
+    (event.section == "treasury" && event.method == "Rejected")
+  ) {
+    var argIndex = _.findIndex(eventDB.args, a => a.name == "proposalIndex")
+    var proposalId = event.data[argIndex].toNumber()
+    links.push([
+      [
+        "commonwealth",
+        `https://commonwealth.im/${network}/proposal/treasuryproposal/${proposalId}`,
+      ],
+      ["subscan", `https://${network}.subscan.io/treasury/${proposalId}`],
+    ])
+  } else if (index) {
+    links.push([
+      ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
+    ])
+  }
+  return links
+}
+
+function getExtrinsicLinks(extrinsic, extrinsicDB, index, block) {
+  var links = []
+  var network = "edgeware"
+  links.push([
+    ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
+  ])
+  return links
+}
+
 async function getNetworkStats(api) {
-  var networkStats = {}
+  var networkStats = {
+    name: "Edgware",
+    prefix: "7",
+    decimals: "18",
+    token: "EDG",
+  }
   var token_data
   try {
     var token_data = await getJSON(

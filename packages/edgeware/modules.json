@@ -1585,7 +1585,7 @@
             "baseType": "GenericAccountId"
           },
           {
-            "name": "reporterd",
+            "name": "reported",
             "type": "AccountId",
             "baseType": "GenericAccountId"
           },

@@ -1,15 +1,15 @@
 {
   "name": "@ryabina-io/polkadotbot",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "main.js",
   "author": "ryabina-io",
   "private": true,
   "license": "Apache-2.0",
   "dependencies": {
-    "@polkadot/api": "^1.27.1",
+    "@polkadot/api": "^1.33.1",
     "@polkadot/util": "^2.18.1",
-    "@ryabina-io/substratebot": "^1.0.0",
-    "bent": "^7.3.7",
+    "@ryabina-io/substratebot": "^1.0.2",
+    "bent": "^7.3.10",
     "bignumber.js": "^9.0.0",
     "lodash": "^4.17.19"
   }

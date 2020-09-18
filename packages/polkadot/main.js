@@ -1,12 +1,13 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const BigNumber = require("bignumber.js")
-const SubstrateBot = require("substratebot/index")
-const { metaConvertToConfig } = require("substratebot/tools/utils")
+const SubstrateBot = require("@ryabina-io/substratebot")
+const { metaConvertToConfig } = require("@ryabina-io/substratebot/tools/utils")
 const { formatBalance } = require("@polkadot/util")
 const bent = require("bent")
 const getJSON = bent("json")
 
 let networkStats = {}
+let network = "polkadot"
 
 async function main() {
   var settings = getSettings()
@@ -209,7 +210,7 @@ function getSettings() {
     network: {
       name: "Polkadot",
       prefix: "0",
-      decimals: "12",
+      decimals: "10",
       token: "DOT",
     },
     startMsg:
@@ -234,9 +235,8 @@ Thank you!
       1HZMocNpdw6VYS1aKyrdu1V7kHpbdCvhL8VKayvzVzqTf6H
       RYABINA/ 8
       13asdY4e7sWdJ4hbGW9n2rkNro1mx5YKB6WBCC9gvqKmLvNH`,
-    /*"Please nominate to our validators:\n                                                    `12Nwxo`\n                                                    `12PctN`\n                                                    `12NcTS`\n                                                    `12MGaB`\n                                                    `12NH2C`\n                                                    `12Mbzq`\n                                                    `12DYhk`\n                                                    `12DDES`\n                                                    `12MwX5`\n                                                    `12PHQt`\n`13T9UGfntid52aHuaxX1j6uh3zTYzMPMG1Des9Cmvf7K4xfq`",*/
-    governanceLinks: ["polkassembly", "subscan", "polkascan"],
-    commonLinks: ["subscan", "polkascan"],
+    getEventLinks: getEventLinks,
+    getExtrinsicLinks: getExtrinsicLinks,
     groupAlerts: {
       events: [
         ["democracy", "Proposed"],
@@ -274,6 +274,93 @@ Feedback and support @RyabinaValidator`
   return result
 }
 
+function getEventLinks(event, eventDB, index, block) {
+  var links = []
+  if (event.section == "democracy" && event.method == "Proposed") {
+    var argIndex = _.findIndex(eventDB.args, a => a.name == "proposalIndex")
+    var proposalId = event.data[argIndex].toNumber()
+    links.push([
+      [
+        "polkassembly",
+        `https://${network}.polkassembly.io/proposal/${proposalId}`,
+      ],
+    ])
+    links.push(
+      [
+        "polkascan",
+        `https://polkascan.io/${network}/democracy/proposal/${proposalId}`,
+      ],
+      [
+        "subscan",
+        `https://${network}.subscan.io/democracy_proposal/${proposalId}`,
+      ]
+    )
+  } else if (
+    (event.section == "democracy" && event.method == "Started") ||
+    (event.section == "democracy" && event.method == "Cancelled") ||
+    (event.section == "democracy" && event.method == "Passed") ||
+    (event.section == "democracy" && event.method == "NotPassed") ||
+    (event.section == "democracy" && event.method == "Executed")
+  ) {
+    var argIndex = _.findIndex(eventDB.args, a => a.name == "refIndex")
+    var referendumId = event.data[argIndex].toNumber()
+    links.push([
+      [
+        "polkassembly",
+        `https://${network}.polkassembly.io/referendum/${referendumId}`,
+      ],
+    ])
+    links.push(
+      [
+        "polkascan",
+        `https://polkascan.io/${network}/democracy/referendum/${referendumId}`,
+      ],
+      ["subscan", `https://${network}.subscan.io/referenda/${referendumId}`]
+    )
+  } else if (
+    (event.section == "treasury" && event.method == "Proposed") ||
+    (event.section == "treasury" && event.method == "Awarded") ||
+    (event.section == "treasury" && event.method == "Rejected")
+  ) {
+    var argIndex = _.findIndex(eventDB.args, a => a.name == "proposalIndex")
+    var proposalId = event.data[argIndex].toNumber()
+    links.push([
+      [
+        "polkassembly",
+        `https://${network}.polkassembly.io/treasury/${proposalId}`,
+      ],
+    ])
+    links.push(
+      [
+        "polkascan",
+        `https://polkascan.io/${network}/treasury/proposal/${proposalId}`,
+      ],
+      ["subscan", `https://${network}.subscan.io/treasury/${proposalId}`]
+    )
+  } else if (index) {
+    links.push([
+      ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
+      [
+        "polkascan",
+        `https://polkascan.io/${network}/transaction/${block}-${index}`,
+      ],
+    ])
+  }
+  return links
+}
+
+function getExtrinsicLinks(index, block) {
+  var links = []
+  links.push([
+    ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
+    [
+      "polkascan",
+      `https://polkascan.io/${network}/transaction/${block}-${index}`,
+    ],
+  ])
+  return links
+}
+
 async function getNetworkStats(api) {
   const networkStats = {}
   var token_data
@@ -301,7 +388,7 @@ async function getNetworkStats(api) {
             )
             .toFixed(0),
           {
-            decimals: api.registry.chainDecimals,
+            decimals: 10,
             withSi: true,
             withUnit: "USD",
           }
@@ -319,8 +406,24 @@ async function getNetworkStats(api) {
           .toFixed(2) + "M USD"
       : token_data
   networkStats.marketcap = marketcap
-  networkStats.totalIssuance = totalIssuance.toHuman()
-  networkStats.totalStaked = totalStake.toHuman()
+  networkStats.totalIssuance = formatBalance(
+    new BigNumber(totalIssuance.toString()).toFixed(0),
+    {
+      decimals: 10,
+      withSi: true,
+      withUnit: "DOT",
+    }
+  )
+
+  networkStats.totalStaked = formatBalance(
+    new BigNumber(totalStake.toString()).toFixed(0),
+    {
+      decimals: 10,
+      withSi: true,
+      withUnit: "DOT",
+    }
+  )
+
   networkStats.percentStaked = new BigNumber(totalStake.toString())
     .dividedBy(new BigNumber(totalIssuance.toString()))
     .multipliedBy(new BigNumber(100))

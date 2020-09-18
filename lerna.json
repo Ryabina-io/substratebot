@@ -1,0 +1,10 @@
+{
+  "packages": ["packages/*"],
+  "command": {
+    "bootstrap": {
+      "npmClientArgs": ["--no-lockfile"]
+    }
+  },
+  "npmClient": "yarn",
+  "version": "1.0.2"
+}

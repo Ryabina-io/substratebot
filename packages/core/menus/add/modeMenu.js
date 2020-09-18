@@ -134,7 +134,7 @@ modeMenu
           ctx.deleteMessage().catch(() => {
             /* ignore */
           })
-          var replyMsg = `You have select the following events:
+          var replyMsg = `You have selected the following events:
             `
           ctx.session.modeEvents
             .filter(u => u.selected)

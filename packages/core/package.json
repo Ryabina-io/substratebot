@@ -1,6 +1,6 @@
 {
   "name": "@ryabina-io/substratebot",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Library for creating Telegram bot for Substrate-like networks.",
   "keywords": [
     "substrate",
@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@polkadot/util": "^2.18.1",
+    "@polkadot/util-crypto": "^3.2.1",
     "bent": "^7.3.7",
     "bignumber.js": "^9.0.0",
     "lodash": "^4.17.19",

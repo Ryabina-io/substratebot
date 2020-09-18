@@ -2,7 +2,7 @@ const bot = require("./bot.js")
 const { parse } = require("./tools/typeParser")
 const BigNumber = require("bignumber.js")
 const Markup = require("telegraf/markup")
-const { isIterable, getTargets } = require("./tools/utils")
+const { isIterable, getTargets, getStashAccount } = require("./tools/utils")
 const { botParams } = require("./config")
 const { stringCamelCase, stringUpperFirst } = require("@polkadot/util")
 const _ = require("lodash")
@@ -65,18 +65,7 @@ async function newHeaderHandler(header) {
         botParams.settings.network.token,
         botParams.settings.network.decimals
       )
-    } /*else if (
-      extrinsic.section == "multisig" &&
-      extrinsic.method == "asMulti"
-    ) {
-      await sendExtrinsic(
-        botParams,
-        extrinsic,
-        index,
-        botParams.settings.network.token,
-        botParams.settings.network.decimals
-      )
-    }*/
+    }
   })
   if (events.length > 0) {
     await newEventsHandler(events)
@@ -174,9 +163,16 @@ async function sendExtrinsic(extrinsic, extrinsicIndex, token, decimals) {
             .find({ chatid: n.chatid })
             .value()
           if (!filters.includes(false) && user.enabled) {
-            var signer
+            var signer, stashName
             if (extrinsic.signer) {
               signer = await getAccountName(extrinsic.signer, user)
+              var stash = await getStashAccount(extrinsic.signer)
+              if (stash.isSome) {
+                stashName = await getAccountName(
+                  stash.value.stash.toString(),
+                  user
+                )
+              }
             }
             var message = `Extrinsic: <b>#${stringUpperFirst(method)}</b>
   \n<i>${
@@ -186,7 +182,9 @@ async function sendExtrinsic(extrinsic, extrinsicIndex, token, decimals) {
   }</i>\n
 Block: ${currentBlock}
 Index: ${extrinsicIndex}
-Module: #${module}${signer ? "\nSigner: " + signer : ""}`
+Module: #${module}${signer ? "\nSigner: " + signer : ""}${
+              stashName && signer != stashName ? "\nStash: " + stashName : ""
+            }`
             if (Object.keys(extrinsic.args).length > 0) {
               message += `\nParameters:\n<code>`
               for (var argName in extrinsic.args) {
@@ -229,7 +227,7 @@ Module: #${module}${signer ? "\nSigner: " + signer : ""}`
                     token
                   }`
                 } else {
-                  var ledger = await botParams.api.query.staking.ledger(
+                  var ledger = await getStashAccount(
                     extrinsic.signer.toString()
                   )
                   message += `  bond ${
@@ -243,24 +241,13 @@ Module: #${module}${signer ? "\nSigner: " + signer : ""}`
               }
               message += `</code>`
             }
-            var links = []
-            var network = botParams.settings.network.name.toLowerCase()
-            if (botParams.settings.commonLinks.includes("subscan")) {
-              links.push(
-                Markup.urlButton(
-                  "subscan",
-                  `https://${network}.subscan.io/extrinsic/${currentBlock}-${extrinsicIndex}`
-                )
-              )
-            }
-            if (botParams.settings.commonLinks.includes("polkascan")) {
-              links.push(
-                Markup.urlButton(
-                  "polkascan",
-                  `https://polkascan.io/${network}/transaction/${currentBlock}-${extrinsicIndex}`
-                )
-              )
-            }
+            var links = botParams.settings
+              .getExtrinsicLinks(extrinsicIndex, currentBlock)
+              .map(row => {
+                return row.map(link => {
+                  return Markup.urlButton(link[0], link[1])
+                })
+              })
             try {
               await botParams.bot.telegram.sendMessage(n.chatid, message, {
                 parse_mode: "HTML",
@@ -300,9 +287,6 @@ async function sendEvent(record) {
     )
   }
   const { event, phase } = record
-  const types = event.typeDef
-  const decimals = botParams.settings.network.decimals
-  const token = botParams.settings.network.token
   if (
     botParams.ui.modules[stringUpperFirst(event.section)] &&
     botParams.ui.modules[stringUpperFirst(event.section)].events[event.method]
@@ -364,166 +348,19 @@ Module: #${stringUpperFirst(event.section)}`
             }
             message += `</code>`
           }
-          var links = []
-          if (event.section == "democracy" && event.method == "Proposed") {
-            var argIndex = _.findIndex(
-              eventDB.args,
-              a => a.name == "proposalIndex"
-            )
-            var proposalId = event.data[argIndex].toNumber()
-            var network = botParams.settings.network.name.toLowerCase()
-            links.push([])
-            if (botParams.settings.governanceLinks.includes("commonwealth")) {
-              links[0].push(
-                Markup.urlButton(
-                  "commonwealth",
-                  `https://commonwealth.im/${network}/proposal/democracyproposal/${proposalId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("polkassembly")) {
-              links[0].push(
-                Markup.urlButton(
-                  "polkassembly",
-                  `https://${network}.polkassembly.io/proposal/${proposalId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("polkascan")) {
-              links.push([])
-              links[1].push(
-                Markup.urlButton(
-                  "polkascan",
-                  `https://polkascan.io/${network}/democracy/proposal/${proposalId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("subscan")) {
-              links[1].push(
-                Markup.urlButton(
-                  "subscan",
-                  `https://${network}.subscan.io/democracy_proposal/${proposalId}`
-                )
-              )
-            }
-          } else if (
-            (event.section == "democracy" && event.method == "Started") ||
-            (event.section == "democracy" && event.method == "Cancelled") ||
-            (event.section == "democracy" && event.method == "Passed") ||
-            (event.section == "democracy" && event.method == "NotPassed") ||
-            (event.section == "democracy" && event.method == "Executed")
-          ) {
-            var argIndex = _.findIndex(eventDB.args, a => a.name == "refIndex")
-            var referendumId = event.data[argIndex].toNumber()
-            var network = botParams.settings.network.name.toLowerCase()
-            links.push([])
-            if (botParams.settings.governanceLinks.includes("commonwealth")) {
-              links[0].push(
-                Markup.urlButton(
-                  "commonwealth",
-                  `https://commonwealth.im/${network}/proposal/referendum/${referendumId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("polkassembly")) {
-              links[0].push(
-                Markup.urlButton(
-                  "polkassembly",
-                  `https://${network}.polkassembly.io/referendum/${referendumId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("polkascan")) {
-              links.push([])
-              links[1].push(
-                Markup.urlButton(
-                  "polkascan",
-                  `https://polkascan.io/${network}/democracy/referendum/${referendumId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("subscan")) {
-              links[1].push(
-                Markup.urlButton(
-                  "subscan",
-                  `https://${network}.subscan.io/referenda/${referendumId}`
-                )
-              )
-            }
-          } else if (
-            (event.section == "treasury" && event.method == "Proposed") ||
-            (event.section == "treasury" && event.method == "Awarded") ||
-            (event.section == "treasury" && event.method == "Rejected")
-          ) {
-            var argIndex = _.findIndex(
-              eventDB.args,
-              a => a.name == "proposalIndex"
-            )
-            var proposalId = event.data[argIndex].toNumber()
-            var network = botParams.settings.network.name.toLowerCase()
-            links.push([])
-            if (botParams.settings.governanceLinks.includes("commonwealth")) {
-              links[0].push(
-                Markup.urlButton(
-                  "commonwealth",
-                  `https://commonwealth.im/${network}/proposal/treasuryproposal/${proposalId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("polkassembly")) {
-              links[0].push(
-                Markup.urlButton(
-                  "polkassembly",
-                  `https://${network}.polkassembly.io/treasury/${proposalId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("polkascan")) {
-              links.push([])
-              links[1].push(
-                Markup.urlButton(
-                  "polkascan",
-                  `https://polkascan.io/${network}/treasury/proposal/${proposalId}`
-                )
-              )
-            }
-            if (botParams.settings.governanceLinks.includes("subscan")) {
-              links[1].push(
-                Markup.urlButton(
-                  "subscan",
-                  `https://${network}.subscan.io/treasury/${proposalId}`
-                )
-              )
-            }
-          } else if (phase.value["toNumber"]) {
-            var network = botParams.settings.network.name.toLowerCase()
-            if (botParams.settings.commonLinks.includes("subscan")) {
-              links.push(
-                Markup.urlButton(
-                  "subscan",
-                  `https://${network}.subscan.io/extrinsic/${currentBlock}-${phase.value.toNumber()}`
-                )
-              )
-            }
-            if (botParams.settings.commonLinks.includes("polkascan")) {
-              links.push(
-                Markup.urlButton(
-                  "polkascan",
-                  `https://polkascan.io/${network}/transaction/${currentBlock}-${phase.value.toNumber()}`
-                )
-              )
-            }
-          }
+          var links = botParams.settings
+            .getEventLinks(event, eventDB, phase.value.toNumber(), currentBlock)
+            .map(row => {
+              return row.map(link => {
+                return Markup.urlButton(link[0], link[1])
+              })
+            })
           try {
-            var result = await botParams.bot.telegram.sendMessage(
-              n.chatid,
-              message,
-              {
-                parse_mode: "html",
-                disable_web_page_preview: "true",
-                reply_markup: Markup.inlineKeyboard(links),
-              }
-            )
+            await botParams.bot.telegram.sendMessage(n.chatid, message, {
+              parse_mode: "html",
+              disable_web_page_preview: "true",
+              reply_markup: Markup.inlineKeyboard(links),
+            })
           } catch (error) {
             if (error.message.includes("bot was blocked by the user")) {
               botParams.db
@@ -619,15 +456,11 @@ Module: #${stringUpperFirst(event.section)}`
             })
           }
           try {
-            var result = await botParams.bot.telegram.sendMessage(
-              n.chatid,
-              message,
-              {
-                parse_mode: "html",
-                disable_web_page_preview: "true",
-                reply_markup: Markup.inlineKeyboard(links),
-              }
-            )
+            await botParams.bot.telegram.sendMessage(n.chatid, message, {
+              parse_mode: "html",
+              disable_web_page_preview: "true",
+              reply_markup: Markup.inlineKeyboard(links),
+            })
           } catch (error) {
             if (error.message.includes("bot was blocked by the user")) {
               botParams.db
@@ -671,18 +504,38 @@ async function getAccountName(account, user) {
 
 async function checkFilter(filter, action, actionType, config) {
   var arg, data
-  if (actionType == "call") {
-    if (filter.name == "sender") {
-      if (!action.signer) {
-        return false
-      }
-      arg = { type: "AccountId" }
-      data = action.signer
-    } else {
-      arg = config.args.find(a => a.name == filter.name)
-      if (!arg) return false
-      data = action.args[filter.name]
+
+  if (actionType == "call" && filter.name == "sender") {
+    if (!action.signer) {
+      return false
     }
+    var signer = action.signer
+    var stash = await getStashAccount(signer.toString())
+    var compareResult = filter.isEqual && filter.value == signer
+    if (compareResult) return true
+    else {
+      if (stash.isSome) {
+        compareResult =
+          filter.isEqual && filter.value == stash.value.stash.toString()
+        if (compareResult) return true
+        else if (filter.source && filter.source == "nominator") {
+          var targets = await getTargets(filter.value)
+          if (
+            targets.includes(signer.toString()) ||
+            targets.includes(stash.value.stash.toString())
+          ) {
+            return true
+          }
+        }
+      }
+      return false
+    }
+  }
+
+  if (actionType == "call") {
+    arg = config.args.find(a => a.name == filter.name)
+    if (!arg) return false
+    data = action.args[filter.name]
   } else {
     arg = config.args.find(a => a.name == filter.name)
     if (!arg) return false
@@ -695,6 +548,7 @@ async function checkFilter(filter, action, actionType, config) {
     }
     data = action.data[_.findIndex(config.args, a => a.name == filter.name)]
   }
+
   if (arg.type.startsWith("Vec<")) {
     var item = data.find(a => {
       if (
@@ -713,28 +567,15 @@ async function checkFilter(filter, action, actionType, config) {
     })
     if (item) return true
     else return false
-  } else {
-    if (filter.source) {
-      if (filter.source == "nominator") {
-        var targets = await getTargets(filter.value)
-        if (targets.includes(data.toString())) {
-          return true
-        } else return false
-      }
-    } else if (
-      (filter.isEqual && filter.value == data.toString()) ||
-      (filter.isLess &&
-        new BigNumber(data.toString()).isLessThan(
-          new BigNumber(filter.value)
-        )) ||
-      (filter.isMore &&
-        new BigNumber(data.toString()).isGreaterThan(
-          new BigNumber(filter.value)
-        ))
-    ) {
-      return true
-    } else return false
-  }
+  } else if (
+    (filter.isEqual && filter.value == data.toString()) ||
+    (filter.isLess &&
+      new BigNumber(data.toString()).isLessThan(new BigNumber(filter.value))) ||
+    (filter.isMore &&
+      new BigNumber(data.toString()).isGreaterThan(new BigNumber(filter.value)))
+  ) {
+    return true
+  } else return false
 }
 
 function getDB(path) {
@@ -768,8 +609,23 @@ module.exports = class SubstrateBot {
     botParams.ui.modules = this.modules
     botParams.ui.modes = this.modes
     botParams.db = this.db
+
+    var networkProperties = await this.api.rpc.system.properties()
+    if (!this.settings.network.prefix && networkProperties.ss58Format) {
+      this.settings.network.prefix = networkProperties.ss58Format.toString()
+    }
+    if (!this.settings.network.decimals && networkProperties.tokenDecimals) {
+      this.settings.network.decimals = networkProperties.tokenDecimals.toString()
+    }
+    if (
+      this.settings.network.token === undefined &&
+      networkProperties.tokenSymbol
+    ) {
+      this.settings.network.token = networkProperties.tokenSymbol.toString()
+    }
     botParams.settings = this.settings
-    botParams.getNetworkStatsMessage = this.getNetworkStatsMessage
+    if (this.api.registry.chainToken)
+      botParams.getNetworkStatsMessage = this.getNetworkStatsMessage
 
     botParams.bot = await bot.run(this)
     await this.api.rpc.chain.subscribeNewHeads(async header =>

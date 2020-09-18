@@ -7,6 +7,8 @@ const parsingMap = {
   AccountId: accountToString,
   GenericAccountId: accountToString,
   GenericAddress: accountToString,
+  GenericAccountIndex: uintToString,
+  GenericLookupSource: accountToString,
   AccountIndex: uintToString,
   AccountVote: enumToString,
   AccountVoteStandart: structToString,

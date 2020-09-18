@@ -173,9 +173,9 @@ async function getTargets(address) {
   } else return []
 }
 
-async function getStashAccount(address){
+async function getStashAccount(address) {
   var ledger = await botParams.api.query.staking.ledger(address)
-  return ledger;
+  return ledger
 }
 
 function isIterable(obj) {
@@ -199,4 +199,5 @@ module.exports = {
   getTargets: getTargets,
   getBaseDef: getBaseDef,
   getInnerType: getInnerType,
+  getStashAccount: getStashAccount,
 }
