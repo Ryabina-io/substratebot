@@ -349,7 +349,12 @@ Module: #${stringUpperFirst(event.section)}`
             message += `</code>`
           }
           var links = botParams.settings
-            .getEventLinks(event, eventDB, phase.value.toNumber(), currentBlock)
+            .getEventLinks(
+              event,
+              eventDB,
+              phase.value["toNumber"] ? phase.value.toNumber() : null,
+              currentBlock
+            )
             .map(row => {
               return row.map(link => {
                 return Markup.urlButton(link[0], link[1])
