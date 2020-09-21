@@ -16,3 +16,4 @@ If you want to test the bots in action, here is a list of our live bots:
 - [@Kusama_bot](https://t.me/Kusama_bot)
 - [@Acala_Ryabina_bot](https://t.me/Acala_Ryabina_bot)
 - [@Edgeware_bot](https://t.me/Edgeware_bot)
+- [@Stafi_bot](https://t.me/Stafi_bot)
