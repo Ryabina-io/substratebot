@@ -7,8 +7,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@acala-network/api": "^0.3.1",
-    "@polkadot/api": "^1.33.1",
-    "@polkadot/types": "^1.33.1",
+    "@polkadot/api": "^1.34.1",
+    "@polkadot/types": "^1.34.1",
     "@polkadot/util": "^3.4.1",
     "@ryabina-io/substratebot": "^1.0.2",
     "bent": "^7.3.10",
