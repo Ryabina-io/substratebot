@@ -37,10 +37,14 @@ function metaConvertToConfig(api, hideIgnore) {
               documentationArgs = docStr
                 .match(/\[.*?\]/g)[0]
                 .replace("[", "")
-                .replace("\\]", "")
+                .replace("]", "")
+                .replace(/\\/g, "")
                 .replace(/ /g, "")
                 .split(",")
-              documentation = docStr.replace("\\[", "`(").replace("\\]", ")`")
+              documentation = docStr
+                .replace(/\\/g, "")
+                .replace("[", "`(")
+                .replace("]", ")`")
             } else if (event.documentation.length > 0) {
               documentation = docStr
             }
