@@ -1,7 +1,5 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api")
-const { TypeRegistry } = require("@polkadot/types")
 const { Mainnet } = require("@edgeware/node-types")
-const edgewareDefinitions = require("@edgeware/node-types/dist/interfaces/definitions") //  ("@edgeware/node-types/interfaces/definitions")
 const BigNumber = require("bignumber.js")
 const SubstrateBot = require("@ryabina-io/substratebot")
 const { metaConvertToConfig } = require("@ryabina-io/substratebot/tools/utils")
@@ -343,7 +341,7 @@ async function getNetworkStats(api) {
   var token_data
   try {
     var token_data = await getJSON(
-      `https://api.coingecko.com/api/v3/coins/stafi`
+      `https://api.coingecko.com/api/v3/coins/edgeware`
     )
   } catch (error) {
     token_data = "NA"
