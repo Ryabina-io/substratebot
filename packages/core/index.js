@@ -242,7 +242,12 @@ Module: #${module}${signer ? "\nSigner: " + signer : ""}${
               message += `</code>`
             }
             var links = botParams.settings
-              .getExtrinsicLinks(extrinsicIndex, currentBlock)
+              .getExtrinsicLinks(
+                extrinsic,
+                extrinsicDB,
+                extrinsicIndex,
+                currentBlock
+              )
               .map(row => {
                 return row.map(link => {
                   return Markup.urlButton(link[0], link[1])

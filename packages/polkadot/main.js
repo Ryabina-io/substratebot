@@ -349,7 +349,7 @@ function getEventLinks(event, eventDB, index, block) {
   return links
 }
 
-function getExtrinsicLinks(index, block) {
+function getExtrinsicLinks(extrinsic, extrinsicDB, index, block) {
   var links = []
   links.push([
     ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],

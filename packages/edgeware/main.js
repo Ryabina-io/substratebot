@@ -64,32 +64,6 @@ async function getAPI() {
   return api
 }
 
-async function createSubstrateApi(provider) {
-  const registry = new TypeRegistry()
-  const edgewareTypes = Object.values(edgewareDefinitions).reduce(
-    (res, { types }) => ({ ...res, ...types }),
-    {}
-  )
-  return await ApiPromise.create({
-    provider,
-    types: {
-      ...edgewareTypes,
-      "voting::VoteType": "VoteType",
-      "voting::TallyType": "TallyType",
-      // chain-specific overrides
-      Address: "GenericAddress",
-      Keys: "SessionKeys4",
-      StakingLedger: "StakingLedgerTo223",
-      Votes: "VotesTo230",
-      ReferendumInfo: "ReferendumInfoTo239",
-      Weight: "u32",
-    },
-    // override duplicate type name
-    typesAlias: { voting: { Tally: "VotingTally" } },
-    registry,
-  })
-}
-
 function getModes() {
   const modes = [
     {
@@ -248,7 +222,6 @@ function getNodeModules(api) {
   }
   const modules = metaConvertToConfig(api, ingoreList)
   return modules
-  //return require("./modules.json")
 }
 
 function getSettings() {
@@ -363,86 +336,6 @@ function getExtrinsicLinks(extrinsic, extrinsicDB, index, block) {
     ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
   ])
   return links
-}
-
-async function getNetworkStatsOld(api) {
-  var networkStats = {}
-  var token_data
-  try {
-    var token_data = await getJSON(
-      `https://api.coingecko.com/api/v3/coins/edgeware`
-    )
-  } catch (error) {
-    token_data = "NA"
-  }
-  var validators = await api.query.session.validators()
-  var validators2 = await api.derive.staking.stashes()
-  var stakers = []
-  var stakes = await Promise.all(
-    validators.toJSON().map(async validator => {
-      var valStakes = await api.query.staking.stakers(validator)
-      var stake = new BigNumber(valStakes.own.toString())
-      var otherStake = new BigNumber(0)
-      var otherStakeArray = valStakes.others.toJSON().map(staker => {
-        stakers.push(staker.who.toString())
-        return new BigNumber(staker.value)
-      })
-      if (otherStakeArray.length > 0) {
-        otherStake = otherStakeArray.reduce((total, val) => total.plus(val))
-      }
-      return stake.plus(otherStake)
-    })
-  )
-  var nominatorsCount = _.uniq(stakers).length
-  const totalStake = stakes.reduce((total, val) => total.plus(val))
-  const totalIssuance = await api.query.balances.totalIssuance()
-  const marketcap =
-    token_data != "NA"
-      ? formatBalance(
-          new BigNumber(totalIssuance.toString())
-            .multipliedBy(
-              new BigNumber(token_data.market_data.current_price.usd)
-            )
-            .toFixed(0),
-          {
-            decimals: api.registry.chainDecimals,
-            withSi: true,
-            withUnit: "USD",
-          }
-        )
-      : token_data
-  networkStats.price =
-    token_data != "NA"
-      ? token_data.market_data.current_price.usd.toString() + " USD"
-      : token_data
-  networkStats.volume =
-    token_data != "NA"
-      ? formatBalance(
-          new BigNumber(
-            token_data.market_data.total_volume.usd.toString()
-          ).toFixed(0),
-          {
-            decimals: "0",
-            withSi: true,
-            withUnit: "USD",
-          }
-        )
-      : token_data
-  networkStats.marketcap = marketcap
-  networkStats.totalIssuance = totalIssuance.toHuman()
-  networkStats.totalStaked = formatBalance(totalStake.toFixed(0), {
-    decimals: api.registry.chainDecimals,
-    withSi: true,
-    withUnit: api.registry.chainToken,
-  })
-  networkStats.percentStaked = totalStake
-    .dividedBy(new BigNumber(totalIssuance.toString()))
-    .multipliedBy(new BigNumber(100))
-    .toFixed(2)
-  networkStats.elected = validators.length
-  networkStats.waiting = validators2.length - validators.length
-  networkStats.nominators = nominatorsCount
-  return networkStats
 }
 
 async function getNetworkStats(api) {
