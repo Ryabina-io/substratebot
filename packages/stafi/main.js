@@ -224,7 +224,7 @@ function getSettings() {
     startMsg:
       "Created by Ryabina team.\n\nIf you like this bot, you can thank by voting for our /validators\nFeel free to describe any issues, typo, errors at @RyabinaValidator",
     validatorsMessage: `Please nominate to our validators:
-Go to https://polkadot.js.org/apps/#/staking/actions
+Go to https://apps.stafi.io/#/staking/actions
 Type RYABINA in the search of "Set nominees".
 Wait a while until the addresses load and select all RYABINA nodes.`,
     getEventLinks: getEventLinks,

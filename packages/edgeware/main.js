@@ -1,5 +1,6 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const { TypeRegistry } = require("@polkadot/types")
+const { Mainnet } = require("@edgeware/node-types")
 const edgewareDefinitions = require("@edgeware/node-types/dist/interfaces/definitions") //  ("@edgeware/node-types/interfaces/definitions")
 const BigNumber = require("bignumber.js")
 const SubstrateBot = require("@ryabina-io/substratebot")
@@ -42,7 +43,14 @@ async function getAPI() {
   const nodeUri = process.env.NODE_URI || "wss://mainnet1.edgewa.re"
   const provider = new WsProvider(nodeUri)
   process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0
-  const api = await createSubstrateApi(provider)
+  const api = await ApiPromise.create({
+    provider,
+    types: {
+      ...Mainnet.types,
+      RefCount: "u8",
+    },
+  })
+  //const api = await createSubstrateApi(provider)
   Promise.all([
     api.rpc.system.chain(),
     api.rpc.system.name(),
@@ -212,12 +220,45 @@ function getModes() {
 }
 
 function getNodeModules(api) {
-  return require("./modules.json")
+  const ingoreList = {
+    events: [
+      "ExtrinsicSuccess",
+      "ExtrinsicFailed",
+      "BatchInterrupted",
+      "BatchCompleted",
+    ],
+    calls: ["batch"],
+    hide: [
+      "GenericAccountId",
+      "GenericAddress",
+      "u8",
+      "u16",
+      "u32",
+      "u64",
+      "u128",
+      "u256",
+      "i8",
+      "i16",
+      "i32",
+      "i64",
+      "i128",
+      "i256",
+      "bool",
+    ],
+  }
+  const modules = metaConvertToConfig(api, ingoreList)
+  return modules
+  //return require("./modules.json")
 }
 
 function getSettings() {
   const settings = {
-    network: {},
+    network: {
+      name: "Edgware",
+      prefix: "7",
+      decimals: "18",
+      token: "EDG",
+    },
     startMsg:
       "Created by Ryabina team.\n\nIf you like this bot, you can thank by voting for our /validators\nFeel free to describe any issues, typo, errors at @RyabinaValidator",
     validatorsMessage:
@@ -324,13 +365,8 @@ function getExtrinsicLinks(extrinsic, extrinsicDB, index, block) {
   return links
 }
 
-async function getNetworkStats(api) {
-  var networkStats = {
-    name: "Edgware",
-    prefix: "7",
-    decimals: "18",
-    token: "EDG",
-  }
+async function getNetworkStatsOld(api) {
+  var networkStats = {}
   var token_data
   try {
     var token_data = await getJSON(
@@ -406,6 +442,63 @@ async function getNetworkStats(api) {
   networkStats.elected = validators.length
   networkStats.waiting = validators2.length - validators.length
   networkStats.nominators = nominatorsCount
+  return networkStats
+}
+
+async function getNetworkStats(api) {
+  const networkStats = {}
+  var token_data
+  try {
+    var token_data = await getJSON(
+      `https://api.coingecko.com/api/v3/coins/stafi`
+    )
+  } catch (error) {
+    token_data = "NA"
+  }
+  var validators = await api.query.session.validators()
+  var validators2 = await api.query.staking.validators.entries()
+  var nominators = await api.query.staking.nominators.entries()
+  var era = await api.query.staking.activeEra()
+  const totalIssuance = await api.query.balances.totalIssuance()
+  const totalStake = await api.query.staking.erasTotalStake(
+    era.value.index.toString()
+  )
+  const marketcap =
+    token_data != "NA"
+      ? formatBalance(
+          new BigNumber(totalIssuance.toString())
+            .multipliedBy(
+              new BigNumber(token_data.market_data.current_price.usd)
+            )
+            .toFixed(0),
+          {
+            decimals: api.registry.chainDecimals,
+            withSi: true,
+            withUnit: "USD",
+          }
+        )
+      : token_data
+
+  networkStats.price =
+    token_data != "NA"
+      ? token_data.market_data.current_price.usd.toString() + " USD"
+      : token_data
+  networkStats.volume =
+    token_data != "NA"
+      ? new BigNumber(token_data.market_data.total_volume.usd.toString())
+          .dividedBy(new BigNumber("1e6"))
+          .toFixed(2) + "M USD"
+      : token_data
+  networkStats.marketcap = marketcap
+  networkStats.totalIssuance = totalIssuance.toHuman()
+  networkStats.totalStaked = totalStake.toHuman()
+  networkStats.percentStaked = new BigNumber(totalStake.toString())
+    .dividedBy(new BigNumber(totalIssuance.toString()))
+    .multipliedBy(new BigNumber(100))
+    .toFixed(2)
+  networkStats.elected = validators.length
+  networkStats.waiting = validators2.length - validators.length
+  networkStats.nominators = nominators.length
   return networkStats
 }
 
