@@ -357,7 +357,9 @@ Module: #${stringUpperFirst(event.section)}`
             .getEventLinks(
               event,
               eventDB,
-              phase.value["toNumber"] ? phase.value.toNumber() : null,
+              phase.value["toNumber"] && phase.value.toNumber() < 1000
+                ? phase.value.toNumber()
+                : null,
               currentBlock
             )
             .map(row => {

@@ -323,6 +323,8 @@ function getEventLinks(event, eventDB, index, block) {
     links.push([
       ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
     ])
+  } else if (block) {
+    links.push([["subscan", `https://${network}.subscan.io/block/${block}`]])
   }
   return links
 }
