@@ -1,34 +1,24 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api")
-const { TypeRegistry } = require("@polkadot/types")
-const { Mainnet } = require("@edgeware/node-types")
-const edgewareDefinitions = require("@edgeware/node-types/dist/interfaces/definitions") //  ("@edgeware/node-types/interfaces/definitions")
 const BigNumber = require("bignumber.js")
 const SubstrateBot = require("@ryabina-io/substratebot")
 const { metaConvertToConfig } = require("@ryabina-io/substratebot/tools/utils")
-const _ = require("lodash")
 const { formatBalance } = require("@polkadot/util")
+const _ = require("lodash")
 const bent = require("bent")
 const getJSON = bent("json")
 
 let networkStats = {}
+let network = "stafi"
 
 async function main() {
   var settings = getSettings()
   var api = await getAPI()
-  var nodeProperties = await api.rpc.system.properties()
-  var chain = await api.rpc.system.chain()
-  settings.network.name = chain
-  settings.network.prefix = nodeProperties.ss58Format
-  settings.network.decimals = nodeProperties.tokenDecimals
-  settings.network.token = nodeProperties.tokenSymbol
   var modules = getNodeModules(api)
   var modes = getModes()
-
   getNetworkStats(api).then(result => (networkStats = result))
   setInterval(async () => {
     networkStats = await getNetworkStats(api)
   }, 10000)
-
   const substrateBot = new SubstrateBot({
     settings,
     api,
@@ -40,17 +30,16 @@ async function main() {
 }
 
 async function getAPI() {
-  const nodeUri = process.env.NODE_URI || "wss://mainnet1.edgewa.re"
+  const nodeUri = process.env.NODE_URI || "wss://mainnet-rpc.stafi.io"
   const provider = new WsProvider(nodeUri)
-  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0
   const api = await ApiPromise.create({
     provider,
-    types: {
-      ...Mainnet.types,
-      RefCount: "u8",
-    },
+    //types: {
+    //  Address: 'AccountId',
+    //  LookupSource: 'AccountId'
+    //},
   })
-  //const api = await createSubstrateApi(provider)
+
   Promise.all([
     api.rpc.system.chain(),
     api.rpc.system.name(),
@@ -62,32 +51,6 @@ async function getAPI() {
     )
   })
   return api
-}
-
-async function createSubstrateApi(provider) {
-  const registry = new TypeRegistry()
-  const edgewareTypes = Object.values(edgewareDefinitions).reduce(
-    (res, { types }) => ({ ...res, ...types }),
-    {}
-  )
-  return await ApiPromise.create({
-    provider,
-    types: {
-      ...edgewareTypes,
-      "voting::VoteType": "VoteType",
-      "voting::TallyType": "TallyType",
-      // chain-specific overrides
-      Address: "GenericAddress",
-      Keys: "SessionKeys4",
-      StakingLedger: "StakingLedgerTo223",
-      Votes: "VotesTo230",
-      ReferendumInfo: "ReferendumInfoTo239",
-      Weight: "u32",
-    },
-    // override duplicate type name
-    typesAlias: { voting: { Tally: "VotingTally" } },
-    registry,
-  })
 }
 
 function getModes() {
@@ -248,21 +211,22 @@ function getNodeModules(api) {
   }
   const modules = metaConvertToConfig(api, ingoreList)
   return modules
-  //return require("./modules.json")
 }
 
 function getSettings() {
   const settings = {
     network: {
-      name: "Edgware",
-      prefix: "7",
-      decimals: "18",
-      token: "EDG",
+      name: "Stafi",
+      prefix: "20",
+      decimals: "12",
+      token: "FIS",
     },
     startMsg:
       "Created by Ryabina team.\n\nIf you like this bot, you can thank by voting for our /validators\nFeel free to describe any issues, typo, errors at @RyabinaValidator",
-    validatorsMessage:
-      'To nominate us:\nGo to https://polkadot.js.org/apps/#/staking/actions\nType RYABINA in the search of "Set nominees".\nWait a while until the addreses load and select all RYABINA nodes.\nThank you!',
+    validatorsMessage: `Please nominate to our validators:
+Go to https://apps.stafi.io/#/staking/actions
+Type RYABINA in the search of "Set nominees".
+Wait a while until the addresses load and select all RYABINA nodes.`,
     getEventLinks: getEventLinks,
     getExtrinsicLinks: getExtrinsicLinks,
     groupAlerts: {
@@ -282,8 +246,26 @@ function getSettings() {
   return settings
 }
 
+function getEventLinks(event, eventDB, index, block) {
+  var links = []
+  if (index) {
+    links.push([
+      ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
+    ])
+  }
+  return links
+}
+
+function getExtrinsicLinks(index, block) {
+  var links = []
+  links.push([
+    ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
+  ])
+  return links
+}
+
 function getNetworkStatsMessage(priceIncluded = true, isGroup = false) {
-  var result = `Edgeware network Stats:\n\n`
+  var result = `Stafi network Stats:\n\n`
   if (priceIncluded) {
     result += `Current Price: ${networkStats.price}
 Market Capitalisation: ${networkStats.marketcap}
@@ -300,149 +282,6 @@ Nominate our /validators
 Feedback and support @RyabinaValidator`
   }
   return result
-}
-
-function getEventLinks(event, eventDB, index, block) {
-  var links = []
-  var network = "edgeware"
-  if (event.section == "democracy" && event.method == "Proposed") {
-    var argIndex = _.findIndex(eventDB.args, a => a.name == "proposalIndex")
-    var proposalId = event.data[argIndex].toNumber()
-    links.push([
-      [
-        "commonwealth",
-        `https://commonwealth.im/${network}/proposal/democracyproposal/${proposalId}`,
-      ],
-      [
-        "subscan",
-        `https://${network}.subscan.io/democracy_proposal/${proposalId}`,
-      ],
-    ])
-  } else if (
-    (event.section == "democracy" && event.method == "Started") ||
-    (event.section == "democracy" && event.method == "Cancelled") ||
-    (event.section == "democracy" && event.method == "Passed") ||
-    (event.section == "democracy" && event.method == "NotPassed") ||
-    (event.section == "democracy" && event.method == "Executed")
-  ) {
-    var argIndex = _.findIndex(eventDB.args, a => a.name == "refIndex")
-    var referendumId = event.data[argIndex].toNumber()
-    links.push([
-      [
-        "commonwealth",
-        `https://commonwealth.im/${network}/proposal/referendum/${referendumId}`,
-      ],
-      ["subscan", `https://${network}.subscan.io/referenda/${referendumId}`],
-    ])
-  } else if (
-    (event.section == "treasury" && event.method == "Proposed") ||
-    (event.section == "treasury" && event.method == "Awarded") ||
-    (event.section == "treasury" && event.method == "Rejected")
-  ) {
-    var argIndex = _.findIndex(eventDB.args, a => a.name == "proposalIndex")
-    var proposalId = event.data[argIndex].toNumber()
-    links.push([
-      [
-        "commonwealth",
-        `https://commonwealth.im/${network}/proposal/treasuryproposal/${proposalId}`,
-      ],
-      ["subscan", `https://${network}.subscan.io/treasury/${proposalId}`],
-    ])
-  } else if (index) {
-    links.push([
-      ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
-    ])
-  }
-  return links
-}
-
-function getExtrinsicLinks(extrinsic, extrinsicDB, index, block) {
-  var links = []
-  var network = "edgeware"
-  links.push([
-    ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
-  ])
-  return links
-}
-
-async function getNetworkStatsOld(api) {
-  var networkStats = {}
-  var token_data
-  try {
-    var token_data = await getJSON(
-      `https://api.coingecko.com/api/v3/coins/edgeware`
-    )
-  } catch (error) {
-    token_data = "NA"
-  }
-  var validators = await api.query.session.validators()
-  var validators2 = await api.derive.staking.stashes()
-  var stakers = []
-  var stakes = await Promise.all(
-    validators.toJSON().map(async validator => {
-      var valStakes = await api.query.staking.stakers(validator)
-      var stake = new BigNumber(valStakes.own.toString())
-      var otherStake = new BigNumber(0)
-      var otherStakeArray = valStakes.others.toJSON().map(staker => {
-        stakers.push(staker.who.toString())
-        return new BigNumber(staker.value)
-      })
-      if (otherStakeArray.length > 0) {
-        otherStake = otherStakeArray.reduce((total, val) => total.plus(val))
-      }
-      return stake.plus(otherStake)
-    })
-  )
-  var nominatorsCount = _.uniq(stakers).length
-  const totalStake = stakes.reduce((total, val) => total.plus(val))
-  const totalIssuance = await api.query.balances.totalIssuance()
-  const marketcap =
-    token_data != "NA"
-      ? formatBalance(
-          new BigNumber(totalIssuance.toString())
-            .multipliedBy(
-              new BigNumber(token_data.market_data.current_price.usd)
-            )
-            .toFixed(0),
-          {
-            decimals: api.registry.chainDecimals,
-            withSi: true,
-            withUnit: "USD",
-          }
-        )
-      : token_data
-  networkStats.price =
-    token_data != "NA"
-      ? token_data.market_data.current_price.usd.toString() + " USD"
-      : token_data
-  networkStats.volume =
-    token_data != "NA"
-      ? formatBalance(
-          new BigNumber(
-            token_data.market_data.total_volume.usd.toString()
-          ).toFixed(0),
-          {
-            decimals: "0",
-            withSi: true,
-            withUnit: "USD",
-          }
-        )
-      : token_data
-  networkStats.marketcap = marketcap
-  networkStats.totalIssuance = totalIssuance.toHuman()
-  networkStats.totalStaked = formatBalance(totalStake.toFixed(0), {
-    decimals: api.registry.chainDecimals,
-    withSi: true,
-    withUnit: api.registry.chainToken,
-  })
-  networkStats.percentStaked = totalStake
-    .dividedBy(new BigNumber(totalIssuance.toString()))
-    .multipliedBy(new BigNumber(100))
-    .toFixed(2)
-  networkStats.elected = validators.length
-  networkStats.waiting = validators2.length - validators.length
-  networkStats.nominators = nominatorsCount
-  return networkStats
 }
 
 async function getNetworkStats(api) {
