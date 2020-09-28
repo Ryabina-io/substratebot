@@ -73,6 +73,8 @@ module.exports.run = async function (params) {
       } else {
         ctx.reply("Time limit 1 min for /stats command")
       }
+    } else if (ctx.chat.type == "private") {
+      ctx.replyWithMarkdown(botParams.getNetworkStatsMessage())
     }
   })
 

@@ -265,7 +265,11 @@ Total Volume: ${networkStats.volume}\n`
 Total staked: ${networkStats.totalStaked} (${networkStats.percentStaked}%)
 Validators: 
     Elected - ${networkStats.elected}; 
-    Waiting - ${networkStats.waiting}`
+    Waiting - ${networkStats.waiting}
+Democracy:
+    Ongoing referendums: ${networkStats.ongoingReferendumsCount}
+    Ongoing proposals: ${networkStats.ongoingProposalsCount}
+`
   if (!isGroup) {
     result += `
 Nominate our /validators
@@ -395,6 +399,10 @@ async function getNetworkStats(api) {
         )
       : token_data
 
+  const referendums = await api.query.democracy.referendumInfoOf.entries()
+  const ongoingReferendums = referendums.filter(r => r[1].value.isOngoing)
+  const ongoingProposals = await api.query.democracy.publicProps()
+
   networkStats.price =
     token_data != "NA"
       ? token_data.market_data.current_price.usd.toString() + " USD"
@@ -431,6 +439,8 @@ async function getNetworkStats(api) {
   networkStats.elected = validators.length
   networkStats.waiting = validators2.length - validators.length
   networkStats.nominators = nominators.length
+  networkStats.ongoingProposalsCount = ongoingProposals.length
+  networkStats.ongoingReferendumsCount = ongoingReferendums.length
   return networkStats
 }
 
