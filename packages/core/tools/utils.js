@@ -198,6 +198,17 @@ function getInnerType(type) {
   } else return type
 }
 
+function replaceMarkdownSymbols(text, includingCode = true) {
+  var result = text
+    .replace(/_/g, "\\_")
+    .replace(/\*/g, "\\*")
+    .replace(/\[/g, "\\[")
+    .replace(/-/g, "\\-")
+    .replace(/=/g, "\\=")
+  if (includingCode) result = result.replace(/`/g, "\\`")
+  return result
+}
+
 module.exports = {
   metaConvertToConfig: metaConvertToConfig,
   isIterable: isIterable,
@@ -205,4 +216,5 @@ module.exports = {
   getBaseDef: getBaseDef,
   getInnerType: getInnerType,
   getStashAccount: getStashAccount,
+  replaceMarkdownSymbols: replaceMarkdownSymbols,
 }

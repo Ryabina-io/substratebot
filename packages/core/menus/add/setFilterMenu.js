@@ -3,7 +3,7 @@ const TelegrafStatelessQuestion = require("telegraf-stateless-question")
 const { checkAddress } = require("@polkadot/util-crypto")
 const Extra = require("telegraf/extra")
 const { keyboardOff, keyboardOn, botParams } = require("../../config")
-const { getInnerType } = require("../../tools/utils")
+const { getInnerType, replaceMarkdownSymbols } = require("../../tools/utils")
 
 const setFilterMenu = new TelegrafInlineMenu(ctx => {
   var action
@@ -28,6 +28,7 @@ const setFilterMenu = new TelegrafInlineMenu(ctx => {
     if (ctx.session.notification) ctx.session.notification.call = actionName
   }
   ctx.session.current = action
+  action.documentation = replaceMarkdownSymbols(action.documentation, false)
   var reply = `${
     ctx.match[2] == "evnts" ? "Event" : "Extrinsic"
   } *${actionName}*\n\nDescription: ${

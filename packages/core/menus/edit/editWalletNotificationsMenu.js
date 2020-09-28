@@ -2,6 +2,7 @@ const TelegrafInlineMenu = require("telegraf-inline-menu")
 const { stringUpperFirst } = require("@polkadot/util")
 const TelegrafStatelessQuestion = require("telegraf-stateless-question")
 const { botParams, keyboardOff, keyboardOn } = require("../../config")
+const { replaceMarkdownSymbols } = require("../../tools/utils")
 const Extra = require("telegraf/extra")
 
 const editWalletNotificationsMenu = new TelegrafInlineMenu(ctx => {
@@ -24,11 +25,7 @@ const editWalletNotificationsMenu = new TelegrafInlineMenu(ctx => {
           n.filters &&
           n.filters.find(f => f.value == ctx.session.wallet.address)
       )
-    reply = `Name: ${name
-      .replace(/_/g, "\\_")
-      .replace(/\*/g, "\\*")
-      .replace(/\[/g, "\\[")
-      .replace(/`/g, "\\`")}
+    reply = `Name: ${replaceMarkdownSymbols(name)}
 Address: \`${ctx.session.wallet.address}\`
 
 Alerts:`
@@ -114,11 +111,7 @@ editWalletNotificationsMenu
       })
       renameAddress.replyWithMarkdown(
         ctx,
-        `Current Name: ${ctx.session.wallet.name
-          .replace("_", "\\_")
-          .replace("*", "\\*")
-          .replace("[", "\\[")
-          .replace("`", "\\`")}
+        `Current Name: ${replaceMarkdownSymbols(ctx.session.wallet.name)}
 Address: ${ctx.session.wallet.address}
 
 Enter new name:`
