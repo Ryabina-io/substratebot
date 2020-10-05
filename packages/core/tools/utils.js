@@ -200,12 +200,13 @@ function getInnerType(type) {
 
 function replaceMarkdownSymbols(text, includingCode = true) {
   var result = text
-    .replace(/_/g, "\\_")
-    .replace(/\*/g, "\\*")
-    .replace(/\[/g, "\\[")
-    .replace(/-/g, "\\-")
-    .replace(/=/g, "\\=")
-  if (includingCode) result = result.replace(/`/g, "\\`")
+    .replace(/_/g, "_")
+    .replace(/\*/g, "*")
+    .replace(/\[/g, "[")
+    .replace(/\]/g, "]")
+    .replace(/-/g, "-")
+    .replace(/=/g, "=")
+  if (includingCode) result = result.replace(/`/g, "`")
   return result
 }
 

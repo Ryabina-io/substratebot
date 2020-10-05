@@ -122,7 +122,8 @@ async function main() {
 }
 
 async function getAPI() {
-  const nodeUri = process.env.NODE_URI || "ws://127.0.0.1:1701"
+  const nodeUri =
+    process.env.NODE_URI || "wss://node-6684611762228215808.jm.onfinality.io/ws" //"ws://127.0.0.1:1701"
   const provider = new WsProvider(nodeUri)
   process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0
   const api = await ApiPromise.create(options({ provider }))
