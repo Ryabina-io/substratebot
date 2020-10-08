@@ -6,6 +6,7 @@ const { metaConvertToConfig } = require("@ryabina-io/substratebot/tools/utils")
 const { formatBalance } = require("@polkadot/util")
 const bent = require("bent")
 const getJSON = bent("json")
+const _ = require("lodash")
 
 let networkStats = {}
 let totalCollaterals, liquidationRatio, debitRate, liquidStakingExchangeRate
