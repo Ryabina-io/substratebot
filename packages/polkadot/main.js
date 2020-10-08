@@ -358,6 +358,11 @@ function getEventLinks(event, eventDB, index, block) {
         `https://polkascan.io/${network}/transaction/${block}-${index}`,
       ],
     ])
+  } else {
+    links.push([
+      ["subscan", `https://${network}.subscan.io/block/${block}?tab=event`],
+      ["polkascan", `https://polkascan.io/${network}/block/${block}#events`],
+    ])
   }
   return links
 }
