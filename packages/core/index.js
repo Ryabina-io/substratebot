@@ -59,25 +59,36 @@ async function newHeaderHandler(header) {
       )
     }
     if (extrinsic.success) {
-      await sendExtrinsic(
-        extrinsic,
-        index,
-        botParams.settings.network.token,
-        botParams.settings.network.decimals
-      )
+      try {
+        await sendExtrinsic(
+          extrinsic,
+          index,
+          botParams.settings.network.token,
+          botParams.settings.network.decimals
+        )
+      } catch (error) {
+        console.log(new Date(), error)
+      }
     }
   })
   if (events.length > 0) {
-    await newEventsHandler(events)
+    try {
+      await newEventsHandler(events)
+    } catch (error) {
+      console.log(new Date(), error)
+    }
   }
 }
 
 async function newEventsHandler(events) {
   botParams.db.read()
   if (events.length > 0) {
-    var header = await botParams.api.rpc.chain.getHeader()
     events.forEach(event => {
-      sendEvent(event)
+      try {
+        sendEvent(event)
+      } catch (error) {
+        console.log(new Date(), error)
+      }
     })
   }
 }
@@ -659,6 +670,10 @@ module.exports = class SubstrateBot {
   }
 
   async sendCustomAlert(alert) {
-    await sendCustomAlert(alert)
+    try {
+      await sendCustomAlert(alert)
+    } catch (error) {
+      console.log(new Date(), error)
+    }
   }
 }
