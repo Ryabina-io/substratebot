@@ -2,7 +2,7 @@ const TelegrafInlineMenu = require("telegraf-inline-menu")
 const TelegrafStatelessQuestion = require("telegraf-stateless-question")
 const { checkAddress } = require("@polkadot/util-crypto")
 const Extra = require("telegraf/extra")
-const { keyboardOff, keyboardOn, botParams } = require("../../config")
+const { botParams, keyboardOn, keyboardOff } = require("../../config")
 const { getInnerType, replaceMarkdownSymbols } = require("../../tools/utils")
 
 const setFilterMenu = new TelegrafInlineMenu(ctx => {
@@ -259,7 +259,7 @@ setFilterMenu
                 Extra.markup(markup => {
                   return markup
                     .resize()
-                    .keyboard(user.enabled ? keyboardOn : keyboardOff)
+                    .keyboard(user.enabled ? keyboardOn() : keyboardOff())
                 })
               )
               return
@@ -311,7 +311,7 @@ const setParam = new TelegrafStatelessQuestion("unique", async ctx => {
         Extra.markup(markup => {
           return markup
             .resize()
-            .keyboard(user.enabled ? keyboardOn : keyboardOff)
+            .keyboard(user.enabled ? keyboardOn() : keyboardOff())
         })
       )
       ctx.session.isNumEditing = false
@@ -329,7 +329,9 @@ const setParam = new TelegrafStatelessQuestion("unique", async ctx => {
   ctx.replyWithMarkdown(
     `Value for *${ctx.session.currentFilter.name}* is set`,
     Extra.markup(markup => {
-      return markup.resize().keyboard(user.enabled ? keyboardOn : keyboardOff)
+      return markup
+        .resize()
+        .keyboard(user.enabled ? keyboardOn() : keyboardOff())
     })
   )
   ctx.session.isNumEditing = false

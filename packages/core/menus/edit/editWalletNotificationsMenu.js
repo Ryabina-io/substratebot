@@ -1,7 +1,7 @@
 const TelegrafInlineMenu = require("telegraf-inline-menu")
 const { stringUpperFirst } = require("@polkadot/util")
 const TelegrafStatelessQuestion = require("telegraf-stateless-question")
-const { botParams, keyboardOff, keyboardOn } = require("../../config")
+const { botParams, keyboardOn, keyboardOff } = require("../../config")
 const { replaceMarkdownSymbols } = require("../../tools/utils")
 const Extra = require("telegraf/extra")
 
@@ -239,7 +239,7 @@ const renameAddress = new TelegrafStatelessQuestion("readrNm", async ctx => {
     Extra.markup(markup => {
       return markup
         .resize()
-        .keyboard(user.value().enabled ? keyboardOn : keyboardOff)
+        .keyboard(user.value().enabled ? keyboardOn() : keyboardOff())
     })
   )
   var newContext = ctx.session.context.replace(

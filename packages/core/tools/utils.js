@@ -210,6 +210,50 @@ function replaceMarkdownSymbols(text, includingCode = true) {
   return result
 }
 
+function splitSentenceIntoRows(str, n) {
+  var res = []
+  var lastDivIndex = 0
+  var currentDivIndex = 0
+  for (var i = 0; i < str.length; i++) {
+    currentDivIndex = i - lastDivIndex
+    if (currentDivIndex >= n - 1 && str[i] == " ") {
+      res.push(str.substr(lastDivIndex, currentDivIndex))
+      lastDivIndex = i + 1
+      currentDivIndex = 0
+    }
+  }
+  return res.join("\n")
+}
+
+async function checkIsGroup(ctx, checkAdmin = false) {
+  if (ctx.chat.type == "group" || ctx.chat.type == "supergroup") {
+    if (checkAdmin) {
+      var admins = await ctx.telegram.getChatAdministrators(ctx.chat.id)
+      var from = ctx.from
+      if (admins.find(a => a.user.id == from.id)) {
+        return true
+      } else return false
+    } else return true
+  } else return false
+}
+
+function getGroupOrCreate(ctx) {
+  var group = botParams.db.get("users").find({ chatid: ctx.chat.id }).value()
+  if (!group) {
+    group = {
+      chatid: ctx.chat.id,
+      type: ctx.chat.type,
+      wallets: [],
+      maxLimit: 100,
+      enabled: false,
+      blocked: false,
+      price: false,
+    }
+    botParams.db.get("users").push(group).write()
+  }
+  return group
+}
+
 module.exports = {
   metaConvertToConfig: metaConvertToConfig,
   isIterable: isIterable,
@@ -218,4 +262,7 @@ module.exports = {
   getInnerType: getInnerType,
   getStashAccount: getStashAccount,
   replaceMarkdownSymbols: replaceMarkdownSymbols,
+  splitSentenceIntoRows: splitSentenceIntoRows,
+  checkIsGroup: checkIsGroup,
+  getGroupOrCreate: getGroupOrCreate,
 }

@@ -3,24 +3,32 @@ const botParams = {
   ui: {
     modules: {},
     modes: [],
+    keyboard: {
+      add: "",
+      alerts: "",
+      on: "",
+      off: "",
+      stats: "",
+    },
+    commands: [],
   },
   db: {},
   networkStats: {},
   settings: {},
 }
 
-const keyboardOff = [
-  ["Add new alert", "My addresses/alerts"],
-  ["Turned off❌ (Press to ON)", "Network stats"],
-]
-
-const keyboardOn = [
-  ["Add new alert", "My addresses/alerts"],
-  ["Turned on✅ (Press to OFF)", "Network stats"],
-]
-
 module.exports = {
-  keyboardOff: keyboardOff,
-  keyboardOn: keyboardOn,
   botParams: botParams,
+  keyboardOn: () => {
+    return [
+      [botParams.ui.keyboard.add, botParams.ui.keyboard.alerts],
+      [botParams.ui.keyboard.on, botParams.ui.keyboard.stats],
+    ]
+  },
+  keyboardOff: () => {
+    return [
+      [botParams.ui.keyboard.add, botParams.ui.keyboard.alerts],
+      [botParams.ui.keyboard.off, botParams.ui.keyboard.stats],
+    ]
+  },
 }

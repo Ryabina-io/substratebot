@@ -1,19 +1,14 @@
+const SubstrateBot = require("@ryabina-io/substratebot")
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const BigNumber = require("bignumber.js")
-const SubstrateBot = require("@ryabina-io/substratebot")
-const {
-  metaConvertToConfig,
-  splitSentenceIntoRows,
-} = require("@ryabina-io/substratebot/tools/utils")
+const { metaConvertToConfig } = require("@ryabina-io/substratebot/tools/utils")
 const { formatBalance } = require("@polkadot/util")
 const bent = require("bent")
 const getJSON = bent("json")
 const _ = require("lodash")
-const fetch = require("node-fetch")
+const types = require("./types.json")
 
 let networkStats = {}
-let lastPolkaProjectID = -1
-let network = "polkadot"
 
 async function main() {
   var settings = getSettings()
@@ -24,6 +19,7 @@ async function main() {
   setInterval(async () => {
     networkStats = await getNetworkStats(api)
   }, 10000)
+
   const substrateBot = new SubstrateBot({
     settings,
     api,
@@ -32,16 +28,47 @@ async function main() {
     getNetworkStatsMessage,
   })
   substrateBot.run()
+}
 
-  setInterval(async () => {
-    checkPolkaProject(substrateBot)
-  }, 5000)
+function getSettings() {
+  const settings = {
+    network: {
+      name: "Darwinia CC1",
+      prefix: "18",
+      decimals: "9",
+      token: "RING",
+      tracker: "darwinia-cc1",
+    },
+    startMsg:
+      "Created by Ryabina team.\n\nIf you like this bot, you can thank us by voting for our /validators\nFeel free to describe any issues, typo, errors at @RyabinaValidator",
+    validatorsMessage:
+      'To nominate us:\nGo to https://polkadot.js.org/apps/#/staking/actions\nType RYABINA in the search of "Set nominees".\nWait a while until the addreses load and select all RYABINA nodes.\nThank you!',
+    getEventLinks: getEventLinks,
+    getExtrinsicLinks: getExtrinsicLinks,
+    groupAlerts: {
+      events: [
+        ["democracy", "Proposed"],
+        ["democracy", "Started"],
+        ["treasury", "Proposed"],
+      ],
+      calls: [
+        ["treasury", "tipNew"],
+        ["treasury", "reportAwesome"],
+      ],
+    },
+    botToken: process.env.BOT_TOKEN,
+    dbFilePath: process.env.DB_FILE_PATH,
+  }
+  return settings
 }
 
 async function getAPI() {
-  const nodeUri = process.env.NODE_URI || "ws://127.0.0.1:9944/"
+  const nodeUri = process.env.NODE_URI || "wss://cc1.darwinia.network"
   const provider = new WsProvider(nodeUri)
-  const api = await ApiPromise.create({ provider })
+  const api = await ApiPromise.create({
+    provider,
+    types: types,
+  })
   Promise.all([
     api.rpc.system.chain(),
     api.rpc.system.name(),
@@ -220,94 +247,11 @@ function getNodeModules(api) {
     ],
   }
   const modules = metaConvertToConfig(api, ingoreList)
-  if (!modules["Ecosystem"]) {
-    modules["Ecosystem"] = { events: {}, short: "Ecsstm" }
-  }
-  modules["Ecosystem"].events["NewPolkaProject"] = {
-    args: [
-      {
-        name: "title",
-        baseType: "String",
-        type: "String",
-        visible: "hide",
-      },
-      {
-        name: "description",
-        baseType: "String",
-        type: "String",
-        visible: "hide",
-      },
-      {
-        name: "tags",
-        baseType: "String",
-        type: "String",
-        visible: "hide",
-      },
-    ],
-    documentation: " A new project has been added to PolkaProject.com",
-    short: "NwPlkPrjct",
-  }
   return modules
 }
 
-function getSettings() {
-  const settings = {
-    network: {
-      name: "Polkadot",
-      prefix: "0",
-      decimals: "10",
-      token: "DOT",
-    },
-    startMsg:
-      "Created by Ryabina team.\n\nIf you like this bot, you can thank by voting for our /validators\nFeel free to describe any issues, typo, errors at @RyabinaValidator",
-    validatorsMessage: `Please nominate to our validators:
-Go to https://polkadot.js.org/apps/#/staking/actions
-Type RYABINA in the search of "Set nominees".
-Wait a while until the addresses load and select all RYABINA nodes.
-If the search doesn't work, use the addresses.
-Choose 16 validators from active and waiting sets to increase expected rewards.
-Thank you!
-    
-      RYABINA
-      13T9UGfntid52aHuaxX1j6uh3zTYzMPMG1Des9Cmvf7K4xfq
-      RYABINA/ 2
-      14xKzzU1ZYDnzFj7FgdtDAYSMJNARjDc2gNw4XAFDgr4uXgp
-      RYABINA/ 3
-      1vEVWfqoLErB6MhhtDijrnmnHqjhrrFA5GzXGNL2HwESQ5r
-      RYABINA/ 4
-      1EmFhcsr7xt4HiMc8KZz6W6QcjYSFukKGKeDZeBjSmjjpNM
-      RYABINA/ 5
-      1HZMocNpdw6VYS1aKyrdu1V7kHpbdCvhL8VKayvzVzqTf6H
-      RYABINA/ 8
-      13asdY4e7sWdJ4hbGW9n2rkNro1mx5YKB6WBCC9gvqKmLvNH`,
-    getEventLinks: getEventLinks,
-    getExtrinsicLinks: getExtrinsicLinks,
-    groupAlerts: {
-      events: [
-        ["democracy", "Proposed"],
-        ["democracy", "Started"],
-        ["treasury", "Proposed"],
-      ],
-      calls: [
-        ["treasury", "tipNew"],
-        ["treasury", "reportAwesome"],
-      ],
-    },
-    keyboard: {
-      add: "Add new alert",
-      alerts: "My addresses/alerts",
-      on: "Turned on✅ (Press to OFF)",
-      off: "Turned off❌ (Press to ON)",
-      stats: "Network stats",
-    },
-    botToken: process.env.BOT_TOKEN,
-    dbFilePath: process.env.DB_FILE_PATH,
-  }
-  return settings
-}
-
 function getNetworkStatsMessage(priceIncluded = true, isGroup = false) {
-  var result = `Polkadot network Stats:\n\n`
+  var result = `Darwinia CC1 network Stats:\n\n`
   if (priceIncluded) {
     result += `Current Price: ${networkStats.price}
 Market Capitalisation: ${networkStats.marketcap}
@@ -316,12 +260,18 @@ Total Volume: ${networkStats.volume}\n`
   result += `Total issuance: ${networkStats.totalIssuance}
 Total staked: ${networkStats.totalStaked} (${networkStats.percentStaked}%)
 Validators: 
-    Elected - ${networkStats.elected}; 
-    Waiting - ${networkStats.waiting}
+    Elected - ${networkStats.elected}
+    Waiting - ${networkStats.waiting}`
+  if (
+    networkStats.ongoingReferendumsCount &&
+    networkStats.ongoingProposalsCount
+  ) {
+    result += `
 Democracy:
     Ongoing referendums: ${networkStats.ongoingReferendumsCount}
     Ongoing proposals: ${networkStats.ongoingProposalsCount}
 `
+  }
   if (!isGroup) {
     result += `
 Nominate our /validators
@@ -332,25 +282,14 @@ Feedback and support @RyabinaValidator`
 
 function getEventLinks(event, eventDB, index, block) {
   var links = []
+  var network = "darwinia-cc1"
   if (event.section == "democracy" && event.method == "Proposed") {
     var argIndex = _.findIndex(eventDB.args, a => a.name == "proposalIndex")
     var proposalId = event.data[argIndex].toNumber()
     links.push([
-      [
-        "polkassembly",
-        `https://${network}.polkassembly.io/proposal/${proposalId}`,
-      ],
+      "subscan",
+      `https://${network}.subscan.io/democracy_proposal/${proposalId}`,
     ])
-    links.push(
-      [
-        "polkascan",
-        `https://polkascan.io/${network}/democracy/proposal/${proposalId}`,
-      ],
-      [
-        "subscan",
-        `https://${network}.subscan.io/democracy_proposal/${proposalId}`,
-      ]
-    )
   } else if (
     (event.section == "democracy" && event.method == "Started") ||
     (event.section == "democracy" && event.method == "Cancelled") ||
@@ -361,18 +300,9 @@ function getEventLinks(event, eventDB, index, block) {
     var argIndex = _.findIndex(eventDB.args, a => a.name == "refIndex")
     var referendumId = event.data[argIndex].toNumber()
     links.push([
-      [
-        "polkassembly",
-        `https://${network}.polkassembly.io/referendum/${referendumId}`,
-      ],
+      "subscan",
+      `https://${network}.subscan.io/referenda/${referendumId}`,
     ])
-    links.push(
-      [
-        "polkascan",
-        `https://polkascan.io/${network}/democracy/referendum/${referendumId}`,
-      ],
-      ["subscan", `https://${network}.subscan.io/referenda/${referendumId}`]
-    )
   } else if (
     (event.section == "treasury" && event.method == "Proposed") ||
     (event.section == "treasury" && event.method == "Awarded") ||
@@ -381,30 +311,16 @@ function getEventLinks(event, eventDB, index, block) {
     var argIndex = _.findIndex(eventDB.args, a => a.name == "proposalIndex")
     var proposalId = event.data[argIndex].toNumber()
     links.push([
-      [
-        "polkassembly",
-        `https://${network}.polkassembly.io/treasury/${proposalId}`,
-      ],
+      "subscan",
+      `https://${network}.subscan.io/treasury/${proposalId}`,
     ])
-    links.push(
-      [
-        "polkascan",
-        `https://polkascan.io/${network}/treasury/proposal/${proposalId}`,
-      ],
-      ["subscan", `https://${network}.subscan.io/treasury/${proposalId}`]
-    )
   } else if (index) {
     links.push([
       ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
-      [
-        "polkascan",
-        `https://polkascan.io/${network}/transaction/${block}-${index}`,
-      ],
     ])
   } else {
     links.push([
       ["subscan", `https://${network}.subscan.io/block/${block}?tab=event`],
-      ["polkascan", `https://polkascan.io/${network}/block/${block}#events`],
     ])
   }
   return links
@@ -412,12 +328,9 @@ function getEventLinks(event, eventDB, index, block) {
 
 function getExtrinsicLinks(extrinsic, extrinsicDB, index, block) {
   var links = []
+  var network = "darwinia-cc1"
   links.push([
     ["subscan", `https://${network}.subscan.io/extrinsic/${block}-${index}`],
-    [
-      "polkascan",
-      `https://polkascan.io/${network}/transaction/${block}-${index}`,
-    ],
   ])
   return links
 }
@@ -427,7 +340,7 @@ async function getNetworkStats(api) {
   var token_data
   try {
     var token_data = await getJSON(
-      `https://api.coingecko.com/api/v3/coins/polkadot`
+      `https://api.coingecko.com/api/v3/coins/darwinia-network-native-token`
     )
   } catch (error) {
     token_data = "NA"
@@ -449,16 +362,21 @@ async function getNetworkStats(api) {
             )
             .toFixed(0),
           {
-            decimals: 10,
+            decimals: api.registry.chainDecimals,
             withSi: true,
             withUnit: "USD",
           }
         )
       : token_data
 
-  const referendums = await api.query.democracy.referendumInfoOf.entries()
-  const ongoingReferendums = referendums.filter(r => r[1].value.isOngoing)
-  const ongoingProposals = await api.query.democracy.publicProps()
+  if (api.query.democracy) {
+    const referendums = await api.query.democracy.referendumInfoOf.entries()
+    const ongoingReferendums = referendums.filter(r => r[1].value.isOngoing)
+    const ongoingProposals = await api.query.democracy.publicProps()
+
+    networkStats.ongoingProposalsCount = ongoingProposals.length
+    networkStats.ongoingReferendumsCount = ongoingReferendums.length
+  }
 
   networkStats.price =
     token_data != "NA"
@@ -471,24 +389,8 @@ async function getNetworkStats(api) {
           .toFixed(2) + "M USD"
       : token_data
   networkStats.marketcap = marketcap
-  networkStats.totalIssuance = formatBalance(
-    new BigNumber(totalIssuance.toString()).toFixed(0),
-    {
-      decimals: 10,
-      withSi: true,
-      withUnit: "DOT",
-    }
-  )
-
-  networkStats.totalStaked = formatBalance(
-    new BigNumber(totalStake.toString()).toFixed(0),
-    {
-      decimals: 10,
-      withSi: true,
-      withUnit: "DOT",
-    }
-  )
-
+  networkStats.totalIssuance = totalIssuance.toHuman()
+  networkStats.totalStaked = totalStake.toHuman()
   networkStats.percentStaked = new BigNumber(totalStake.toString())
     .dividedBy(new BigNumber(totalIssuance.toString()))
     .multipliedBy(new BigNumber(100))
@@ -496,115 +398,7 @@ async function getNetworkStats(api) {
   networkStats.elected = validators.length
   networkStats.waiting = validators2.length - validators.length
   networkStats.nominators = nominators.length
-  networkStats.ongoingProposalsCount = ongoingProposals.length
-  networkStats.ongoingReferendumsCount = ongoingReferendums.length
   return networkStats
-}
-
-async function checkPolkaProject(bot) {
-  var checkLastIDRequest = await fetch(
-    "https://api.staked.xyz/apiPolka/getPolkaList?limit=1&tagID=0&page=0",
-    {
-      headers: {
-        accept: "application/json, text/javascript, */*; q=0.01",
-        "accept-language": "en-US,en;q=0.9",
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "cross-site",
-      },
-      referrer: "https://polkaproject.com/",
-      referrerPolicy: "strict-origin-when-cross-origin",
-      body: null,
-      method: "GET",
-      mode: "cors",
-    }
-  )
-  var checkLastIDResult = await checkLastIDRequest.json()
-  if (checkLastIDResult.error) {
-    console.log(new Date(), "Error. PolkaProject API Request.", error)
-  }
-  if (!checkLastIDResult.data || checkLastIDResult.data.length === 0) {
-    console.log(
-      new Date(),
-      "Error. PolkaProject API Request.",
-      `No data returned`
-    )
-  }
-  var currentLastID = parseInt(checkLastIDResult.data.polkas[0].ID)
-  if (lastPolkaProjectID == -1) {
-    lastPolkaProjectID = currentLastID
-  } else if (currentLastID > lastPolkaProjectID) {
-    var limit = currentLastID - lastDbId
-    var newProjectsRequest = await fetch(
-      `https://api.staked.xyz/apiPolka/getPolkaList?limit=${limit}&tagID=0&page=0`,
-      {
-        headers: {
-          accept: "application/json, text/javascript, */*; q=0.01",
-          "accept-language": "en-US,en;q=0.9",
-          "sec-fetch-dest": "empty",
-          "sec-fetch-mode": "cors",
-          "sec-fetch-site": "cross-site",
-        },
-        referrer: "https://polkaproject.com/",
-        referrerPolicy: "strict-origin-when-cross-origin",
-        body: null,
-        method: "GET",
-        mode: "cors",
-      }
-    )
-    var newProjects = await newProjectsRequest.json()
-    if (newProjects.error) {
-      console.log(new Date(), "Error. PolkaProject API Request.", error)
-    }
-    if (!newProjects.data || newProjects.data.length === 0) {
-      console.log(
-        new Date(),
-        "Error. PolkaProject API Request.",
-        `No data returned`
-      )
-    }
-    var alerts = newProjects.data.polkas.map(project => {
-      var alert = {
-        section: "ecosystem",
-        method: "NewPolkaProject",
-        data: [
-          project.title,
-          "\n" + splitSentenceIntoRows(project.introduction, 40),
-          project.tags.join(" "),
-        ],
-      }
-      alert.links = []
-      if (project.website) {
-        alert.links.push({
-          name: project.title + " website",
-          url: project.website,
-        })
-      } else if (project.github) {
-        alert.links.push({
-          name: project.title + " github",
-          url: project.github,
-        })
-      } else if (project.twitter) {
-        alert.links.push({
-          name: project.title + " twitter",
-          url: project.twitter,
-        })
-      } else if (project.telegram) {
-        alert.links.push({
-          name: project.title + " telegram",
-          url: project.telegram,
-        })
-      }
-      alert.links.push({
-        name: "PolkaProject.com",
-        url: "https://polkaproject.com/",
-      })
-      return alert
-    })
-    alerts.forEach(async alert => {
-      await bot.sendCustomAlert(alert)
-    })
-  }
 }
 
 main()

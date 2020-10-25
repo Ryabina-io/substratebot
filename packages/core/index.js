@@ -631,6 +631,7 @@ module.exports = class SubstrateBot {
     botParams.api = this.api
     botParams.ui.modules = this.modules
     botParams.ui.modes = this.modes
+    botParams.ui.keyboard = this.settings.keyboard
     botParams.db = this.db
 
     var networkProperties = await this.api.rpc.system.properties()

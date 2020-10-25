@@ -1,7 +1,7 @@
 const TelegrafInlineMenu = require("telegraf-inline-menu")
 const TelegrafStatelessQuestion = require("telegraf-stateless-question")
 const Extra = require("telegraf/extra")
-const { keyboardOff, keyboardOn, botParams } = require("../../config")
+const { botParams, keyboardOn, keyboardOff } = require("../../config")
 const { checkAddress } = require("@polkadot/util-crypto")
 const { mainAddAlerts } = require("./addAlerts")
 const selectModuleMenu = require("./selectModuleMenu")
@@ -97,7 +97,7 @@ modeMenu
                   Extra.markup(markup => {
                     return markup
                       .resize()
-                      .keyboard(user.enabled ? keyboardOn : keyboardOff)
+                      .keyboard(user.enabled ? keyboardOn() : keyboardOff())
                   })
                 )
                 return true
@@ -123,7 +123,7 @@ modeMenu
             Extra.markup(markup => {
               return markup
                 .resize()
-                .keyboard(user.enabled ? keyboardOn : keyboardOff)
+                .keyboard(user.enabled ? keyboardOn() : keyboardOff())
             })
           )
         } else {
@@ -175,7 +175,7 @@ const enterAddress = new TelegrafStatelessQuestion("adr", async ctx => {
       Extra.markup(markup => {
         return markup
           .resize()
-          .keyboard(user.value().enabled ? keyboardOn : keyboardOff)
+          .keyboard(user.value().enabled ? keyboardOn() : keyboardOff())
       })
     )
     mainAddAlerts.middleware.setSpecific(ctx)
@@ -296,7 +296,7 @@ This is necessary for readable notifications and easy navigation.`
     Extra.markup(markup => {
       return markup
         .resize()
-        .keyboard(user.value().enabled ? keyboardOn : keyboardOff)
+        .keyboard(user.value().enabled ? keyboardOn() : keyboardOff())
     })
   )
 })
@@ -310,7 +310,9 @@ function checkMaxLimit(db, ctx) {
     ctx.replyWithMarkdown(
       `Sorry, but you've reached the subscription limit = ${user.maxLimit}.`,
       Extra.markup(markup => {
-        return markup.resize().keyboard(user.enabled ? keyboardOn : keyboardOff)
+        return markup
+          .resize()
+          .keyboard(user.enabled ? keyboardOn() : keyboardOff())
       })
     )
     return true

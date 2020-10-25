@@ -59,6 +59,7 @@ const parsingMap = {
   RegistrarIndex: uintToString,
   Renouncing: enumToString,
   RewardDestination: enumToString,
+  String: primitiveToString,
   Schedule: structToString,
   SessionIndex: uintToString,
   Signature: primitiveToString,

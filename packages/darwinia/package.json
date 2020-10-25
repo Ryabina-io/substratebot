@@ -1,17 +1,15 @@
 {
-  "name": "@ryabina-io/polkadotbot",
-  "version": "1.0.2",
+  "name": "@ryabina-io/darwiniabot",
   "main": "main.js",
-  "author": "ryabina-io",
+  "version": "1.0.2",
   "private": true,
+  "author": "ryabina-io",
   "license": "Apache-2.0",
   "dependencies": {
     "@polkadot/api": "^2.1.1",
-    "@polkadot/util": "^2.18.1",
     "@ryabina-io/substratebot": "^1.0.2",
-    "bent": "^7.3.10",
+    "bent": "^7.3.7",
     "bignumber.js": "^9.0.0",
-    "lodash": "^4.17.19",
-    "node-fetch": "^2.6.1"
+    "lodash": "^4.17.19"
   }
 }

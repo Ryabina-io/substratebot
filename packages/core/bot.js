@@ -1,7 +1,7 @@
 const Telegraf = require("telegraf")
 const Extra = require("telegraf/extra")
 const session = require("telegraf/session")
-const { keyboardOn, keyboardOff, botParams } = require("./config")
+const { botParams, keyboardOn, keyboardOff } = require("./config")
 const { mainAddAlerts } = require("./menus/add/addAlerts")
 const { setParam } = require("./menus/add/setFilterMenu")
 const modeMenu = require("./menus/add/modeMenu")
@@ -11,6 +11,7 @@ const {
   walletsNotificationsMenuMiddleware,
 } = require("./menus/edit/walletsNotificationsMenu")
 const { refreshMenu, refreshMenuMiddleware } = require("./menus/statsMenu")
+const { checkIsGroup, getGroupOrCreate } = require("./tools/utils")
 
 module.exports.run = async function (params) {
   /*
@@ -45,7 +46,7 @@ module.exports.run = async function (params) {
         Extra.webPreview(false).markup(markup => {
           return markup
             .resize()
-            .keyboard(user.enabled ? keyboardOn : keyboardOff)
+            .keyboard(user.enabled ? keyboardOn() : keyboardOff())
         })
       )
     }
@@ -65,7 +66,7 @@ module.exports.run = async function (params) {
    */
   const antispamOn = {}
   bot.command("stats", async ctx => {
-    if (ctx.chat.type == "group" || ctx.chat.type == "supergroup") {
+    if (await checkIsGroup(ctx)) {
       if (!antispamOn[ctx.chat.id]) {
         antispamOn[ctx.chat.id] = true
         setTimeout(() => (antispamOn[ctx.chat.id] = false), 60000)
@@ -79,205 +80,122 @@ module.exports.run = async function (params) {
   })
 
   bot.command("priceon", async ctx => {
-    if (ctx.chat.type == "group" || ctx.chat.type == "supergroup") {
-      var admins = await ctx.telegram.getChatAdministrators(ctx.chat.id)
-      var from = ctx.from
-      if (admins.find(a => a.user.id == from.id)) {
-        var group = botParams.db
+    if (await checkIsGroup(ctx, true)) {
+      var group = getGroupOrCreate(ctx)
+      if (!group.price) {
+        botParams.db
           .get("users")
           .find({ chatid: ctx.chat.id })
-          .value()
-        if (!group) {
-          group = {
-            chatid: ctx.chat.id,
-            type: ctx.chat.type,
-            wallets: [],
-            maxLimit: 100,
-            enabled: false,
-            blocked: false,
-            price: false,
-          }
-          botParams.db.get("users").push(group).write()
-        }
-        if (!group.price) {
-          botParams.db
-            .get("users")
-            .find({ chatid: ctx.chat.id })
-            .assign({ price: true })
-            .write()
-          ctx.reply("Price display is turned on.")
-        } else {
-          ctx.reply("Price are already ON for your group.")
-        }
+          .assign({ price: true })
+          .write()
+        ctx.reply("Price display is turned on.")
       } else {
-        ctx.reply("This command avaiable only for admin.")
+        ctx.reply("Price are already ON for your group.")
       }
     }
   })
 
   bot.command("priceoff", async ctx => {
-    if (ctx.chat.type == "group" || ctx.chat.type == "supergroup") {
-      var admins = await ctx.telegram.getChatAdministrators(ctx.chat.id)
-      var from = ctx.from
-      if (admins.find(a => a.user.id == from.id)) {
-        var group = botParams.db
+    if (await checkIsGroup(ctx, true)) {
+      var group = getGroupOrCreate(ctx)
+      if (group.price) {
+        botParams.db
           .get("users")
           .find({ chatid: ctx.chat.id })
-          .value()
-        if (!group) {
-          group = {
-            chatid: ctx.chat.id,
-            type: ctx.chat.type,
-            wallets: [],
-            maxLimit: 100,
-            enabled: false,
-            blocked: false,
-            price: false,
-          }
-          botParams.db.get("users").push(group).write()
-        }
-        if (group.price) {
-          botParams.db
-            .get("users")
-            .find({ chatid: ctx.chat.id })
-            .assign({ price: false })
-            .write()
-          ctx.reply("Price display is turned off.")
-        } else {
-          ctx.reply("Price are already OFF for your group.")
-        }
+          .assign({ price: false })
+          .write()
+        ctx.reply("Price display is turned off.")
       } else {
-        ctx.reply("This command avaiable only for admin.")
+        ctx.reply("Price are already OFF for your group.")
       }
     }
   })
 
   bot.command("alertson", async ctx => {
-    if (ctx.chat.type == "group" || ctx.chat.type == "supergroup") {
-      var admins = await ctx.telegram.getChatAdministrators(ctx.chat.id)
-      var from = ctx.from
-      if (admins.find(a => a.user.id == from.id)) {
-        var group = botParams.db
+    if (await checkIsGroup(ctx, true)) {
+      var group = getGroupOrCreate(ctx)
+      if (!group.enabled) {
+        var events = botParams.settings.groupAlerts.events
+        var calls = botParams.settings.groupAlerts.calls
+        events.forEach(e => {
+          var notification = {
+            chatid: ctx.chat.id,
+            contract: e[0],
+            event: e[1],
+          }
+          botParams.db.get("notifications").push(notification).write()
+        })
+        calls.forEach(e => {
+          var notification = {
+            chatid: ctx.chat.id,
+            contract: e[0],
+            call: e[1],
+          }
+          botParams.db.get("notifications").push(notification).write()
+        })
+        botParams.db
           .get("users")
           .find({ chatid: ctx.chat.id })
-          .value()
-        if (!group) {
-          group = {
-            chatid: ctx.chat.id,
-            type: ctx.chat.type,
-            wallets: [],
-            maxLimit: 100,
-            enabled: false,
-            blocked: false,
-          }
-          botParams.db.get("users").push(group).write()
-        }
-        if (!group.enabled) {
-          var notifications = botParams.db.get("notifications").value()
-          var events = botParams.settings.groupAlerts.events
-          var calls = botParams.settings.groupAlerts.calls
-          events.forEach(e => {
-            var notification = {
-              chatid: ctx.chat.id,
-              contract: e[0],
-              event: e[1],
-            }
-            botParams.db.get("notifications").push(notification).write()
-          })
-          calls.forEach(e => {
-            var notification = {
-              chatid: ctx.chat.id,
-              contract: e[0],
-              call: e[1],
-            }
-            botParams.db.get("notifications").push(notification).write()
-          })
-          botParams.db
-            .get("users")
-            .find({ chatid: ctx.chat.id })
-            .assign({ enabled: true })
-            .write()
-          ctx.reply("Alerts have been successfully activated.")
-        } else {
-          ctx.reply("Alerts are already ON for your group.")
-        }
+          .assign({ enabled: true })
+          .write()
+        ctx.reply("Alerts have been successfully activated.")
       } else {
-        ctx.reply("This command avaiable only for admin.")
+        ctx.reply("Alerts are already ON for your group.")
       }
     }
   })
 
   bot.command("alertsoff", async ctx => {
-    if (ctx.chat.type == "group" || ctx.chat.type == "supergroup") {
-      var admins = await ctx.telegram.getChatAdministrators(ctx.chat.id)
-      var from = ctx.from
-      if (admins.find(a => a.user.id == from.id)) {
-        var group = botParams.db
+    if (await checkIsGroup(ctx, true)) {
+      var group = getGroupOrCreate(ctx)
+      if (group.enabled) {
+        botParams.db
+          .get("notifications")
+          .remove(n => n.chatid == ctx.chat.id)
+          .write()
+        botParams.db
           .get("users")
           .find({ chatid: ctx.chat.id })
-          .value()
-        if (!group) {
-          group = {
-            chatid: ctx.chat.id,
-            type: ctx.chat.type,
-            wallets: [],
-            maxLimit: 100,
-            enabled: false,
-            blocked: false,
-          }
-          botParams.db.get("users").push(group).write()
-        }
-        if (group.enabled) {
-          botParams.db
-            .get("notifications")
-            .remove(n => n.chatid == ctx.chat.id)
-            .write()
-          botParams.db
-            .get("users")
-            .find({ chatid: ctx.chat.id })
-            .assign({ enabled: false })
-            .write()
-          ctx.reply("Alerts have been successfully turned off.")
-        } else {
-          ctx.reply("Alerts are already OFF for your group.")
-        }
+          .assign({ enabled: false })
+          .write()
+        ctx.reply("Alerts have been successfully turned off.")
       } else {
-        ctx.reply("This command avaiable only for admin.")
+        ctx.reply("Alerts are already OFF for your group.")
       }
     }
   })
 
   /*
-   *   React bot on 'Add new alert' message
+   *   React bot on add message
    */
-  bot.hears("Add new alert", ctx => {
+  bot.hears(botParams.ui.keyboard.add, ctx => {
     if (ctx.chat.type == "private") {
       mainAddAlerts.middleware.setSpecific(ctx)
     }
   })
 
   /*
-   *   React bot on 'My addresses/alerts' message
+   *   React bot on alerts message
    */
-  bot.hears("My addresses/alerts", ctx => {
+  bot.hears(botParams.ui.keyboard.alerts, ctx => {
     if (ctx.chat.type == "private") {
       walletsNotificationsMenuMiddleware.setSpecific(ctx)
     }
   })
 
   /*
-   *   React bot on 'My addresses/alerts' message
+   *   React bot on stats message
    */
-  bot.hears("Network stats", async ctx => {
+  bot.hears(botParams.ui.keyboard.stats, async ctx => {
     if (ctx.chat.type == "private") {
       ctx.replyWithMarkdown(botParams.getNetworkStatsMessage())
     }
   })
 
   /*
-   *   React bot on 'Turned off❌ (Press to ON)' message.
+   *   React bot on OFF message.
    */
-  bot.hears("Turned off❌ (Press to ON)", ctx => {
+  bot.hears(botParams.ui.keyboard.off, ctx => {
     if (ctx.chat.type == "private") {
       botParams.db
         .get("users")
@@ -288,16 +206,16 @@ module.exports.run = async function (params) {
       ctx.reply(
         "All notifications are turned on",
         Extra.markup(markup => {
-          return markup.resize().keyboard(keyboardOn)
+          return markup.resize().keyboard(keyboardOn())
         })
       )
     }
   })
 
   /*
-   *   React bot on 'Turned on✅ (Press to OFF)' message.
+   *   React bot on ON message.
    */
-  bot.hears("Turned on✅ (Press to OFF)", ctx => {
+  bot.hears(botParams.ui.keyboard.on, ctx => {
     if (ctx.chat.type == "private") {
       botParams.db
         .get("users")
@@ -308,7 +226,7 @@ module.exports.run = async function (params) {
       ctx.reply(
         "All notifications are turned off",
         Extra.markup(markup => {
-          return markup.resize().keyboard(keyboardOff)
+          return markup.resize().keyboard(keyboardOff())
         })
       )
     }
