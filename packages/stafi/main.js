@@ -240,6 +240,13 @@ Wait a while until the addresses load and select all RYABINA nodes.`,
         ["treasury", "reportAwesome"],
       ],
     },
+    keyboard: {
+      add: "Add new alert",
+      alerts: "My addresses/alerts",
+      on: "Turned on✅ (Press to OFF)",
+      off: "Turned off❌ (Press to ON)",
+      stats: "Network stats",
+    },
     botToken: process.env.BOT_TOKEN,
     dbFilePath: process.env.DB_FILE_PATH,
   }
