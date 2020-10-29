@@ -222,6 +222,7 @@ function splitSentenceIntoRows(str, n) {
       currentDivIndex = 0
     }
   }
+  if (res.length == 0) return str
   return res.join("\n")
 }
 
