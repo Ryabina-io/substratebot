@@ -108,7 +108,8 @@ async function main() {
             )
           })
           updated["LDOT"] = new BigNumber(
-            liquidStakingExchangeRate + `e-${api.registry.chainDecimals}`
+            liquidStakingExchangeRate.toString() +
+              `e-${api.registry.chainDecimals}`
           ).multipliedBy(updated["DOT"])
           checkLiquidationPrice(substrateBot, updated)
         } else if (event.method == "LiquidateUnsafeCDP") {
@@ -123,8 +124,11 @@ async function main() {
 }
 
 async function getAPI() {
+  //wss://node-6714447553211260928.rz.onfinality.io/ws
+  //"wss://node-6684611762228215808.jm.onfinality.io/ws"
+  //"ws://127.0.0.1:1701"
   const nodeUri =
-    process.env.NODE_URI || "wss://node-6684611762228215808.jm.onfinality.io/ws" //"ws://127.0.0.1:1701"
+    process.env.NODE_URI || "wss://node-6714447553211260928.rz.onfinality.io/ws"
   const provider = new WsProvider(nodeUri)
   process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0
   const api = await ApiPromise.create(options({ provider }))
@@ -339,7 +343,12 @@ async function getNetworkStats(api) {
         )
       : token_data
 
-  var oraclePrices = await api.rpc.oracle.getAllValues()
+  var oraclePrices
+  try {
+    oraclePrices = await api.rpc.oracle.getAllValues()
+  } catch (error) {
+    console.log(error)
+  }
   var dexPools = await api.query.dex.liquidityPool.entries()
   var liquidRate = await api.rpc.stakingPool.getLiquidStakingExchangeRate()
   var totalCollaterals = await api.query.loans.totalCollaterals.entries()
@@ -449,7 +458,7 @@ async function checkLiquidationPrice(bot, updated) {
   }
 }
 
-async function getAllCollaterals(api) {
+async function getAllCollateralsOLD(api) {
   var result = {}
 
   var collateralParams = await api.query.cdpEngine.collateralParams.entries()
@@ -501,6 +510,62 @@ async function getAllCollaterals(api) {
         .multipliedBy(item.debit)
         .dividedBy(item.amount)
       result[collateralType][c[0].toHuman()[0]] = item
+    })
+  return result
+}
+
+async function getAllCollaterals(api) {
+  var result = {}
+
+  var collateralParams = await api.query.cdpEngine.collateralParams.entries()
+  liquidationRatio = {}
+  collateralParams.forEach(c => {
+    if (c[1].liquidationRatio.toString() == "") {
+      liquidationRatio[c[0].toHuman()[0].Token] = "1"
+    } else
+      liquidationRatio[c[0].toHuman()[0].Token] =
+        c[1].liquidationRatio.toString() + `e-${api.registry.chainDecimals}`
+  })
+  var debitExchangeRate = await api.query.cdpEngine.debitExchangeRate.entries()
+  debitRate = {}
+  debitExchangeRate.forEach(d => {
+    debitRate[d[0].toHuman()[0].Token] =
+      d[1].toString() + `e-${api.registry.chainDecimals}`
+  })
+  liquidStakingExchangeRate = await api.rpc.stakingPool.getLiquidStakingExchangeRate()
+
+  var collaterals = await api.query.loans.positions.entries()
+
+  //var debits = await api.query.loans.positions.entries()
+  //var debitsKeyValues = {}
+  //debits.forEach(d => {
+  //  debitsKeyValues[d[0].toHuman()[1] + ":" + d[0].toHuman()[0].Token] =
+  //    d[1].debit.toString() + `e-${api.registry.chainDecimals}`
+  //})
+
+  collaterals
+    .filter(c =>
+      new BigNumber(
+        c[1].collateral.toString() + `e-${api.registry.chainDecimals}`
+      ).isGreaterThan(new BigNumber(0))
+    )
+    .forEach(c => {
+      var collateralType = c[0].toHuman()[0].Token
+      if (!result[collateralType]) {
+        result[collateralType] = {}
+      }
+      var item = {
+        amount: new BigNumber(
+          c[1].collateral.toString() + `e-${api.registry.chainDecimals}`
+        ),
+      }
+      item.debit = new BigNumber(
+        c[1].debit.toString() + `e-${api.registry.chainDecimals}`
+      ).multipliedBy(new BigNumber(debitRate[collateralType]))
+      item.liquidationPrice = new BigNumber(liquidationRatio[collateralType])
+        .multipliedBy(item.debit)
+        .dividedBy(item.amount)
+      result[collateralType][c[0].toHuman()[1]] = item
     })
   return result
 }

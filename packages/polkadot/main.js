@@ -12,7 +12,6 @@ const _ = require("lodash")
 const fetch = require("node-fetch")
 
 let networkStats = {}
-let lastPolkaProjectID = -1
 let network = "polkadot"
 
 async function main() {
