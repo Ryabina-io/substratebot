@@ -210,20 +210,25 @@ function replaceMarkdownSymbols(text, includingCode = true) {
   return result
 }
 
-function splitSentenceIntoRows(str, n) {
-  var res = []
-  var lastDivIndex = 0
-  var currentDivIndex = 0
-  for (var i = 0; i < str.length; i++) {
-    currentDivIndex = i - lastDivIndex
-    if (currentDivIndex >= n - 1 && str[i] == " ") {
-      res.push(str.substr(lastDivIndex, currentDivIndex))
-      lastDivIndex = i + 1
-      currentDivIndex = 0
+function splitSentenceIntoRows(sentence, n) {
+  var result = []
+  var subsentences = sentence.split("\n")
+  subsentences.forEach(s => {
+    var lastDivIndex = 0
+    var currentDivIndex = 0
+    for (var i = 0; i < s.length; i++) {
+      currentDivIndex = i - lastDivIndex
+      if (currentDivIndex >= n - 1 && s[i] == " ") {
+        result.push(s.substr(lastDivIndex, currentDivIndex))
+        lastDivIndex = i + 1
+        currentDivIndex = 0
+      }
+      if (i + 1 == s.length) {
+        result.push(s.substr(lastDivIndex, currentDivIndex + 1))
+      }
     }
-  }
-  if (res.length == 0) return str
-  return res.join("\n")
+  })
+  return result.join("\n")
 }
 
 async function checkIsGroup(ctx, checkAdmin = false) {

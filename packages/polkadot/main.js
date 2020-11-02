@@ -33,8 +33,12 @@ async function main() {
   substrateBot.run()
 
   setInterval(async () => {
-    checkPolkaProject(substrateBot)
-  }, 15000)
+    try {
+      checkPolkaProject(substrateBot)
+    } catch (error) {
+      console.log(new Date(), error)
+    }
+  }, 5000)
 }
 
 async function getAPI() {

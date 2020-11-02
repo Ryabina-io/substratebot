@@ -1,11 +1,12 @@
 const fetch = require("node-fetch")
 const { splitSentenceIntoRows } = require("../tools/utils")
+const _ = require("lodash")
 
-let lastPolkaProjectID = -1
+let last20PolkaProjects = []
 module.exports = {
   checkPolkaProject: async bot => {
-    var checkLastIDRequest = await fetch(
-      "https://api.staked.xyz/apiPolka/getPolkaList?limit=1&tagID=0&page=0",
+    var checkLast20IDRequest = await fetch(
+      "https://api.staked.xyz/apiPolka/getPolkaList?limit=20&tagID=0&page=0",
       {
         headers: {
           accept: "application/json, text/javascript, */*; q=0.01",
@@ -21,93 +22,85 @@ module.exports = {
         mode: "cors",
       }
     )
-    var checkLastIDResult = await checkLastIDRequest.json()
-    if (checkLastIDResult.error) {
+    var checkLast20IDResult = await checkLast20IDRequest.json()
+    if (checkLast20IDResult.error) {
       console.log(new Date(), "Error. PolkaProject API Request.", error)
     }
-    if (!checkLastIDResult.data || checkLastIDResult.data.length === 0) {
+    if (!checkLast20IDResult.data || checkLast20IDResult.data.length === 0) {
       console.log(
         new Date(),
         "Error. PolkaProject API Request.",
         `No data returned`
       )
     }
-    var currentLastID = parseInt(checkLastIDResult.data.polkas[0].ID)
-    if (lastPolkaProjectID == -1) {
-      lastPolkaProjectID = currentLastID
-    } else if (currentLastID > lastPolkaProjectID) {
-      var limit = currentLastID - lastPolkaProjectID
-      lastPolkaProjectID = currentLastID
-      var newProjectsRequest = await fetch(
-        `https://api.staked.xyz/apiPolka/getPolkaList?limit=${limit}&tagID=0&page=0`,
-        {
-          headers: {
-            accept: "application/json, text/javascript, */*; q=0.01",
-            "accept-language": "en-US,en;q=0.9",
-            "sec-fetch-dest": "empty",
-            "sec-fetch-mode": "cors",
-            "sec-fetch-site": "cross-site",
-          },
-          referrer: "https://polkaproject.com/",
-          referrerPolicy: "strict-origin-when-cross-origin",
-          body: null,
-          method: "GET",
-          mode: "cors",
-        }
-      )
-      var newProjects = await newProjectsRequest.json()
-      if (newProjects.error) {
-        console.log(new Date(), "Error. PolkaProject API Request.", error)
-      }
-      if (!newProjects.data || newProjects.data.length === 0) {
-        console.log(
-          new Date(),
-          "Error. PolkaProject API Request.",
-          `No data returned`
-        )
-      }
-      var alerts = newProjects.data.polkas.map(project => {
-        var alert = {
-          section: "ecosystem",
-          method: "NewPolkaProject",
-          data: [
-            project.title,
-            project.introduction.length > 0
-              ? "\n" + splitSentenceIntoRows(project.introduction, 40)
-              : "",
-            project.tags.length > 0 ? project.tags.join(" ") : "",
-          ],
-        }
-        alert.links = []
-        if (project.website) {
-          alert.links.push({
-            name: project.title + " website",
-            url: project.website,
+    var currentLast20IDs = checkLast20IDResult.data.polkas.map(p =>
+      parseInt(p.ID)
+    )
+    if (last20PolkaProjects.length == 0) {
+      last20PolkaProjects = currentLast20IDs
+      return
+    }
+    var diffIDs = _.difference(currentLast20IDs, last20PolkaProjects)
+    if (diffIDs.length > 0) {
+      var alerts = await Promise.all(
+        diffIDs.map(async id => {
+          var request = `https://api.staked.xyz/apiPolka/getProjectById?v=1.0&id=${id}`
+          var newProjectRequest = await fetch(request, {
+            headers: {
+              accept: "application/json, text/javascript, */*; q=0.01",
+              "accept-language": "en-US,en;q=0.9",
+              "sec-fetch-dest": "empty",
+              "sec-fetch-mode": "cors",
+              "sec-fetch-site": "cross-site",
+              "sec-gpc": "1",
+            },
+            referrer: "https://www.polkaproject.com/",
+            referrerPolicy: "strict-origin-when-cross-origin",
+            body: null,
+            method: "GET",
+            mode: "cors",
           })
-        } else if (project.github) {
-          alert.links.push({
-            name: project.title + " github",
-            url: project.github,
-          })
-        } else if (project.twitter) {
-          alert.links.push({
-            name: project.title + " twitter",
-            url: project.twitter,
-          })
-        } else if (project.telegram) {
-          alert.links.push({
-            name: project.title + " telegram",
-            url: project.telegram,
-          })
-        }
-        alert.links.push({
-          name: "PolkaProject.com",
-          url: "https://polkaproject.com/",
+          var newProject = await newProjectRequest.json()
+          if (newProject.error) {
+            console.log(new Date(), "Error. PolkaProject API Request.", error)
+            return null
+          }
+          if (!newProject.data || newProject.data.length === 0) {
+            console.log(
+              new Date(),
+              "Error. PolkaProject API Request.",
+              `No data returned`
+            )
+            return null
+          }
+          var alert = {
+            section: "ecosystem",
+            method: "NewPolkaProject",
+            data: [
+              newProject.data.title,
+              newProject.data.introduction.length > 0
+                ? "\n" + splitSentenceIntoRows(newProject.data.introduction, 40)
+                : "",
+              newProject.data.tags.length > 0
+                ? newProject.data.tags.join(" ")
+                : "",
+            ],
+          }
+          alert.links = [
+            {
+              name: "PolkaProject.com",
+              url: `https://polkaproject.com/?id=${newProject.data.ID}`,
+            },
+          ]
+          return { id: parseInt(newProject.data.ID), alert: alert }
         })
-        return alert
-      })
+      )
+      alerts = alerts.filter(a => a.alert != null)
+
       alerts.forEach(async alert => {
-        await bot.sendCustomAlert(alert)
+        last20PolkaProjects.pop()
+        last20PolkaProjects.unshift(alert.id)
+        await bot.sendCustomAlert(alert.alert)
       })
     }
   },
