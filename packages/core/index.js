@@ -144,6 +144,7 @@ async function sendExtrinsic(extrinsic, extrinsicIndex, token, decimals) {
       botParams.ui.modules[module] &&
       botParams.ui.modules[module].calls[extrinsic.method]
     ) {
+      botParams.callback(extrinsic, true)
       var extrinsicDB = botParams.ui.modules[module].calls[extrinsic.method]
       botParams.db
         .get("notifications")
@@ -307,6 +308,7 @@ async function sendEvent(record) {
     botParams.ui.modules[stringUpperFirst(event.section)] &&
     botParams.ui.modules[stringUpperFirst(event.section)].events[event.method]
   ) {
+    botParams.callback(record, false)
     var eventDB =
       botParams.ui.modules[stringUpperFirst(event.section)].events[event.method]
     botParams.db
@@ -633,6 +635,7 @@ module.exports = class SubstrateBot {
     botParams.ui.modes = this.modes
     botParams.ui.keyboard = this.settings.keyboard
     botParams.db = this.db
+    botParams.callback = this.settings.callback
 
     var networkProperties = await this.api.rpc.system.properties()
     if (!this.settings.network.prefix && networkProperties.ss58Format) {

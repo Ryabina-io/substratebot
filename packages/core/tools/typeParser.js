@@ -45,7 +45,7 @@ const parsingMap = {
   MemberCount: uintToString,
   Null: primitiveToString,
   OpaqueNetworkState: structToString,
-  OracleKey: primitiveToString,
+  OracleKey: oracleKeyToString,
   OracleValue: priceToString,
   Perbill: uintToString,
   Period: tupleToString,
@@ -374,6 +374,21 @@ async function hexToString(value, type, baseType, depth) {
   } else return str
 }
 
+async function oracleKeyToString(value, type, baseType, depth) {
+  var result = ""
+  var oracleKey = value.toHuman()
+  if (oracleKey.toString() === "[object Object]") {
+    for (var key in oracleKey) {
+      result += oracleKey[key] + " "
+    }
+  } else result = oracleKey.toString()
+  return result
+}
+
 module.exports = {
   parse: parse,
+  objectToString: objectToString,
+  balanceToString: balanceToString,
+  dateToString: dateToString,
+  hexToString: hexToString,
 }

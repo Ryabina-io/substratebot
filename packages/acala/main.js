@@ -9,7 +9,7 @@ const getJSON = bent("json")
 const _ = require("lodash")
 
 let networkStats = {}
-let totalCollaterals, liquidationRatio, debitRate, liquidStakingExchangeRate
+let collaterals, liquidationRatio, debitRate, liquidStakingExchangeRate
 var alreadyRecieved = new Map()
 
 async function main() {
@@ -17,11 +17,12 @@ async function main() {
   var api = await getAPI()
   var modules = getNodeModules(api)
   var modes = getModes()
+  collaterals = await getAllCollaterals(api)
   getNetworkStats(api).then(result => (networkStats = result))
   setInterval(async () => {
     networkStats = await getNetworkStats(api)
   }, 10000)
-  totalCollaterals = await getAllCollaterals(api)
+
   const substrateBot = new SubstrateBot({
     settings,
     api,
@@ -37,7 +38,7 @@ async function main() {
         const { event } = record
         if (
           (event.section == "loans" && event.method == "PositionUpdated") ||
-          (event.section == "oracle" && event.method == "NewFeedData") ||
+          (event.section == "acalaOracle" && event.method == "NewFeedData") ||
           (event.section == "cdpEngine" && event.method == "LiquidateUnsafeCDP")
         ) {
           return true
@@ -64,37 +65,36 @@ async function main() {
           var debit = new BigNumber(
             event.data[3].toString() + `e-${api.registry.chainDecimals}`
           ).multipliedBy(new BigNumber(debitRate[collateralType]))
-          if (!totalCollaterals[collateralType]) {
-            totalCollaterals[collateralType] = {}
+          if (!collaterals[collateralType]) {
+            collaterals[collateralType] = {}
           }
-          if (totalCollaterals[collateralType][account]) {
-            totalCollaterals[collateralType][account].amount = totalCollaterals[
+          if (collaterals[collateralType][account]) {
+            collaterals[collateralType][account].amount = collaterals[
               collateralType
             ][account].amount.plus(amount)
-            totalCollaterals[collateralType][account].debit = totalCollaterals[
+            collaterals[collateralType][account].debit = collaterals[
               collateralType
             ][account].debit.plus(debit)
             if (
-              totalCollaterals[collateralType][account].amount.toFixed() ==
-                "0" &&
-              totalCollaterals[collateralType][account].debit.toFixed() == "0"
+              collaterals[collateralType][account].amount.toFixed() == "0" &&
+              collaterals[collateralType][account].debit.toFixed() == "0"
             ) {
-              delete totalCollaterals[collateralType][account]
+              delete collaterals[collateralType][account]
             } else {
-              totalCollaterals[collateralType][
+              collaterals[collateralType][
                 account
               ].liquidationPrice = new BigNumber(
                 liquidationRatio[collateralType]
               )
-                .multipliedBy(totalCollaterals[collateralType][account].debit)
-                .dividedBy(totalCollaterals[collateralType][account].amount)
+                .multipliedBy(collaterals[collateralType][account].debit)
+                .dividedBy(collaterals[collateralType][account].amount)
             }
           } else {
-            totalCollaterals[collateralType][account] = {
+            collaterals[collateralType][account] = {
               amount: amount,
               debit: debit,
             }
-            totalCollaterals[collateralType][
+            collaterals[collateralType][
               account
             ].liquidationPrice = new BigNumber(liquidationRatio[collateralType])
               .multipliedBy(debit)
@@ -115,8 +115,8 @@ async function main() {
         } else if (event.method == "LiquidateUnsafeCDP") {
           var account = event.data[1].toHuman()
           var collateralType = event.data[0].toHuman()
-          if (totalCollaterals[collateralType][account]) {
-            delete totalCollaterals[collateralType][account]
+          if (collaterals[collateralType][account]) {
+            delete collaterals[collateralType][account]
           }
         }
       })
@@ -251,6 +251,7 @@ function getSettings() {
     },
     botToken: process.env.BOT_TOKEN,
     dbFilePath: process.env.DB_FILE_PATH,
+    callback: (data, isExtrinsic) => {},
   }
   return settings
 }
@@ -262,22 +263,21 @@ function getNetworkStatsMessage(priceIncluded = false, isGroup = false) {
 ACA Market Capitalisation: ${networkStats.marketcap}
 ACA Total Volume: ${networkStats.volume}\n`
   }
-
   result += `Total issuance: ${networkStats.totalIssuance}
 
 Total collaterals:`
-  networkStats.totalCollaterals.forEach(c => {
-    result += `\n    ${c.collateralType}: ${c.value}`
+  networkStats.totalPositions.forEach(c => {
+    result += `\n    ${c.type}: ${c.collateral}`
   })
   result += `\nTotal debits:`
-  networkStats.totalDebits.forEach(d => {
-    result += `\n    ${d.collateralType}: ${d.value}`
+  networkStats.totalPositions.forEach(d => {
+    result += `\n    ${d.type}: ${d.debit}`
   })
-  result += `\n\nOracle Currency Prices:\n`
+  /*result += `\n\nOracle Currency Prices:\n`
   networkStats.oraclePrices.forEach(currency => {
     result += `    1 ${currency.token} = ${currency.price} USD\n`
-  })
-  result += `\nDEX Currency Prices:\n`
+  })*/
+  result += `\n\nDEX Currency Prices:\n`
   networkStats.dexPrices.forEach(currency => {
     result += `    1 ${currency.token} = ${currency.price} aUSD\n`
   })
@@ -343,34 +343,24 @@ async function getNetworkStats(api) {
         )
       : token_data
 
-  var oraclePrices
+  /*var oraclePrices
   try {
     oraclePrices = await api.rpc.oracle.getAllValues()
   } catch (error) {
     console.log(error)
-  }
+  }*/
   var dexPools = await api.query.dex.liquidityPool.entries()
-  var liquidRate = await api.rpc.stakingPool.getLiquidStakingExchangeRate()
-  var totalCollaterals = await api.query.loans.totalCollaterals.entries()
-  totalCollaterals = totalCollaterals.map(c => {
+  var totalPositions = await api.query.loans.totalPositions.entries()
+  totalPositions = totalPositions.map(c => {
     return {
-      collateralType: c[0].toHuman()[0],
-      value: formatBalance(new BigNumber(c[1].toString()).toFixed(0), {
-        decimals: api.registry.chainDecimals,
-        withSi: true,
-        withUnit: "",
-      }),
-    }
-  })
-  var totalDebits = await api.query.loans.totalDebits.entries()
-  totalDebits = totalDebits.map(d => {
-    return {
-      collateralType: d[0].toHuman()[0],
-      value: formatBalance(new BigNumber(d[1].toString()).toFixed(0), {
-        decimals: api.registry.chainDecimals,
-        withSi: true,
-        withUnit: "aUSD",
-      }),
+      type: c[0].toHuman()[0].Token,
+      collateral: new BigNumber(
+        c[1].collateral.toString() + `e-${api.registry.chainDecimals}`
+      ).toFixed(2),
+      debit:
+        new BigNumber(
+          c[1].debit.toString() + `e-${api.registry.chainDecimals}`
+        ).toFixed(2) + " aUSD",
     }
   })
 
@@ -394,9 +384,8 @@ async function getNetworkStats(api) {
   networkStats.elected = validators.length
   networkStats.waiting = validators2.length - validators.length
   networkStats.nominators = nominators.length
-  networkStats.totalCollaterals = totalCollaterals
-  networkStats.totalDebits = totalDebits
-  networkStats.oraclePrices = oraclePrices.map(price => {
+  networkStats.totalPositions = totalPositions
+  /*networkStats.oraclePrices = oraclePrices.map(price => {
     var name = price[0].toHuman()
     var value = new BigNumber(
       price[1].value.value.toString() + `e-${api.registry.chainDecimals}`
@@ -412,17 +401,19 @@ async function getNetworkStats(api) {
         )
       )
       .toFixed(2),
-  })
+  })*/
   networkStats.dexPrices = dexPools.map(pool => {
     var token = pool[0].toHuman()[0]
-    var value1 = new BigNumber(
-      pool[1][0].toString() + `e-${api.registry.chainDecimals}`
+    var usdIndex = _.findIndex(token, i => i.Token == "AUSD")
+    var сurrencyIndex = _.findIndex(token, i => i.Token != "AUSD")
+    var valueUSD = new BigNumber(
+      pool[1][usdIndex].toString() + `e-${api.registry.chainDecimals}`
     )
-    var value2 = new BigNumber(
-      pool[1][1].toString() + `e-${api.registry.chainDecimals}`
+    var valueCurrency = new BigNumber(
+      pool[1][сurrencyIndex].toString() + `e-${api.registry.chainDecimals}`
     )
-    var price = value2.dividedBy(value1).toFixed(2)
-    return { token: token, price: price }
+    var price = valueUSD.dividedBy(valueCurrency).toFixed(2)
+    return { token: token[сurrencyIndex].Token, price: price }
   })
   return networkStats
 }
@@ -430,10 +421,10 @@ async function getNetworkStats(api) {
 async function checkLiquidationPrice(bot, updated) {
   for (var collateralType in updated) {
     var updatedPrice = updated[collateralType]
-    for (var account in totalCollaterals[collateralType]) {
+    for (var account in collaterals[collateralType]) {
       if (
         updatedPrice
-          .dividedBy(totalCollaterals[collateralType][account].liquidationPrice)
+          .dividedBy(collaterals[collateralType][account].liquidationPrice)
           .isLessThan(new BigNumber("1.15"))
       ) {
         var alert = {
@@ -442,11 +433,9 @@ async function checkLiquidationPrice(bot, updated) {
           data: [
             account,
             collateralType,
-            totalCollaterals[collateralType][account].amount.toFixed(4),
-            totalCollaterals[collateralType][account].debit.toFixed(4),
-            totalCollaterals[collateralType][account].liquidationPrice.toFixed(
-              4
-            ),
+            collaterals[collateralType][account].amount.toFixed(4),
+            collaterals[collateralType][account].debit.toFixed(4),
+            collaterals[collateralType][account].liquidationPrice.toFixed(4),
             updatedPrice.toFixed(4),
           ],
           documentation:

@@ -256,6 +256,7 @@ function getSettings() {
     },
     botToken: process.env.BOT_TOKEN,
     dbFilePath: process.env.DB_FILE_PATH,
+    callback: (data, isExtrinsic) => {},
   }
   return settings
 }
