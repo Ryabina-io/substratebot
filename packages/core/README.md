@@ -2,12 +2,6 @@
 
 Core Lib for Substrate Telegram Bot.
 
-## Build
-
-```
-lerna bootstrap
-```
-
 ## Install
 
 ```
