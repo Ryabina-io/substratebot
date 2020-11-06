@@ -1,5 +1,7 @@
 const BigNumber = require("bignumber.js")
 const { formatBalance } = require("@polkadot/util")
+const bent = require("bent")
+const getJSON = bent("json")
 
 let networkStats = {}
 

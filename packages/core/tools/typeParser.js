@@ -2,6 +2,7 @@ const BigNumber = require("bignumber.js")
 const { botParams } = require("../config")
 const { getBaseDef, getInnerType } = require("../tools/utils")
 const { stringShorten } = require("@polkadot/util")
+const { splitSentenceIntoRows } = require("../tools/utils")
 
 const parsingMap = {
   AccountId: accountToString,
@@ -371,7 +372,7 @@ async function hexToString(value, type, baseType, depth) {
     return value.toString().length > 45
       ? stringShorten(value.toString(), 12)
       : value.toString()
-  } else return str
+  } else return splitSentenceIntoRows(str, 50)
 }
 
 async function oracleKeyToString(value, type, baseType, depth) {
