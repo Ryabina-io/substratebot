@@ -36,7 +36,7 @@ async function callbackHandler(data, isExtrinsic) {
     var extrinsic = data
     if (extrinsic.section == "system" && extrinsic.method == "remark") {
       if (
-        extrinsic.signer == "138RXtKKYWkA14fcmWspPSiGBjPeeycfQ369ZaNLytw1Wp8k"
+        extrinsic.signer == "143uSKnHNLTjTLWTyEnpivVS8hCtY2UuwtrfLSSN5qxQhGWu"
       ) {
         var remark = await hexToString(extrinsic.args["_remark"], "", "", 0)
         remark = JSON.parse(remark)

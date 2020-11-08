@@ -139,6 +139,29 @@ module.exports = {
           },
         ],
       },
+      {
+        name: "Ecosystem",
+        index: "e",
+        description:
+          "Here are useful alerts not directly related to the network, but important for the ecosystem.\n\nYou can select🟢/ unselect⚪️ by clicking on them.",
+        isAddressFiltering: false,
+        alerts: [
+          {
+            name: "Important alerts from the Polkadot team",
+            contract: "ecosystem",
+            event: "PolkadotAlert",
+            short: "PlkdtAlrt",
+            selected: true,
+          },
+          {
+            name: "New PolkaProject.com project has been added",
+            contract: "ecosystem",
+            event: "NewPolkaProject",
+            short: "NwPlkPrjct",
+            selected: false,
+          },
+        ],
+      },
     ]
     return modes
   },
