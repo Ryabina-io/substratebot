@@ -3,6 +3,9 @@ const {
   runPolkaProjectChecker,
 } = require("@ryabina-io/substratebot/tools/polkaProjectChecker")
 const {
+  runGithubReleasesChecker,
+} = require("@ryabina-io/substratebot/tools/githubReleasesChecker")
+const {
   startNetworkStatsRefreshing,
   getNetworkStatsMessage,
 } = require("./src/networkStats")
@@ -28,6 +31,7 @@ async function main() {
     getNetworkStatsMessage,
   })
   substrateBot.run()
+  runGithubReleasesChecker("paritytech", "substrate", substrateBot, 5000)
   runPolkaProjectChecker(substrateBot, 5000)
 }
 
