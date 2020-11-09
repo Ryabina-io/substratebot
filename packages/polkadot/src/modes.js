@@ -147,7 +147,7 @@ module.exports = {
         isAddressFiltering: false,
         alerts: [
           {
-            name: "Important alerts from the Polkadot team",
+            name: "Important alerts from the Polkadot team ⚡️",
             contract: "ecosystem",
             event: "PolkadotAlert",
             short: "PlkdtAlrt",
@@ -158,6 +158,20 @@ module.exports = {
             contract: "ecosystem",
             event: "NewPolkaProject",
             short: "NwPlkPrjct",
+            selected: true,
+          },
+          {
+            name: "New Github release has been published (soon)",
+            contract: "ecosystem",
+            event: "NewGithubRelease",
+            short: "NwGthbRls",
+            selected: false,
+          },
+          {
+            name: "New Polkassembly discussion has been added (soon)",
+            contract: "ecosystem",
+            event: "NewPolkassemblyDiscussion",
+            short: "NwPlkssblDscssn",
             selected: false,
           },
         ],
