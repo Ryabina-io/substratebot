@@ -1,3 +1,6 @@
+const FileSync = require("lowdb/adapters/FileSync")
+const low = require("lowdb")
+
 const botParams = {
   api: {},
   ui: {
@@ -51,5 +54,10 @@ module.exports = {
       keyboard[1].push(botParams.ui.keyboard.broadcastOff)
     }
     return keyboard
+  },
+  getDB: path => {
+    const adapter = new FileSync(path || "/db/db.json")
+    const db = low(adapter)
+    return db
   },
 }
