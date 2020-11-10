@@ -48,10 +48,15 @@ module.exports = {
       keyboard[1].push(botParams.ui.keyboard.off)
     }
     keyboard[1].push(botParams.ui.keyboard.stats)
-    if (user.broadcast) {
-      keyboard[1].push(botParams.ui.keyboard.broadcastOn)
-    } else {
-      keyboard[1].push(botParams.ui.keyboard.broadcastOff)
+    if (
+      botParams.ui.keyboard.broadcastOn != undefined &&
+      botParams.ui.keyboard.broadcastOff != undefined
+    ) {
+      if (user.broadcast) {
+        keyboard[1].push(botParams.ui.keyboard.broadcastOn)
+      } else {
+        keyboard[1].push(botParams.ui.keyboard.broadcastOff)
+      }
     }
     return keyboard
   },
