@@ -3,10 +3,9 @@ const Extra = require("telegraf/extra")
 const session = require("telegraf/session")
 const {
   botParams,
-  keyboardOn,
-  keyboardOff,
-  keyboardBroadcastOn,
-  keyboardBroadcastOff,
+  getKeyboard,
+  setUserBroadcast,
+  setUserEnable,
 } = require("./config")
 const { mainAddAlerts } = require("./menus/add/addAlerts")
 const { setParam } = require("./menus/add/setFilterMenu")
@@ -46,13 +45,10 @@ module.exports.run = async function (params) {
         }
         botParams.db.get("users").push(user).write()
       }
-
       return ctx.replyWithMarkdown(
         `Welcome to ${botParams.settings.network.name} Bot. It can help you create and manage usefull alerts.\n\n${botParams.settings.startMsg}`,
         Extra.webPreview(false).markup(markup => {
-          return markup
-            .resize()
-            .keyboard(user.enabled ? keyboardOn() : keyboardOff())
+          return markup.resize().keyboard(getKeyboard(ctx))
         })
       )
     }
@@ -203,16 +199,11 @@ module.exports.run = async function (params) {
    */
   bot.hears(botParams.ui.keyboard.off, ctx => {
     if (ctx.chat.type == "private") {
-      botParams.db
-        .get("users")
-        .find({ chatid: ctx.chat.id })
-        .assign({ enabled: true })
-        .write()
-
+      setUserEnable(ctx, true)
       ctx.reply(
         "All notifications are turned on",
         Extra.markup(markup => {
-          return markup.resize().keyboard(keyboardOn())
+          return markup.resize().keyboard(getKeyboard(ctx))
         })
       )
     }
@@ -223,16 +214,11 @@ module.exports.run = async function (params) {
    */
   bot.hears(botParams.ui.keyboard.on, ctx => {
     if (ctx.chat.type == "private") {
-      botParams.db
-        .get("users")
-        .find({ chatid: ctx.chat.id })
-        .assign({ enabled: false })
-        .write()
-
+      setUserEnable(ctx, false)
       ctx.reply(
         "All notifications are turned off",
         Extra.markup(markup => {
-          return markup.resize().keyboard(keyboardOff())
+          return markup.resize().keyboard(getKeyboard(ctx))
         })
       )
     }
@@ -244,16 +230,11 @@ module.exports.run = async function (params) {
   ) {
     bot.hears(botParams.ui.keyboard.broadcastOn, ctx => {
       if (ctx.chat.type == "private") {
-        botParams.db
-          .get("users")
-          .find({ chatid: ctx.chat.id })
-          .assign({ broadcast: false })
-          .write()
-
+        setUserBroadcast(ctx, false)
         ctx.reply(
           "Broadcast notifications are turned off",
           Extra.markup(markup => {
-            return markup.resize().keyboard(keyboardBroadcastOff())
+            return markup.resize().keyboard(getKeyboard(ctx))
           })
         )
       }
@@ -261,16 +242,11 @@ module.exports.run = async function (params) {
 
     bot.hears(botParams.ui.keyboard.broadcastOff, ctx => {
       if (ctx.chat.type == "private") {
-        botParams.db
-          .get("users")
-          .find({ chatid: ctx.chat.id })
-          .assign({ broadcast: true })
-          .write()
-
+        setUserBroadcast(ctx, true)
         ctx.reply(
           "Broadcast notifications are turned on",
           Extra.markup(markup => {
-            return markup.resize().keyboard(keyboardBroadcastOn())
+            return markup.resize().keyboard(getKeyboard(ctx))
           })
         )
       }

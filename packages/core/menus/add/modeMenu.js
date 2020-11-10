@@ -1,7 +1,7 @@
 const TelegrafInlineMenu = require("telegraf-inline-menu")
 const TelegrafStatelessQuestion = require("telegraf-stateless-question")
 const Extra = require("telegraf/extra")
-const { botParams, keyboardOn, keyboardOff } = require("../../config")
+const { botParams, getKeyboard } = require("../../config")
 const { checkAddress } = require("@polkadot/util-crypto")
 const { mainAddAlerts } = require("./addAlerts")
 const selectModuleMenu = require("./selectModuleMenu")
@@ -95,9 +95,7 @@ modeMenu
                 ctx.replyWithMarkdown(
                   `Sorry, but you've reached the subscription limit = ${user.maxLimit}.`,
                   Extra.markup(markup => {
-                    return markup
-                      .resize()
-                      .keyboard(user.enabled ? keyboardOn() : keyboardOff())
+                    return markup.resize().keyboard(getKeyboard(ctx))
                   })
                 )
                 return true
@@ -121,9 +119,7 @@ modeMenu
           ctx.replyWithMarkdown(
             reply,
             Extra.markup(markup => {
-              return markup
-                .resize()
-                .keyboard(user.enabled ? keyboardOn() : keyboardOff())
+              return markup.resize().keyboard(getKeyboard(ctx))
             })
           )
         } else {
@@ -173,9 +169,7 @@ const enterAddress = new TelegrafStatelessQuestion("adr", async ctx => {
     ctx.replyWithMarkdown(
       `Incorrect address. Please try again.`,
       Extra.markup(markup => {
-        return markup
-          .resize()
-          .keyboard(user.value().enabled ? keyboardOn() : keyboardOff())
+        return markup.resize().keyboard(getKeyboard(ctx))
       })
     )
     mainAddAlerts.middleware.setSpecific(ctx)
@@ -294,9 +288,7 @@ This is necessary for readable notifications and easy navigation.`
   ctx.replyWithMarkdown(
     reply,
     Extra.markup(markup => {
-      return markup
-        .resize()
-        .keyboard(user.value().enabled ? keyboardOn() : keyboardOff())
+      return markup.resize().keyboard(getKeyboard(ctx))
     })
   )
 })
@@ -310,9 +302,7 @@ function checkMaxLimit(db, ctx) {
     ctx.replyWithMarkdown(
       `Sorry, but you've reached the subscription limit = ${user.maxLimit}.`,
       Extra.markup(markup => {
-        return markup
-          .resize()
-          .keyboard(user.enabled ? keyboardOn() : keyboardOff())
+        return markup.resize().keyboard(getKeyboard(ctx))
       })
     )
     return true

@@ -17,117 +17,39 @@ const botParams = {
   settings: {},
 }
 
-let isOn = true
-let isBroadcastOn = true
-
 module.exports = {
   botParams: botParams,
-  keyboardOn: () => {
-    isOn = true
-    if (
-      botParams.ui.keyboard.broadcastOn != undefined &&
-      botParams.ui.keyboard.broadcastOff != undefined
-    ) {
-      if (isBroadcastOn) {
-        return [
-          [botParams.ui.keyboard.add, botParams.ui.keyboard.alerts],
-          [
-            botParams.ui.keyboard.on,
-            botParams.ui.keyboard.stats,
-            botParams.ui.keyboard.broadcastOn,
-          ],
-        ]
-      } else {
-        return [
-          [botParams.ui.keyboard.add, botParams.ui.keyboard.alerts],
-          [
-            botParams.ui.keyboard.on,
-            botParams.ui.keyboard.stats,
-            botParams.ui.keyboard.broadcastOff,
-          ],
-        ]
-      }
-    } else {
-      return [
-        [botParams.ui.keyboard.add, botParams.ui.keyboard.alerts],
-        [botParams.ui.keyboard.on, botParams.ui.keyboard.stats],
-      ]
-    }
+  setUserEnable: (ctx, enable) => {
+    botParams.db
+      .get("users")
+      .find({ chatid: ctx.chat.id })
+      .assign({ enabled: enable })
+      .write()
   },
-  keyboardOff: () => {
-    isOn = false
-    if (
-      botParams.ui.keyboard.broadcastOn != undefined &&
-      botParams.ui.keyboard.broadcastOff != undefined
-    ) {
-      if (isBroadcastOn) {
-        return [
-          [botParams.ui.keyboard.add, botParams.ui.keyboard.alerts],
-          [
-            botParams.ui.keyboard.off,
-            botParams.ui.keyboard.stats,
-            botParams.ui.keyboard.broadcastOn,
-          ],
-        ]
-      } else {
-        return [
-          [botParams.ui.keyboard.add, botParams.ui.keyboard.alerts],
-          [
-            botParams.ui.keyboard.off,
-            botParams.ui.keyboard.stats,
-            botParams.ui.keyboard.broadcastOff,
-          ],
-        ]
-      }
-    } else {
-      return [
-        [botParams.ui.keyboard.add, botParams.ui.keyboard.alerts],
-        [botParams.ui.keyboard.off, botParams.ui.keyboard.stats],
-      ]
-    }
+  setUserBroadcast: (ctx, broadcast) => {
+    botParams.db
+      .get("users")
+      .find({ chatid: ctx.chat.id })
+      .assign({ broadcast: broadcast })
+      .write()
   },
-  keyboardBroadcastOn: () => {
-    isBroadcastOn = true
-    if (isOn) {
-      return [
-        [botParams.ui.keyboard.add, botParams.ui.keyboard.alerts],
-        [
-          botParams.ui.keyboard.on,
-          botParams.ui.keyboard.stats,
-          botParams.ui.keyboard.broadcastOn,
-        ],
-      ]
+  getKeyboard: ctx => {
+    var user = botParams.db.get("users").find({ chatid: ctx.chat.id }).value()
+    var keyboard = [
+      [botParams.ui.keyboard.add, botParams.ui.keyboard.alerts],
+      [],
+    ]
+    if (user.enabled) {
+      keyboard[1].push(botParams.ui.keyboard.on)
     } else {
-      return [
-        [botParams.ui.keyboard.add, botParams.ui.keyboard.alerts],
-        [
-          botParams.ui.keyboard.off,
-          botParams.ui.keyboard.stats,
-          botParams.ui.keyboard.broadcastOn,
-        ],
-      ]
+      keyboard[1].push(botParams.ui.keyboard.off)
     }
-  },
-  keyboardBroadcastOff: () => {
-    isBroadcastOn = false
-    if (isOn) {
-      return [
-        [botParams.ui.keyboard.add, botParams.ui.keyboard.alerts],
-        [
-          botParams.ui.keyboard.on,
-          botParams.ui.keyboard.stats,
-          botParams.ui.keyboard.broadcastOff,
-        ],
-      ]
+    keyboard[1].push(botParams.ui.keyboard.stats)
+    if (user.broadcast) {
+      keyboard[1].push(botParams.ui.keyboard.broadcastOn)
     } else {
-      return [
-        [botParams.ui.keyboard.add, botParams.ui.keyboard.alerts],
-        [
-          botParams.ui.keyboard.off,
-          botParams.ui.keyboard.stats,
-          botParams.ui.keyboard.broadcastOff,
-        ],
-      ]
+      keyboard[1].push(botParams.ui.keyboard.broadcastOff)
     }
+    return keyboard
   },
 }
