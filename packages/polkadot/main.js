@@ -45,10 +45,11 @@ async function callbackHandler(data, isExtrinsic) {
           method: "PolkadotAlert",
           data: [remark.message],
         }
-        alert.links = remark.links.map(link => {
-          return { name: Object.keys(link)[0], url: link[Object.keys(link)[0]] }
-        })
-        await substrateBot.sendCustomAlert(alert)
+        alert.links = remark.links
+        //broadcast
+        await substrateBot.sendCustomAlert(alert, true)
+        //regular alert
+        await substrateBot.sendCustomAlert(alert, false)
       }
     }
   }

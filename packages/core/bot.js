@@ -1,7 +1,13 @@
 const Telegraf = require("telegraf")
 const Extra = require("telegraf/extra")
 const session = require("telegraf/session")
-const { botParams, keyboardOn, keyboardOff } = require("./config")
+const {
+  botParams,
+  keyboardOn,
+  keyboardOff,
+  keyboardBroadcastOn,
+  keyboardBroadcastOff,
+} = require("./config")
 const { mainAddAlerts } = require("./menus/add/addAlerts")
 const { setParam } = require("./menus/add/setFilterMenu")
 const modeMenu = require("./menus/add/modeMenu")
@@ -231,6 +237,45 @@ module.exports.run = async function (params) {
       )
     }
   })
+
+  if (
+    botParams.ui.keyboard.broadcastOn != undefined &&
+    botParams.ui.keyboard.broadcastOff != undefined
+  ) {
+    bot.hears(botParams.ui.keyboard.broadcastOn, ctx => {
+      if (ctx.chat.type == "private") {
+        botParams.db
+          .get("users")
+          .find({ chatid: ctx.chat.id })
+          .assign({ broadcast: false })
+          .write()
+
+        ctx.reply(
+          "Broadcast notifications are turned off",
+          Extra.markup(markup => {
+            return markup.resize().keyboard(keyboardBroadcastOff())
+          })
+        )
+      }
+    })
+
+    bot.hears(botParams.ui.keyboard.broadcastOff, ctx => {
+      if (ctx.chat.type == "private") {
+        botParams.db
+          .get("users")
+          .find({ chatid: ctx.chat.id })
+          .assign({ broadcast: true })
+          .write()
+
+        ctx.reply(
+          "Broadcast notifications are turned on",
+          Extra.markup(markup => {
+            return markup.resize().keyboard(keyboardBroadcastOn())
+          })
+        )
+      }
+    })
+  }
 
   /*
    *   Collect and show in console all bot errors

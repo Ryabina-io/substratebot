@@ -129,11 +129,15 @@ async function sendExtrinsic(extrinsic, extrinsicIndex, token, decimals) {
       if (callArg.toRawType() == "Bytes") {
         callArg = botParams.api.registry.createType("Call", callArg.toHex())
       }
+      var signer = extrinsic.signer
+      if (module == "Proxy" && method == "proxy") {
+        signer = extrinsic.args["real"].toString()
+      }
       var call = {
         method: callArg.method,
         section: callArg.section,
         args: _.zipObject(Object.keys(callArg.argsDef), callArg.args),
-        signer: extrinsic.signer,
+        signer: signer,
       }
       await sendExtrinsic(call, extrinsicIndex, token, decimals)
     } catch (error) {
@@ -406,103 +410,183 @@ Module: #${stringUpperFirst(event.section)}`
   }
 }
 
-async function sendCustomAlert(event) {
+async function sendCustomAlert(event, broadcast) {
   if (
     botParams.ui.modules[stringUpperFirst(event.section)] &&
     botParams.ui.modules[stringUpperFirst(event.section)].events[event.method]
   ) {
     var eventDB =
       botParams.ui.modules[stringUpperFirst(event.section)].events[event.method]
-    botParams.db
-      .get("notifications")
-      .value()
-      .filter(n => n.contract == event.section && n.event == event.method)
-      .forEach(async n => {
-        var filters = []
-        if (n.filters && n.filters.length > 0) {
-          await Promise.all(
-            n.filters.map(async f => {
-              var checkResult = await checkFilter(f, event, "event", eventDB)
-              filters.push(checkResult)
-            })
-          )
-        } else filters.push(true)
-        var user = botParams.db.get("users").find({ chatid: n.chatid }).value()
-        if (!filters.includes(false) && user.enabled) {
-          var message = `Event: <b>#${event.method}</b>\n\n<i>${
-            eventDB.documentation == ""
-              ? "A new event has occurred."
-              : eventDB.documentation.replace("`(", "(").replace(")`", ")")
-          }</i>\n
+
+    if (broadcast) {
+      var users = botParams.db
+        .get("users")
+        .value()
+        .filter(
+          u =>
+            u.enabled &&
+            (u.broadcast === undefined || u.broadcast) &&
+            u.type == "private"
+        )
+      var message = `Broadcast Event: <b>#${event.method}</b>\n\n<i>${
+        eventDB.documentation == ""
+          ? "A new event has occurred."
+          : eventDB.documentation.replace("`(", "(").replace(")`", ")")
+      }\n\nP.S. If you want to unsubscribe from broadcast messages, please press Broadcast button in keyboard menu.</i>\n
 Module: #${stringUpperFirst(event.section)}`
-          if (event.data.length > 0) {
-            message += `\nParameters:\n<code>`
-            for (var i = 0; i < event.data.length; i++) {
-              var data = event.data[i]
-              var value = `  ${eventDB.args[i].name
-                .replace("<", "[")
-                .replace(">", "]")}: `
-              try {
-                if (
-                  (eventDB.args[i].baseType == "GenericAccountId" ||
-                    eventDB.args[i].baseType == "GenericAddress") &&
-                  user.wallets &&
-                  user.wallets.find(w => w.address == data.toString())
-                ) {
+      if (event.data.length > 0) {
+        message += `\nParameters:\n<code>`
+        for (var i = 0; i < event.data.length; i++) {
+          var data = event.data[i]
+          var value = `  ${eventDB.args[i].name
+            .replace("<", "[")
+            .replace(">", "]")}: `
+          try {
+            if (
+              eventDB.args[i].baseType == "GenericAccountId" ||
+              eventDB.args[i].baseType == "GenericAddress"
+            ) {
+              value += await parse(
+                data,
+                eventDB.args[i].type,
+                eventDB.args[i].baseType,
+                4
+              )
+            } else {
+              value += data
+            }
+          } catch (error) {
+            console.log(new Date(), error)
+          }
+          message += value + `\n`
+        }
+        message += `</code>`
+      }
+      var links = []
+      if (event.links && event.links.length > 0) {
+        event.links.forEach(link => {
+          links.push([Markup.urlButton(link.name, link.url)])
+        })
+      }
+
+      users.forEach(async user => {
+        try {
+          await botParams.bot.telegram.sendMessage(user.chatid, message, {
+            parse_mode: "html",
+            disable_web_page_preview: "true",
+            reply_markup: Markup.inlineKeyboard(links),
+          })
+        } catch (error) {
+          if (error.message.includes("bot was blocked by the user")) {
+            botParams.db
+              .get("users")
+              .find({ chatid: user.chatid })
+              .assign({ enabled: false, blocked: true })
+              .write()
+            console.log(
+              new Date(),
+              `Bot was blocked by user with chatid ${user.chatid}`
+            )
+            return
+          }
+          console.log(new Date(), error)
+        }
+      })
+    } else {
+      botParams.db
+        .get("notifications")
+        .value()
+        .filter(n => n.contract == event.section && n.event == event.method)
+        .forEach(async n => {
+          var filters = []
+          if (n.filters && n.filters.length > 0) {
+            await Promise.all(
+              n.filters.map(async f => {
+                var checkResult = await checkFilter(f, event, "event", eventDB)
+                filters.push(checkResult)
+              })
+            )
+          } else filters.push(true)
+          var user = botParams.db
+            .get("users")
+            .find({ chatid: n.chatid })
+            .value()
+          if (!filters.includes(false) && user.enabled) {
+            var message = `Event: <b>#${event.method}</b>\n\n<i>${
+              eventDB.documentation == ""
+                ? "A new event has occurred."
+                : eventDB.documentation.replace("`(", "(").replace(")`", ")")
+            }</i>\n
+Module: #${stringUpperFirst(event.section)}`
+            if (event.data.length > 0) {
+              message += `\nParameters:\n<code>`
+              for (var i = 0; i < event.data.length; i++) {
+                var data = event.data[i]
+                var value = `  ${eventDB.args[i].name
+                  .replace("<", "[")
+                  .replace(">", "]")}: `
+                try {
                   if (
+                    (eventDB.args[i].baseType == "GenericAccountId" ||
+                      eventDB.args[i].baseType == "GenericAddress") &&
                     user.wallets &&
                     user.wallets.find(w => w.address == data.toString())
                   ) {
-                    value += user.wallets.find(
-                      w => w.address == data.toString()
-                    ).name
+                    if (
+                      user.wallets &&
+                      user.wallets.find(w => w.address == data.toString())
+                    ) {
+                      value += user.wallets.find(
+                        w => w.address == data.toString()
+                      ).name
+                    } else {
+                      value += await parse(
+                        data,
+                        eventDB.args[i].type,
+                        eventDB.args[i].baseType,
+                        4
+                      )
+                    }
                   } else {
-                    value += await parse(
-                      data,
-                      eventDB.args[i].type,
-                      eventDB.args[i].baseType,
-                      4
-                    )
+                    value += data
                   }
-                } else {
-                  value += data
+                } catch (error) {
+                  console.log(new Date(), error)
                 }
-              } catch (error) {
-                console.log(new Date(), error)
+                message += value + `\n`
               }
-              message += value + `\n`
+              message += `</code>`
             }
-            message += `</code>`
-          }
-          var links = []
-          if (event.links && event.links.length > 0) {
-            event.links.forEach(link => {
-              links.push(Markup.urlButton(link.name, link.url))
-            })
-          }
-          try {
-            await botParams.bot.telegram.sendMessage(n.chatid, message, {
-              parse_mode: "html",
-              disable_web_page_preview: "true",
-              reply_markup: Markup.inlineKeyboard(links),
-            })
-          } catch (error) {
-            if (error.message.includes("bot was blocked by the user")) {
-              botParams.db
-                .get("users")
-                .find({ chatid: n.chatid })
-                .assign({ enabled: false, blocked: true })
-                .write()
-              console.log(
-                new Date(),
-                `Bot was blocked by user with chatid ${n.chatid}`
-              )
-              return
+            var links = []
+            if (event.links && event.links.length > 0) {
+              event.links.forEach(link => {
+                links.push([Markup.urlButton(link.name, link.url)])
+              })
             }
-            console.log(new Date(), error)
+            try {
+              await botParams.bot.telegram.sendMessage(n.chatid, message, {
+                parse_mode: "html",
+                disable_web_page_preview: "true",
+                reply_markup: Markup.inlineKeyboard(links),
+              })
+            } catch (error) {
+              if (error.message.includes("bot was blocked by the user")) {
+                botParams.db
+                  .get("users")
+                  .find({ chatid: n.chatid })
+                  .assign({ enabled: false, blocked: true })
+                  .write()
+                console.log(
+                  new Date(),
+                  `Bot was blocked by user with chatid ${n.chatid}`
+                )
+                return
+              }
+              console.log(new Date(), error)
+            }
           }
-        }
-      })
+        })
+    }
   }
 }
 
@@ -673,9 +757,9 @@ module.exports = class SubstrateBot {
     clearInterval(this.invalidateCacheInterval)
   }
 
-  async sendCustomAlert(alert) {
+  async sendCustomAlert(alert, broadcast) {
     try {
-      await sendCustomAlert(alert)
+      await sendCustomAlert(alert, broadcast)
     } catch (error) {
       console.log(new Date(), error)
     }
