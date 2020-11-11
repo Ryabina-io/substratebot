@@ -57,7 +57,7 @@ module.exports = {
       short: "NwPlkPrjct",
     }
     modules["Ecosystem"].events["KusamaAlert"] = {
-      documentation: " ⚡️ Important system alerts from the Polkadot team",
+      documentation: " ⚡️ Important system alerts from the Kusama team",
       short: "KsmAlrt",
       args: [
         {
