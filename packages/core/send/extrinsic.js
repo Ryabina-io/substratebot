@@ -2,7 +2,11 @@ const { botParams } = require("../config")
 const { parse } = require("../tools/typeParser")
 const _ = require("lodash")
 const { stringCamelCase, stringUpperFirst } = require("@polkadot/util")
-const { getStashAccount, checkFilter } = require("../tools/utils")
+const {
+  getStashAccount,
+  checkFilter,
+  getAccountName,
+} = require("../tools/utils")
 const Markup = require("telegraf/markup")
 const BigNumber = require("bignumber.js")
 
