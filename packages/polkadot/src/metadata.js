@@ -57,7 +57,7 @@ module.exports = {
       short: "NwPlkPrjct",
     }
     modules["Ecosystem"].events["PolkadotAlert"] = {
-      documentation: " ⚡️ Important system alerts from the Polkadot team",
+      documentation: " ⚡️ Important system alerts from the Parity team",
       short: "PlkdtAlrt",
       args: [
         {
