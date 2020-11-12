@@ -1,7 +1,7 @@
 {
   "name": "@ryabina-io/edgewarebot",
   "main": "main.js",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "author": "ryabina-io",
   "private": true,
   "license": "Apache-2.0",
@@ -9,7 +9,7 @@
     "@edgeware/node-types": "^3.0.3",
     "@polkadot/api": "^2.1.1",
     "@polkadot/util": "^2.18.1",
-    "@ryabina-io/substratebot": "^1.0.2",
+    "@ryabina-io/substratebot": "^1.1.0",
     "bent": "^7.3.7",
     "bignumber.js": "^9.0.0",
     "i": "^0.3.6",
