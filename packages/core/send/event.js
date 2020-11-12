@@ -4,7 +4,12 @@ const _ = require("lodash")
 const { stringUpperFirst } = require("@polkadot/util")
 const { isIterable, checkFilter } = require("../tools/utils")
 const Markup = require("telegraf/markup")
+const prom = require("../metrics")
 
+const sentMessagesCounter = new prom.Counter({
+  name: "substrate_bot_sent_messages",
+  help: "metric_help",
+})
 const alreadyRecieved = new Map()
 
 async function sendEvent(record, currentBlock) {
@@ -101,6 +106,7 @@ Module: #${stringUpperFirst(event.section)}`
               disable_web_page_preview: "true",
               reply_markup: Markup.inlineKeyboard(links),
             })
+            sentMessagesCounter.inc()
           } catch (error) {
             if (error.message.includes("bot was blocked by the user")) {
               botParams.db

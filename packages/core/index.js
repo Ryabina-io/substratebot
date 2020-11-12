@@ -3,6 +3,12 @@ const { botParams, getDB } = require("./config")
 const { sendCustomAlert } = require("./send/customAlert")
 const { newHeaderHandler } = require("./send/handler")
 const { alreadyRecieved } = require("./send/event")
+const prom = require("./metrics")
+
+const lastEventCacheSize = new prom.Gauge({
+  name: "substrate_bot_last_event_cache_size",
+  help: "metric_help",
+})
 
 module.exports = class SubstrateBot {
   /**
@@ -50,6 +56,12 @@ module.exports = class SubstrateBot {
       botParams.getNetworkStatsMessage = this.getNetworkStatsMessage
 
     botParams.bot = await bot.run(this)
+    this.api.rpc.system.name().then(name => {
+      prom.register.setDefaultLabels({
+        telegram_bot_name: botParams.bot.options.username,
+        network: name.toString(),
+      })
+    })
     await this.api.rpc.chain.subscribeNewHeads(async header =>
       newHeaderHandler(header)
     )
@@ -61,6 +73,7 @@ module.exports = class SubstrateBot {
           alreadyRecieved.delete(key[0])
         }
       })
+      lastEventCacheSize.set(alreadyRecieved.size())
     }, 60000)
   }
 
