@@ -1,7 +1,7 @@
 {
   "name": "@ryabina-io/acalabot",
   "main": "main.js",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "private": true,
   "author": "ryabina-io",
   "license": "Apache-2.0",
@@ -11,7 +11,7 @@
     "@polkadot/api": "^2.3.2-17",
     "@polkadot/types": "^2.3.2-17",
     "@polkadot/util": "^3.4.1",
-    "@ryabina-io/substratebot": "^1.0.2",
+    "@ryabina-io/substratebot": "^1.1.0",
     "bent": "^7.3.10",
     "bignumber.js": "^9.0.0",
     "lodash": "^4.17.19"
