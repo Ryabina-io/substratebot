@@ -2,7 +2,7 @@ const TelegrafInlineMenu = require("telegraf-inline-menu")
 const TelegrafStatelessQuestion = require("telegraf-stateless-question")
 const { checkAddress } = require("@polkadot/util-crypto")
 const Extra = require("telegraf/extra")
-const { botParams, keyboardOn, keyboardOff } = require("../../config")
+const { botParams, getKeyboard } = require("../../config")
 const { getInnerType, replaceMarkdownSymbols } = require("../../tools/utils")
 
 const setFilterMenu = new TelegrafInlineMenu(ctx => {
@@ -257,9 +257,7 @@ setFilterMenu
               ctx.replyWithMarkdown(
                 `Sorry, but you've reached the subscription limit = ${user.maxLimit}.`,
                 Extra.markup(markup => {
-                  return markup
-                    .resize()
-                    .keyboard(user.enabled ? keyboardOn() : keyboardOff())
+                  return markup.resize().keyboard(getKeyboard(ctx))
                 })
               )
               return
@@ -309,9 +307,7 @@ const setParam = new TelegrafStatelessQuestion("unique", async ctx => {
       ctx.replyWithMarkdown(
         `Incorrect address. Please try again.`,
         Extra.markup(markup => {
-          return markup
-            .resize()
-            .keyboard(user.enabled ? keyboardOn() : keyboardOff())
+          return markup.resize().keyboard(getKeyboard(ctx))
         })
       )
       ctx.session.isNumEditing = false
@@ -329,9 +325,7 @@ const setParam = new TelegrafStatelessQuestion("unique", async ctx => {
   ctx.replyWithMarkdown(
     `Value for *${ctx.session.currentFilter.name}* is set`,
     Extra.markup(markup => {
-      return markup
-        .resize()
-        .keyboard(user.enabled ? keyboardOn() : keyboardOff())
+      return markup.resize().keyboard(getKeyboard(ctx))
     })
   )
   ctx.session.isNumEditing = false

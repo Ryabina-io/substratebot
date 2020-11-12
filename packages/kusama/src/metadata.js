@@ -56,9 +56,9 @@ module.exports = {
       documentation: " A new project has been added to PolkaProject.com",
       short: "NwPlkPrjct",
     }
-    modules["Ecosystem"].events["PolkadotAlert"] = {
+    modules["Ecosystem"].events["KusamaAlert"] = {
       documentation: " ⚡️ Important system alerts from the Parity team",
-      short: "PlkdtAlrt",
+      short: "KsmAlrt",
       args: [
         {
           name: "message",

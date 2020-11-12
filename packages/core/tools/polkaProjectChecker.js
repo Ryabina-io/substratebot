@@ -1,5 +1,4 @@
 const fetch = require("node-fetch")
-const { splitSentenceIntoRows } = require("../tools/utils")
 const _ = require("lodash")
 
 let last20PolkaProjects = []
@@ -79,7 +78,7 @@ async function checkPolkaProject(bot) {
           data: [
             newProject.data.title,
             newProject.data.introduction.length > 0
-              ? "\n" + splitSentenceIntoRows(newProject.data.introduction, 40)
+              ? newProject.data.introduction
               : "",
             newProject.data.tags.length > 0
               ? newProject.data.tags.join(" ")

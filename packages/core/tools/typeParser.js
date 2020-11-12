@@ -372,7 +372,7 @@ async function hexToString(value, type, baseType, depth) {
     return value.toString().length > 45
       ? stringShorten(value.toString(), 12)
       : value.toString()
-  } else return splitSentenceIntoRows(str, 50)
+  } else return str
 }
 
 async function oracleKeyToString(value, type, baseType, depth) {
