@@ -22,11 +22,6 @@ module.exports = class SubstrateBot {
    * @param config.getNetworkStats - external function for getting substrate network stats
    */
   constructor({ settings, api, modules, modes, getNetworkStatsMessage }) {
-    api.rpc.system.name().then(name => {
-      prom.register.setDefaultLabels({
-        network: name.toString(),
-      })
-    })
     this.settings = settings
     this.api = api
     this.modules = modules
