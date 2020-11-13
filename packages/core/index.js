@@ -56,11 +56,9 @@ module.exports = class SubstrateBot {
       botParams.getNetworkStatsMessage = this.getNetworkStatsMessage
 
     botParams.bot = await bot.run(this)
-    this.api.rpc.system.name().then(name => {
-      prom.register.setDefaultLabels({
-        telegram_bot_name: botParams.bot.options.username,
-        network: name.toString(),
-      })
+    prom.register.setDefaultLabels({
+      telegram_bot_name: botParams.bot.options.username,
+      network: botParams.settings.network.name,
     })
     await this.api.rpc.chain.subscribeNewHeads(async header =>
       newHeaderHandler(header)

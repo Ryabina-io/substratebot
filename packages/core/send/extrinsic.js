@@ -7,6 +7,7 @@ const {
   checkFilter,
   getAccountName,
 } = require("../tools/utils")
+const telegram = require("./telegram")
 const Markup = require("telegraf/markup")
 const BigNumber = require("bignumber.js")
 
@@ -194,27 +195,8 @@ Module: #${module}${signer ? "\nSigner: " + signer : ""}${
                   return Markup.urlButton(link[0], link[1])
                 })
               })
-            try {
-              await botParams.bot.telegram.sendMessage(n.chatid, message, {
-                parse_mode: "HTML",
-                disable_web_page_preview: "true",
-                reply_markup: Markup.inlineKeyboard(links),
-              })
-            } catch (error) {
-              if (error.message.includes("bot was blocked by the user")) {
-                botParams.db
-                  .get("users")
-                  .find({ chatid: n.chatid })
-                  .assign({ enabled: false, blocked: true })
-                  .write()
-                console.log(
-                  new Date(),
-                  `Bot was blocked by user with chatid ${n.chatid}`
-                )
-                return
-              }
-              console.log(new Date(), error.message)
-            }
+
+            telegram.send(n.chatid, message, links)
           }
         })
     }

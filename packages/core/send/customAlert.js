@@ -3,6 +3,7 @@ const { checkFilter } = require("../tools/utils")
 const Markup = require("telegraf/markup")
 const { stringUpperFirst } = require("@polkadot/util")
 const { parse } = require("../tools/typeParser")
+const telegram = require("./telegram")
 
 module.exports.sendCustomAlert = async function (event, broadcast) {
   if (
@@ -64,27 +65,7 @@ Module: #${stringUpperFirst(event.section)}`
       }
 
       users.forEach(async user => {
-        try {
-          await botParams.bot.telegram.sendMessage(user.chatid, message, {
-            parse_mode: "html",
-            disable_web_page_preview: "true",
-            reply_markup: Markup.inlineKeyboard(links),
-          })
-        } catch (error) {
-          if (error.message.includes("bot was blocked by the user")) {
-            botParams.db
-              .get("users")
-              .find({ chatid: user.chatid })
-              .assign({ enabled: false, blocked: true })
-              .write()
-            console.log(
-              new Date(),
-              `Bot was blocked by user with chatid ${user.chatid}`
-            )
-            return
-          }
-          console.log(new Date(), error)
-        }
+        telegram.send(user.chatid, message, links)
       })
     } else {
       botParams.db
@@ -157,27 +138,7 @@ Module: #${stringUpperFirst(event.section)}`
                 links.push([Markup.urlButton(link.name, link.url)])
               })
             }
-            try {
-              await botParams.bot.telegram.sendMessage(n.chatid, message, {
-                parse_mode: "html",
-                disable_web_page_preview: "true",
-                reply_markup: Markup.inlineKeyboard(links),
-              })
-            } catch (error) {
-              if (error.message.includes("bot was blocked by the user")) {
-                botParams.db
-                  .get("users")
-                  .find({ chatid: n.chatid })
-                  .assign({ enabled: false, blocked: true })
-                  .write()
-                console.log(
-                  new Date(),
-                  `Bot was blocked by user with chatid ${n.chatid}`
-                )
-                return
-              }
-              console.log(new Date(), error)
-            }
+            telegram.send(n.chatid, message, links)
           }
         })
     }
