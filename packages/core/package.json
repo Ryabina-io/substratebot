@@ -33,6 +33,7 @@
     "lowdb": "^1.0.0",
     "telegraf": "^3.38.0",
     "telegraf-inline-menu": "^4.0.1",
-    "telegraf-stateless-question": "^0.1.1"
+    "telegraf-stateless-question": "^0.1.1",
+    "marked": "^1.2.3"
   }
 }

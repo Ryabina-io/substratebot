@@ -14,9 +14,17 @@ Please select a module`
 selectModuleMenu.selectSubmenu(
   "c",
   ctx => {
-    return Object.keys(botParams.ui.modules).map(
-      k => botParams.ui.modules[k].short
-    )
+    return Object.keys(botParams.ui.modules)
+      .sort((a, b) => {
+        if (a < b) {
+          return -1
+        }
+        if (a > b) {
+          return 1
+        }
+        return 0
+      })
+      .map(k => botParams.ui.modules[k].short)
   },
   selectTypeMenu,
   {

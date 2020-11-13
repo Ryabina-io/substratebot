@@ -1,14 +1,15 @@
 const fetch = require("node-fetch")
-const { splitSentenceIntoRows } = require("../tools/utils")
 const _ = require("lodash")
+const { convertMarkdownToText } = require("./utils")
 
-let lastGithubReleaseId = -1
+let lastGithubReleaseId = 33463688 //29939844
 
-async function checkGithubReleases(owner, repo, bot) {
+async function getLastGithubRelease(owner, repo, token) {
   var githubReleasesRequest = await fetch(
     `https://api.github.com/repos/${owner}/${repo}/releases`,
     {
       headers: {
+        Authorization: `Bearer ${token}`,
         accept:
           "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
         "accept-language": "en-US,en;q=0.9",
@@ -29,34 +30,14 @@ async function checkGithubReleases(owner, repo, bot) {
     }
   )
   var githubReleases = await githubReleasesRequest.json()
-  var lastGithubRelease = _.orderBy(githubReleases, r => r.created_at, [
+  var lastGithubRelease = _.orderBy(githubReleases, r => r.published_at, [
     "desc",
   ])[0]
-  if (lastGithubReleaseId == -1) {
-    lastGithubReleaseId = lastGithubRelease.id
-  } else if (lastGithubReleaseId != lastGithubRelease.id) {
-    var alert = {
-      section: "ecosystem",
-      method: "NewGithubRelease",
-      data: [],
-    }
-    alert.links = [
-      {
-        name: "PolkaProject.com",
-        url: `https://polkaproject.com/?id=${newProject.data.ID}`,
-      },
-    ]
-  }
+  lastGithubRelease.body = convertMarkdownToText(lastGithubRelease.body)
+  return lastGithubRelease
+  return null
 }
 
 module.exports = {
-  runGithubReleasesChecker: (owner, repo, bot, interval) => {
-    setInterval(async () => {
-      try {
-        checkGithubReleases(owner, repo, bot)
-      } catch (error) {
-        console.log(new Date(), error)
-      }
-    }, interval)
-  },
+  getLastGithubRelease: getLastGithubRelease,
 }

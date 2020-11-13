@@ -1,8 +1,5 @@
 const SubstrateBot = require("@ryabina-io/substratebot")
 const {
-  runPolkaProjectChecker,
-} = require("@ryabina-io/substratebot/tools/polkaProjectChecker")
-const {
   startNetworkStatsRefreshing,
   getNetworkStatsMessage,
 } = require("./src/networkStats")
@@ -10,12 +7,16 @@ const { getSettings } = require("./src/settings")
 const { getModes } = require("./src/modes")
 const { getApi } = require("./src/api")
 const { getNodeModules } = require("./src/metadata")
-const { hexToString } = require("@ryabina-io/substratebot/tools/typeParser")
+const networkEvents = require("./src/newEvents/networkEventsHandler")
+const githubReleaseAlert = require("./src/newEvents/githubRelease")
+const polkaProjectAlert = require("./src/newEvents/polkaProject")
 
 let substrateBot
 async function main() {
   var settings = getSettings()
-  settings.callback = callbackHandler
+  settings.callback = (data, isExtrinsic) => {
+    networkEvents.handler(substrateBot, data, isExtrinsic)
+  }
   var api = await getApi()
   var modules = getNodeModules(api)
   var modes = getModes()
@@ -28,31 +29,9 @@ async function main() {
     getNetworkStatsMessage,
   })
   substrateBot.run()
-  runPolkaProjectChecker(substrateBot, 5000)
-}
 
-async function callbackHandler(data, isExtrinsic) {
-  if (isExtrinsic) {
-    var extrinsic = data
-    if (extrinsic.section == "system" && extrinsic.method == "remark") {
-      if (
-        extrinsic.signer == "DFfmNGJBuAexib19TbjhaubfekchJe8mMTVQv4Axd8ynSjw"
-      ) {
-        var remark = await hexToString(extrinsic.args["_remark"], "", "", 0)
-        remark = JSON.parse(remark)
-        var alert = {
-          section: "ecosystem",
-          method: "KusamaAlert",
-          data: [remark.message],
-        }
-        alert.links = remark.links
-        //broadcast
-        await substrateBot.sendCustomAlert(alert, true)
-        //regular alert
-        await substrateBot.sendCustomAlert(alert, false)
-      }
-    }
-  }
+  polkaProjectAlert.run(substrateBot, 30000)
+  githubReleaseAlert.run(substrateBot, 5000)
 }
 
 main()

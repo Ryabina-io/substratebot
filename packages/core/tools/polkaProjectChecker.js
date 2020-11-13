@@ -3,7 +3,8 @@ const _ = require("lodash")
 
 let last20PolkaProjects = []
 
-async function checkPolkaProject(bot) {
+async function checkPolkaProject() {
+  var newProjects = []
   var checkLast20IDRequest = await fetch(
     "https://api.staked.xyz/apiPolka/getPolkaList?limit=20&tagID=0&page=0",
     {
@@ -41,7 +42,7 @@ async function checkPolkaProject(bot) {
   }
   var diffIDs = _.difference(currentLast20IDs, last20PolkaProjects)
   if (diffIDs.length > 0) {
-    var alerts = await Promise.all(
+    var newProjects = await Promise.all(
       diffIDs.map(async id => {
         var request = `https://api.staked.xyz/apiPolka/getProjectById?v=1.0&id=${id}`
         var newProjectRequest = await fetch(request, {
@@ -72,46 +73,20 @@ async function checkPolkaProject(bot) {
           )
           return null
         }
-        var alert = {
-          section: "ecosystem",
-          method: "NewPolkaProject",
-          data: [
-            newProject.data.title,
-            newProject.data.introduction.length > 0
-              ? newProject.data.introduction
-              : "",
-            newProject.data.tags.length > 0
-              ? newProject.data.tags.join(" ")
-              : "",
-          ],
-        }
-        alert.links = [
-          {
-            name: "PolkaProject.com",
-            url: `https://polkaproject.com/?id=${newProject.data.ID}`,
-          },
-        ]
-        return { id: parseInt(newProject.data.ID), alert: alert }
+
+        return newProject.data
       })
     )
-    alerts = alerts.filter(a => a.alert != null)
+    newProjects = newProjects.filter(p => p != null)
 
-    alerts.forEach(async alert => {
+    newProjects.forEach(async project => {
       last20PolkaProjects.pop()
-      last20PolkaProjects.unshift(alert.id)
-      await bot.sendCustomAlert(alert.alert)
+      last20PolkaProjects.unshift(project.ID)
     })
   }
+  return newProjects
 }
 
 module.exports = {
-  runPolkaProjectChecker: (bot, interval) => {
-    setInterval(async () => {
-      try {
-        checkPolkaProject(bot)
-      } catch (error) {
-        console.log(new Date(), error)
-      }
-    }, interval)
-  },
+  checkPolkaProject: checkPolkaProject,
 }

@@ -1,4 +1,5 @@
 const { metaConvertToConfig } = require("@ryabina-io/substratebot/tools/utils")
+const newMeta = require("./newEvents/meta")
 
 module.exports = {
   getNodeModules: api => {
@@ -29,45 +30,19 @@ module.exports = {
       ],
     }
     const modules = metaConvertToConfig(api, ingoreList)
-    if (!modules["Ecosystem"]) {
-      modules["Ecosystem"] = { events: {}, short: "Ecsstm" }
-    }
-    modules["Ecosystem"].events["NewPolkaProject"] = {
-      args: [
-        {
-          name: "title",
-          baseType: "String",
-          type: "String",
-          visible: "hide",
-        },
-        {
-          name: "description",
-          baseType: "String",
-          type: "String",
-          visible: "hide",
-        },
-        {
-          name: "tags",
-          baseType: "String",
-          type: "String",
-          visible: "hide",
-        },
-      ],
-      documentation: " A new project has been added to PolkaProject.com",
-      short: "NwPlkPrjct",
-    }
-    modules["Ecosystem"].events["KusamaAlert"] = {
-      documentation: " ⚡️ Important system alerts from the Parity team",
-      short: "KsmAlrt",
-      args: [
-        {
-          name: "message",
-          baseType: "String",
-          type: "String",
-          visible: "hide",
-        },
-      ],
-    }
+    var newEvents = newMeta.getNewEvents()
+    newEvents.forEach(module => {
+      if (!modules[module.name]) {
+        modules[module.name] = { events: {}, short: module.short }
+      }
+      module.events.forEach(event => {
+        modules[module.name].events[event.name] = {
+          short: event.short,
+          documentation: event.documentation,
+          args: event.args,
+        }
+      })
+    })
     return modules
   },
 }

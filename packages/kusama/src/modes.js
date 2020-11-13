@@ -154,7 +154,7 @@ module.exports = {
             selected: true,
           },
           {
-            name: "New Github release has been published (soon)",
+            name: "New Github release has been published",
             contract: "ecosystem",
             event: "NewGithubRelease",
             short: "NwGthbRls",

@@ -2,6 +2,7 @@ const { botParams } = require("../config")
 const { stringCamelCase } = require("@polkadot/util")
 const _ = require("lodash")
 const BigNumber = require("bignumber.js")
+const marked = require("marked")
 
 function metaConvertToConfig(api, hideIgnore) {
   var modules = {}
@@ -359,6 +360,60 @@ async function getAccountName(account, user) {
   return account
 }
 
+function htmlEscapeToText(text) {
+  return text.replace(/\&\#[0-9]*;|&amp;/g, function (escapeCode) {
+    if (escapeCode.match(/amp/)) {
+      return "&"
+    }
+    return String.fromCharCode(escapeCode.match(/[0-9]+/))
+  })
+}
+function render_plain() {
+  var render = new marked.Renderer()
+  render.link = function (href, title, text) {
+    return text
+  }
+  render.paragraph = function (text) {
+    return "\r\n" + htmlEscapeToText(text)
+  }
+  render.heading = function (text, level) {
+    return "\r\n\n" + text
+  }
+  render.image = function (href, title, text) {
+    return ""
+  }
+  render.blockquote = function (text) {
+    return text
+  }
+  render.codespan = function (text) {
+    return text
+  }
+  render.del = function (text) {
+    return text
+  }
+  render.code = function (code, lang, isEscaped) {
+    return code
+  }
+  render.list = function (body, ordered, start) {
+    return body + "\r\n"
+  }
+  render.listitem = function (text) {
+    return "\r\n  - " + text
+  }
+  render.strong = function (text) {
+    return text
+  }
+  render.em = function (text) {
+    return text
+  }
+  return render
+}
+
+function convertMarkdownToText(md) {
+  var result = marked(md, { renderer: render_plain() })
+  return result
+}
+
 module.exports = {
   metaConvertToConfig: metaConvertToConfig,
   isIterable: isIterable,
@@ -372,4 +427,5 @@ module.exports = {
   getGroupOrCreate: getGroupOrCreate,
   checkFilter: checkFilter,
   getAccountName: getAccountName,
+  convertMarkdownToText: convertMarkdownToText,
 }
