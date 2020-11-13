@@ -3,8 +3,14 @@ const { parse } = require("../tools/typeParser")
 const _ = require("lodash")
 const { stringUpperFirst } = require("@polkadot/util")
 const { isIterable, checkFilter } = require("../tools/utils")
+const telegram = require("./telegram")
 const Markup = require("telegraf/markup")
+const prom = require("../metrics")
 
+const sentMessagesCounter = new prom.Counter({
+  name: "substrate_bot_sent_messages",
+  help: "metric_help",
+})
 const alreadyRecieved = new Map()
 
 async function sendEvent(record, currentBlock) {
@@ -95,27 +101,7 @@ Module: #${stringUpperFirst(event.section)}`
                 return Markup.urlButton(link[0], link[1])
               })
             })
-          try {
-            await botParams.bot.telegram.sendMessage(n.chatid, message, {
-              parse_mode: "html",
-              disable_web_page_preview: "true",
-              reply_markup: Markup.inlineKeyboard(links),
-            })
-          } catch (error) {
-            if (error.message.includes("bot was blocked by the user")) {
-              botParams.db
-                .get("users")
-                .find({ chatid: n.chatid })
-                .assign({ enabled: false, blocked: true })
-                .write()
-              console.log(
-                new Date(),
-                `Bot was blocked by user with chatid ${n.chatid}`
-              )
-              return
-            }
-            console.log(new Date(), error)
-          }
+          telegram.send(n.chatid, message, links)
         }
       })
   }

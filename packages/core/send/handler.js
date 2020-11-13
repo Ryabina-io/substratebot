@@ -2,12 +2,19 @@ const { botParams } = require("../config")
 const _ = require("lodash")
 const { sendEvent } = require("./event")
 const { sendExtrinsic } = require("./extrinsic")
+const prom = require("../metrics")
+
+const lastBlockGauge = new prom.Gauge({
+  name: "substrate_bot_last_block",
+  help: "metric_help",
+})
 
 let currentBlock = 0
 async function newHeaderHandler(header) {
   const blockNumber = header.number.toNumber()
   if (currentBlock < blockNumber) currentBlock = blockNumber
   else return
+  lastBlockGauge.set(currentBlock)
   const blockHash = await botParams.api.rpc.chain.getBlockHash(blockNumber)
   const block = await botParams.api.rpc.chain.getBlock(blockHash)
   const events = await botParams.api.query.system.events.at(blockHash)
