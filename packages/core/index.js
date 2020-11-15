@@ -71,7 +71,7 @@ module.exports = class SubstrateBot {
           alreadyRecieved.delete(key[0])
         }
       })
-      lastEventCacheSize.set(alreadyRecieved.size())
+      lastEventCacheSize.set(alreadyRecieved.size)
     }, 60000)
   }
 

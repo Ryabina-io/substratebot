@@ -12,7 +12,6 @@ const githubReleaseAlert = require("./src/newEvents/githubRelease")
 const substrateGithubReleaseAlert = require("./src/newEvents/substrateGithubRelease")
 const polkaProjectAlert = require("./src/newEvents/polkaProject")
 
-let substrateBot
 async function main() {
   var settings = getSettings()
   settings.callback = (data, isExtrinsic) => {
@@ -22,7 +21,7 @@ async function main() {
   var modules = getNodeModules(api)
   var modes = getModes()
   startNetworkStatsRefreshing(api)
-  substrateBot = new SubstrateBot({
+  var substrateBot = new SubstrateBot({
     settings,
     api,
     modules,
@@ -32,7 +31,7 @@ async function main() {
   substrateBot.run()
 
   polkaProjectAlert.run(substrateBot, 30000)
-  //githubReleaseAlert.run(substrateBot, process.env.GITHUB_TOKEN ? 5000 : 100000)
+  githubReleaseAlert.run(substrateBot, process.env.GITHUB_TOKEN ? 5000 : 100000)
   substrateGithubReleaseAlert.run(
     substrateBot,
     process.env.GITHUB_TOKEN ? 10000 : 100000

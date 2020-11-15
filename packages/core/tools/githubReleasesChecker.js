@@ -2,8 +2,6 @@ const fetch = require("node-fetch")
 const _ = require("lodash")
 const { convertMarkdownToText } = require("./utils")
 
-let lastGithubReleaseId = 33463688 //29939844
-
 async function getLastGithubRelease(owner, repo, token) {
   var githubReleasesRequest = await fetch(
     `https://api.github.com/repos/${owner}/${repo}/releases`,
