@@ -2,7 +2,7 @@ const {
   getLastGithubRelease,
 } = require("@ryabina-io/substratebot/tools/githubReleasesChecker")
 
-let lastId = 32658300
+let lastId = -1
 module.exports.run = async function (bot, interval) {
   setInterval(async () => {
     getLastGithubRelease(
