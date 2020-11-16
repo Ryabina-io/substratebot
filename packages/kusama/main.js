@@ -9,6 +9,7 @@ const { getApi } = require("./src/api")
 const { getNodeModules } = require("./src/metadata")
 const networkEvents = require("./src/newEvents/networkEventsHandler")
 const githubReleaseAlert = require("./src/newEvents/githubRelease")
+const substrateGithubReleaseAlert = require("./src/newEvents/substrateGithubRelease")
 const polkaProjectAlert = require("./src/newEvents/polkaProject")
 
 let substrateBot
@@ -31,7 +32,11 @@ async function main() {
   substrateBot.run()
 
   polkaProjectAlert.run(substrateBot, 30000)
-  githubReleaseAlert.run(substrateBot, 5000)
+  githubReleaseAlert.run(substrateBot, process.env.GITHUB_TOKEN ? 5000 : 100000)
+  substrateGithubReleaseAlert.run(
+    substrateBot,
+    process.env.GITHUB_TOKEN ? 10000 : 100000
+  )
 }
 
 main()
