@@ -3,11 +3,11 @@ const prom = require("../metrics")
 const Markup = require("telegraf/markup")
 
 const sentMessagesSuccessCounter = new prom.Counter({
-  name: "substrate_bot_success_sent_messages",
+  name: "substrate_bot_sent_messages_success",
   help: "metric_help",
 })
 const sentMessagesErrorCounter = new prom.Counter({
-  name: "substrate_bot_sent_messages_with_error",
+  name: "substrate_bot_sent_messages_error",
   help: "metric_help",
 })
 

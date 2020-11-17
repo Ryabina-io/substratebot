@@ -17,12 +17,22 @@ const {
 } = require("./menus/edit/walletsNotificationsMenu")
 const { refreshMenu, refreshMenuMiddleware } = require("./menus/statsMenu")
 const { checkIsGroup, getGroupOrCreate } = require("./tools/utils")
+const prom = require("../metrics")
+
+const telegramBotUpdates = new prom.Counter({
+  name: "substrate_bot_telegram_updates",
+  help: "metric_help",
+})
 
 module.exports.run = async function (params) {
   /*
    *   BOT initialization
    */
   const bot = new Telegraf(botParams.settings.botToken)
+  bot.use((ctx, next) => {
+    telegramBotUpdates.inc()
+    return next()
+  })
   bot.use(session())
 
   /*
