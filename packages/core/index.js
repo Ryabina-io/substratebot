@@ -3,6 +3,7 @@ const { botParams, getDB } = require("./config")
 const { sendCustomAlert } = require("./send/customAlert")
 const { newHeaderHandler } = require("./send/handler")
 const { alreadyRecieved } = require("./send/event")
+const prom = require("./metrics")
 module.exports = class SubstrateBot {
   /**
    * Create SubstrateBot instance
