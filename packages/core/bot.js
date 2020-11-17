@@ -17,7 +17,7 @@ const {
 } = require("./menus/edit/walletsNotificationsMenu")
 const { refreshMenu, refreshMenuMiddleware } = require("./menus/statsMenu")
 const { checkIsGroup, getGroupOrCreate } = require("./tools/utils")
-const prom = require("../metrics")
+const prom = require("./metrics")
 
 const telegramBotUpdates = new prom.Counter({
   name: "substrate_bot_telegram_updates",
