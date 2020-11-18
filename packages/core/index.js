@@ -4,12 +4,6 @@ const { sendCustomAlert } = require("./send/customAlert")
 const { newHeaderHandler } = require("./send/handler")
 const { alreadyRecieved } = require("./send/event")
 const prom = require("./metrics")
-
-const lastEventCacheSize = new prom.Gauge({
-  name: "substrate_bot_last_event_cache_size",
-  help: "metric_help",
-})
-
 module.exports = class SubstrateBot {
   /**
    * Create SubstrateBot instance
@@ -71,7 +65,6 @@ module.exports = class SubstrateBot {
           alreadyRecieved.delete(key[0])
         }
       })
-      lastEventCacheSize.set(alreadyRecieved.size)
     }, 60000)
   }
 

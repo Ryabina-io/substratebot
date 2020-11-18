@@ -5,12 +5,6 @@ const { stringUpperFirst } = require("@polkadot/util")
 const { isIterable, checkFilter } = require("../tools/utils")
 const telegram = require("./telegram")
 const Markup = require("telegraf/markup")
-const prom = require("../metrics")
-
-const sentMessagesCounter = new prom.Counter({
-  name: "substrate_bot_sent_messages",
-  help: "metric_help",
-})
 const alreadyRecieved = new Map()
 
 async function sendEvent(record, currentBlock) {
