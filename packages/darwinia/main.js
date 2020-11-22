@@ -1,3 +1,7 @@
+// const requireHacker = require('require-hacker')
+// requireHacker.hook('png', (path) => 'module.exports={}')
+// requireHacker.hook('gif', (path) => 'module.exports={}')
+// requireHacker.hook('svg', (path) => 'module.exports={}')
 const SubstrateBot = require("@ryabina-io/substratebot")
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const BigNumber = require("bignumber.js")
@@ -6,7 +10,12 @@ const { formatBalance } = require("@polkadot/util")
 const bent = require("bent")
 const getJSON = bent("json")
 const _ = require("lodash")
-const types = require("./types.json")
+const {
+  typesChain,
+  typesSpec,
+  typesBundle,
+  typesRpc,
+} = require("@polkadot/apps-config/api")
 
 let networkStats = {}
 
@@ -73,10 +82,15 @@ function getSettings() {
 async function getAPI() {
   const nodeUri = process.env.NODE_URI || "wss://cc1.darwinia.network"
   const provider = new WsProvider(nodeUri)
-  const api = await ApiPromise.create({
+  const api = await new ApiPromise({
     provider,
-    types: types,
+    rpc: typesRpc,
+    types: {},
+    typesBundle,
+    typesChain,
+    typesSpec,
   })
+  await new Promise(resolve => api.once("ready", resolve))
   Promise.all([
     api.rpc.system.chain(),
     api.rpc.system.name(),
@@ -345,37 +359,41 @@ function getExtrinsicLinks(extrinsic, extrinsicDB, index, block) {
 
 async function getNetworkStats(api) {
   const networkStats = {}
-  var token_data
   try {
-    var token_data = await getJSON(
+    const token_data = await getJSON(
       `https://api.coingecko.com/api/v3/coins/darwinia-network-native-token`
     )
-  } catch (error) {
-    token_data = "NA"
+
+    networkStats.marketcap = formatBalance(
+      token_data.market_data.market_cap.usd,
+      {
+        decimals: 0,
+        withSi: true,
+        withUnit: "USD",
+      }
+    )
+    networkStats.price =
+      token_data.market_data.current_price.usd.toString() + " USD"
+    networkStats.volume = formatBalance(
+      token_data.market_data.total_volume.usd,
+      {
+        decimals: 0,
+        withSi: true,
+        withUnit: "USD",
+      }
+    )
+  } catch {
+    networkStats.marketcap = "NA"
+    networkStats.price = "NA"
+    networkStats.volume = "NA"
   }
+  const totalIssuanceRing = await api.query.balances.totalIssuance()
+  const totalIssuanceKton = await api.query.kton.totalIssuance()
+  const stakedRing = await api.query.staking.ringPool()
+  const stakedKton = await api.query.staking.ktonPool()
   var validators = await api.query.session.validators()
   var validators2 = await api.query.staking.validators.entries()
   var nominators = await api.query.staking.nominators.entries()
-  var era = await api.query.staking.activeEra()
-  const totalIssuance = await api.query.balances.totalIssuance()
-  const totalStake = await api.query.staking.erasTotalStake(
-    era.value.index.toString()
-  )
-  const marketcap =
-    token_data != "NA"
-      ? formatBalance(
-          new BigNumber(totalIssuance.toString())
-            .multipliedBy(
-              new BigNumber(token_data.market_data.current_price.usd)
-            )
-            .toFixed(0),
-          {
-            decimals: api.registry.chainDecimals,
-            withSi: true,
-            withUnit: "USD",
-          }
-        )
-      : token_data
 
   if (api.query.democracy) {
     const referendums = await api.query.democracy.referendumInfoOf.entries()
@@ -385,24 +403,24 @@ async function getNetworkStats(api) {
     networkStats.ongoingProposalsCount = ongoingProposals.length
     networkStats.ongoingReferendumsCount = ongoingReferendums.length
   }
-
-  networkStats.price =
-    token_data != "NA"
-      ? token_data.market_data.current_price.usd.toString() + " USD"
-      : token_data
-  networkStats.volume =
-    token_data != "NA"
-      ? new BigNumber(token_data.market_data.total_volume.usd.toString())
-          .dividedBy(new BigNumber("1e6"))
-          .toFixed(2) + "M USD"
-      : token_data
-  networkStats.marketcap = marketcap
-  networkStats.totalIssuance = totalIssuance.toHuman()
-  networkStats.totalStaked = totalStake.toHuman()
-  networkStats.percentStaked = new BigNumber(totalStake.toString())
-    .dividedBy(new BigNumber(totalIssuance.toString()))
-    .multipliedBy(new BigNumber(100))
-    .toFixed(2)
+  networkStats.totalIssuance = `${formatBalance(totalIssuanceRing, {
+    decimals: api.registry.chainDecimals,
+    withUnit: "RING",
+  })} ${formatBalance(totalIssuanceKton, {
+    decimals: api.registry.chainDecimals,
+    withUnit: "KTON",
+  })}`
+  const ringPercentStaked = ((100 * stakedRing) / totalIssuanceRing).toFixed(2)
+  networkStats.totalStaked = `${formatBalance(stakedRing, {
+    decimals: api.registry.chainDecimals,
+    withUnit: "RING",
+  })} (${ringPercentStaked}%) ${formatBalance(stakedKton, {
+    decimals: api.registry.chainDecimals,
+    withUnit: "KTON",
+  })}`
+  networkStats.percentStaked = ((100 * stakedKton) / totalIssuanceKton).toFixed(
+    2
+  )
   networkStats.elected = validators.length
   networkStats.waiting = validators2.length - validators.length
   networkStats.nominators = nominators.length
