@@ -1,0 +1,47 @@
+Arguments: 
+  /usr/bin/node /usr/share/yarn/bin/yarn.js install --mutex network:42424 --non-interactive --no-lockfile
+
+PATH: 
+  /home/warfollowsme/substratebot/packages/equilibrium/node_modules/.bin:/home/warfollowsme/substratebot/packages/node_modules/.bin:/home/warfollowsme/substratebot/node_modules/.bin:/home/warfollowsme/node_modules/.bin:/home/node_modules/.bin:/node_modules/.bin:/usr/bin:/root/.vscode-server/bin/940b5f4bb5fa47866a54529ed759d95d09ee80be/bin:/root/.cargo/bin:/root/.vscode-server/bin/940b5f4bb5fa47866a54529ed759d95d09ee80be/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/opt/sgxsdk/bin:/opt/sgxsdk/bin/x64:/opt/sgxsdk/bin:/opt/sgxsdk/bin/x64
+
+Yarn version: 
+  1.22.4
+
+Node version: 
+  14.6.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  SyntaxError: /home/warfollowsme/substratebot/packages/equilibrium/package.json: Unexpected token , in JSON at position 228
+      at JSON.parse (<anonymous>)
+      at /usr/share/yarn/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/share/yarn/lib/cli.js:310:30)
+      at /usr/share/yarn/lib/cli.js:321:13
+
+npm manifest: 
+  {
+  	"name": "@ryabina-io/equilibriumbot",
+  	"version": "1.1.0",
+  	"main": "main.js",
+  	"author": "ryabina-io",
+  	"private": true,
+  	"license": "Apache-2.0",
+  	"dependencies": {
+  		"@polkadot/api": "^3.3.1",
+  		"@polkadot/util": "^5.2.3",,
+      "@ryabina-io/substratebot": "^1.1.0",
+  		"bent": "^7.3.10",
+  		"bignumber.js": "^9.0.0",
+  		"lodash": "^4.17.19",
+  		"node-fetch": "^2.6.1"
+  	}
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
