@@ -5,13 +5,13 @@ module.exports.handler = async function (bot, data, isExtrinsic) {
     var extrinsic = data
     if (extrinsic.section == "system" && extrinsic.method == "remark") {
       if (
-        extrinsic.signer == "DFfmNGJBuAexib19TbjhaubfekchJe8mMTVQv4Axd8ynSjw"
+        extrinsic.signer == "143uSKnHNLTjTLWTyEnpivVS8hCtY2UuwtrfLSSN5qxQhGWu"
       ) {
         var remark = await hexToString(extrinsic.args["_remark"], "", "", 0)
         remark = JSON.parse(remark)
         var alert = {
           section: "ecosystem",
-          method: "KusamaAlert",
+          method: "PolkadotAlert",
           data: [remark.message],
         }
         alert.links = remark.links

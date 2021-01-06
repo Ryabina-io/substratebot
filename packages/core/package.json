@@ -25,8 +25,8 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
-    "@polkadot/util": "^2.18.1",
-    "@polkadot/util-crypto": "^3.2.1",
+    "@polkadot/util": "^5.2.3",
+    "@polkadot/util-crypto": "^5.2.3",
     "bent": "^7.3.7",
     "bignumber.js": "^9.0.0",
     "lodash": "^4.17.19",
