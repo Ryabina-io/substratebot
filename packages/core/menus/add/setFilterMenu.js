@@ -28,11 +28,11 @@ const setFilterMenu = new TelegrafInlineMenu(ctx => {
     if (ctx.session.notification) ctx.session.notification.call = actionName
   }
   ctx.session.current = action
-  action.documentation = replaceMarkdownSymbols(action.documentation, false)
+  const documentation = replaceMarkdownSymbols(action.documentation, false)
   var reply = `${
     ctx.match[2] == "evnts" ? "Event" : "Extrinsic"
   } *${actionName}*\n\nDescription: ${
-    action.documentation == "" ? "_No description._" : action.documentation
+    documentation == "" ? "_No description._" : documentation
   }\n\n`
   var args = []
   if (ctx.session.notification && ctx.session.notification.call) {
