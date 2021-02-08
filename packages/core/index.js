@@ -57,7 +57,7 @@ module.exports = class SubstrateBot {
       this.settings.network.token = networkProperties.tokenSymbol.toString()
     }
     botParams.settings = this.settings
-    if (this.api.registry.chainToken)
+    if (this.api.registry.chainToken || this.api.registry.chainTokens)
       botParams.getNetworkStatsMessage = this.getNetworkStatsMessage
 
     botParams.bot = await bot.run(this)

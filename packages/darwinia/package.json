@@ -6,8 +6,8 @@
   "author": "ryabina-io",
   "license": "Apache-2.0",
   "dependencies": {
-    "@polkadot/api": "^3.3.2",
-    "@polkadot/apps-config": "^0.67.2-8",
+    "@polkadot/api": "3.3.2",
+    "@polkadot/apps-config": "0.67.2-8",
     "@ryabina-io/substratebot": "^1.1.0",
     "bent": "^7.3.7",
     "bignumber.js": "^9.0.0",
