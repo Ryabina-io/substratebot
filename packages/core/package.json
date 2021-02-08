@@ -27,14 +27,16 @@
   "dependencies": {
     "@polkadot/util": "^5.2.3",
     "@polkadot/util-crypto": "^5.2.3",
+    "@sentry/node": "^6.1.0",
+    "@sentry/tracing": "^6.1.0",
     "bent": "^7.3.7",
     "bignumber.js": "^9.0.0",
     "lodash": "^4.17.19",
     "lowdb": "^1.0.0",
+    "marked": "^1.2.3",
     "prom-client": "^12.0.0",
     "telegraf": "^3.38.0",
     "telegraf-inline-menu": "^4.0.1",
-    "telegraf-stateless-question": "^0.1.1",
-    "marked": "^1.2.3"
+    "telegraf-stateless-question": "^0.1.1"
   }
 }

@@ -4,6 +4,17 @@ const { sendCustomAlert } = require("./send/customAlert")
 const { newHeaderHandler } = require("./send/handler")
 const { alreadyRecieved } = require("./send/event")
 const prom = require("./metrics")
+const Sentry = require("@sentry/node")
+const Tracing = require("@sentry/tracing")
+
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    tracesSampleRate: 1.0,
+    release: process.env.npm_package_version,
+  })
+}
+
 module.exports = class SubstrateBot {
   /**
    * Create SubstrateBot instance
@@ -54,6 +65,10 @@ module.exports = class SubstrateBot {
       telegram_bot_name: botParams.bot.options.username,
       network: botParams.settings.network.name,
     })
+
+    Sentry.setTag("telegram_bot_name", botParams.bot.options.username)
+    Sentry.setTag("blockchain", botParams.settings.network.name)
+
     await this.api.rpc.chain.subscribeNewHeads(async header =>
       newHeaderHandler(header)
     )
