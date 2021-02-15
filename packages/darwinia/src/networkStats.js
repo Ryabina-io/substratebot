@@ -1,4 +1,5 @@
 const BigNumber = require("bignumber.js")
+const BN = require("bn.js")
 const { formatBalance } = require("@polkadot/util")
 const bent = require("bent")
 const getJSON = bent("json")
@@ -110,10 +111,10 @@ async function getNetworkStats(api) {
     decimals: api.registry.chainDecimals,
     withUnit: "KTON",
   })
-  ktonMarketcap = new BigNumber(
-    kton_data.market_data.current_price.usd
-  ).multipliedBy(totalIssuanceKton.toNumber())
-  ktonStats.marketcap = formatBalance(ktonMarketcap.toNumber(), {
+  ktonMarketcap = new BN(kton_data.market_data.current_price.usd).mul(
+    totalIssuanceKton
+  )
+  ktonStats.marketcap = formatBalance(ktonMarketcap, {
     decimals: 9,
     withSi: true,
     withUnit: "USD",
