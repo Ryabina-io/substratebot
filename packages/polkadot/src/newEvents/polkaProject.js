@@ -22,7 +22,7 @@ module.exports.run = async function (bot, interval) {
             alert.links = [
               {
                 name: "PolkaProject.com",
-                url: `https://polkaproject.com/?id=${newProject.ID}`,
+                url: `https://polkaproject.com/#/project/${newProject.ID}`,
               },
             ]
             return alert
