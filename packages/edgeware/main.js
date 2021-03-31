@@ -1,5 +1,5 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api")
-const { Mainnet } = require("@edgeware/node-types")
+const { spec } = require("@edgeware/node-types")
 const BigNumber = require("bignumber.js")
 const SubstrateBot = require("@ryabina-io/substratebot")
 const { metaConvertToConfig } = require("@ryabina-io/substratebot/tools/utils")
@@ -38,16 +38,14 @@ async function main() {
 }
 
 async function getAPI() {
-  const nodeUri = process.env.NODE_URI || "wss://mainnet1.edgewa.re"
+  const nodeUri = process.env.NODE_URI || "wss://mainnet4.edgewa.re"
   const provider = new WsProvider(nodeUri)
   process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0
-  const api = await ApiPromise.create({
-    provider,
-    types: {
-      ...Mainnet.types,
-      RefCount: "u8",
-    },
-  })
+  const options = {
+    provider: new WsProvider(nodeUri),
+    ...spec,
+  }
+  const api = await ApiPromise.create(options)
   //const api = await createSubstrateApi(provider)
   Promise.all([
     api.rpc.system.chain(),

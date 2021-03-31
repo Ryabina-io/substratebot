@@ -6,7 +6,7 @@
   "private": true,
   "license": "Apache-2.0",
   "dependencies": {
-    "@edgeware/node-types": "3.0.11",
+    "@edgeware/node-types": "3.3.2",
     "@polkadot/api": "3.3.2",
     "@ryabina-io/substratebot": "^1.1.0",
     "bent": "^7.3.7",
