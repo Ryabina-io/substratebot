@@ -8,10 +8,8 @@ module.exports = {
     const api = await ApiPromise.create({
       provider,
       types: {
-        ChainId: "u8",
-        ResourceId: "[u8; 32]",
-        DepositNonce: "u64",
-        Keys: "SessionKeys2",
+        BlockNumber: "u64",
+        Keys: "SessionKeys3",
         Balance: "u64",
         FixedI64: "i64",
         SignedBalance: {
@@ -27,10 +25,13 @@ module.exports = {
           block_num: "BlockNumber",
         },
         Currency: {
-          _enum: ["Unknown", "Usd", "EQ", "Eth", "Btc", "Eos", "Dot"],
+          _enum: ["Unknown", "Usd", "Eq", "Eth", "Btc", "Eos", "Dot"],
         },
         UserGroup: {
           _enum: ["Unknown", "Balances", "Balsmen"],
+        },
+        SubAccType: {
+          _enum: ["Bailsman", "Borrower", "Lender"],
         },
         TotalAggregates: {
           collateral: "Balance",
@@ -71,18 +72,6 @@ module.exports = {
             "TreasuryEqBuyout",
             "TreasuryBuyEq",
           ],
-        },
-        ProposalStatus: {
-          _enum: ["Initiated", "Approved", "Rejected"],
-        },
-        ProposalVotes: {
-          votes_for: "Vec<AccountId>",
-          votes_against: "Vec<AccountId>",
-          status: "ProposalStatus",
-          expiry: "BlockNumber",
-        },
-        SubAccType: {
-          _enum: ["Bailsman", "Borrower", "Lender"],
         },
       },
     })
