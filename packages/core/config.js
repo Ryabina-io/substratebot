@@ -1,4 +1,4 @@
-const FileSync = require("lowdb/adapters/FileSync")
+const LazyAdapter = require("./LazyAdapter")
 const low = require("lowdb")
 
 const botParams = {
@@ -61,7 +61,7 @@ module.exports = {
     return keyboard
   },
   getDB: path => {
-    const adapter = new FileSync(path || "/db/db.json")
+    const adapter = new LazyAdapter(path || "/db/db.json")
     const db = low(adapter)
     return db
   },
