@@ -184,7 +184,7 @@ async function objectToString(value, type, baseType, depth) {
 async function enumToString(value, type, baseType, depth = 4) {
   var enumStruct = JSON.parse(value.toRawType())
   var valueType = enumStruct._enum[value.type]
-  if (!valueType || valueType == "Null") {
+  if (!valueType || valueType == "Null" || /^-?\d+$/.test(valueType)) {
     return value.type
   } else if (valueType.includes("{")) {
     var subStruct = JSON.parse(valueType)
