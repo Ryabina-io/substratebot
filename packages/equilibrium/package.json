@@ -6,7 +6,7 @@
   "private": true,
   "license": "Apache-2.0",
   "dependencies": {
-    "@polkadot/api": "^3.3.1",
+    "@polkadot/api": "^4.3.2-2",
     "@polkadot/util": "^5.2.3",
     "@ryabina-io/substratebot": "^1.1.0",
     "bent": "^7.3.10",
