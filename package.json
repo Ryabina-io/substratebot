@@ -4,14 +4,22 @@
   },
   "devDependencies": {
     "husky": "^4.2.5",
-    "lerna": "^3.22.1",
     "prettier": "2.0.5",
     "pretty-quick": "^2.0.1"
   },
+  "private": true,
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
   },
-  "name": "substratebot"
+  "name": "substratebot",
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {
+    "@polkadot/util": "^6.8.1",
+    "@polkadot/util-crypto": "^6.8.1",
+    "@polkadot/wasm-crypto": "^4.0.2"
+  }
 }
