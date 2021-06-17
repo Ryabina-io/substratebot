@@ -6,7 +6,7 @@
   "author": "ryabina-io",
   "license": "Apache-2.0",
   "dependencies": {
-    "@polkadot/api": "4.9.2",
+    "@polkadot/api": "4.14.1",
     "@ryabina-io/substratebot": "^1.1.0",
     "bent": "^7.3.7",
     "bignumber.js": "^9.0.0",
