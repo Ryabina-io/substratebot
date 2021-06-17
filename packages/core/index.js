@@ -26,9 +26,17 @@ module.exports = class SubstrateBot {
    * @param config.modes - custom modes in main menu
    * @param config.getNetworkStats - external function for getting substrate network stats
    */
-  constructor({ settings, api, modules, modes, getNetworkStatsMessage }) {
+  constructor({
+    settings,
+    api,
+    modules,
+    modes,
+    getNetworkStatsMessage,
+    subscribeApi,
+  }) {
     this.settings = settings
     this.api = api
+    this.subscribeApi = subscribeApi
     this.modules = modules
     this.modes = modes
     this.getNetworkStatsMessage = getNetworkStatsMessage
@@ -69,7 +77,7 @@ module.exports = class SubstrateBot {
     Sentry.setTag("telegram_bot_name", botParams.bot.options.username)
     Sentry.setTag("blockchain", botParams.settings.network.name)
 
-    await this.api.rpc.chain.subscribeNewHeads(async header =>
+    await this.subscribeApi.rpc.chain.subscribeNewHeads(async header =>
       newHeaderHandler(header)
     )
     this.invalidateCacheInterval = setInterval(() => {
