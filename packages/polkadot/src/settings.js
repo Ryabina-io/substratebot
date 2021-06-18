@@ -1,3 +1,4 @@
+const _ = require("lodash")
 let network = "polkadot"
 
 function getEventLinks(event, eventDB, index, block) {
