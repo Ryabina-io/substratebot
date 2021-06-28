@@ -4,4 +4,4 @@ VOLUME [ "/db" ]
 ENTRYPOINT ["/usr/local/bin/node"]
 CMD yarn config set workspaces-experimental true
 COPY . .
-RUN yarn
+RUN yarn --ignore-engines
