@@ -28,7 +28,6 @@ module.exports = {
       typesChain,
       typesSpec,
     })
-    await new Promise(resolve => api.once("ready", resolve))
     Promise.all([
       api.rpc.system.chain(),
       api.rpc.system.name(),
