@@ -1,6 +1,4 @@
-const {
-  metaConvertToConfig,
-} = require("@ryabina-io/substratebot/polkadot.util")
+const { metaConvertToConfig } = require("@ryabina-io/substratebot/tools/utils")
 
 module.exports = {
   getNodeModules: api => {
