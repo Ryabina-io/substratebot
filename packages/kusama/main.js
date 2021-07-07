@@ -18,13 +18,14 @@ async function main() {
   settings.callback = (data, isExtrinsic) => {
     networkEvents.handler(substrateBot, data, isExtrinsic)
   }
-  var api = await getApi()
+  var { api, subscribeApi } = await getApi()
   var modules = getNodeModules(api)
   var modes = getModes()
   startNetworkStatsRefreshing(api)
   substrateBot = new SubstrateBot({
     settings,
     api,
+    subscribeApi,
     modules,
     modes,
     getNetworkStatsMessage,

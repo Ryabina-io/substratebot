@@ -1,9 +1,7 @@
-FROM node:14-alpine as build
+FROM node:16 as build
 WORKDIR /app
 VOLUME [ "/db" ]
 ENTRYPOINT ["/usr/local/bin/node"]
-
-COPY ./package.json ./
-RUN yarn --no-lockfile
+CMD yarn config set workspaces-experimental true
 COPY . .
-RUN node_modules/.bin/lerna bootstrap
+RUN yarn --ignore-engines

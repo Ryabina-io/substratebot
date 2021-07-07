@@ -14,13 +14,14 @@ const { getNodeModules } = require("./src/metadata")
 
 async function main() {
   var settings = getSettings()
-  var api = await getApi()
+  var { api, subscribeApi } = await getApi()
   var modules = getNodeModules(api)
   var modes = getModes()
   startNetworkStatsRefreshing(api)
   const substrateBot = new SubstrateBot({
     settings,
     api,
+    subscribeApi,
     modules,
     modes,
     getNetworkStatsMessage,
