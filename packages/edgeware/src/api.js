@@ -1,14 +1,15 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const { HttpProvider } = require("@polkadot/rpc-provider")
+const { spec } = require('edgeware-node-types')
 
 module.exports = {
   getApi: async () => {
     const wsNodeUri =
-      process.env.WS_NODE_URI || "wss://edgeware.api.onfinality.io/public-ws"
+      process.env.WS_NODE_URI || "wss://mainnet.edgewa.re/"
     const wsProvider = new WsProvider(wsNodeUri)
     const httpProvider =
       new HttpProvider(process.env.HTTP_NODE_URI) ||
-      "https://edgeware.api.onfinality.io/public-ws"
+      "https://edgeware.api.onfinality.io/public"
     const types = {
       ChainId: "u8",
       ResourceId: "[u8; 32]",
@@ -138,12 +139,12 @@ module.exports = {
       },
     }
     const api = await ApiPromise.create({
-      provider: httpProvider,
-      types: types,
+      provider: wsProvider,
+      ...spec
     })
     const subscribeApi = await ApiPromise.create({
       provider: wsProvider,
-      types: types,
+      ...spec
     })
     Promise.all([
       api.rpc.system.chain(),

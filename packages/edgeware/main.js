@@ -12,6 +12,7 @@ async function main() {
   var settings = getSettings()
   var { api, subscribeApi } = await getApi()
   var chain = await api.rpc.system.chain()
+  var nodeProperties = await api.rpc.system.properties()
   settings.network.name = chain
   settings.network.prefix = nodeProperties.ss58Format
   settings.network.decimals = nodeProperties.tokenDecimals
@@ -22,10 +23,10 @@ async function main() {
   var substrateBot = new SubstrateBot({
     settings,
     api,
-    subscribeApi,
     modules,
     modes,
     getNetworkStatsMessage,
+    subscribeApi
   })
   substrateBot.run()
 }

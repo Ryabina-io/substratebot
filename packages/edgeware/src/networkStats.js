@@ -86,7 +86,7 @@ function startNetworkStatsRefreshing(api) {
   getNetworkStats(api).then(result => (networkStats = result))
   setInterval(async () => {
     networkStats = await getNetworkStats(api)
-  }, 10000)
+  }, 120000)
 }
 
 module.exports = {
