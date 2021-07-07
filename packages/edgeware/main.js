@@ -38,7 +38,7 @@ async function main() {
 }
 
 async function getAPI() {
-  const nodeUri = process.env.NODE_URI || "wss://mainnet4.edgewa.re"
+  const nodeUri = process.env.NODE_URI || "wss://mainnet.edgewa.re"
   const provider = new WsProvider(nodeUri)
   process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0
   const options = {

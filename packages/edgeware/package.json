@@ -6,8 +6,8 @@
   "private": true,
   "license": "Apache-2.0",
   "dependencies": {
-    "@edgeware/node-types": "3.3.2",
-    "@polkadot/api": "3.3.2",
+    "@edgeware/node-types": "3.6.1-wako",
+    "@polkadot/api": "^4.12.1",
     "@ryabina-io/substratebot": "^1.1.0",
     "bent": "^7.3.7",
     "bignumber.js": "^9.0.0",
