@@ -296,11 +296,11 @@ async function accountToString(value, type, baseType, depth) {
 
 async function balanceToString(value, type, baseType, depth) {
   var decimals = botParams.settings.network.decimals
-  if(decimals.toRawType() === 'Option<Vec<u32>>'){
+  if(decimals.toRawType != null && decimals.toRawType() === 'Option<Vec<u32>>'){
     decimals = decimals.toJSON()[0]
   }
   var token = botParams.settings.network.token
-  if(token.toRawType() === 'Option<Vec<Text>>'){
+  if(decimals.toRawType != null && token.toRawType() === 'Option<Vec<Text>>'){
     token = token.toJSON()[0]
   }
   return (

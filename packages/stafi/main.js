@@ -12,7 +12,7 @@ const substrateGithubReleaseAlert = require("./src/newEvents/substrateGithubRele
 
 async function main() {
   var settings = getSettings()
-  var api = await getApi()
+  var { api, subscribeApi } = await getApi()
   var modules = getNodeModules(api)
   var modes = getModes()
   startNetworkStatsRefreshing(api)
@@ -22,6 +22,7 @@ async function main() {
     modules,
     modes,
     getNetworkStatsMessage,
+    subscribeApi
   })
   substrateBot.run()
 
