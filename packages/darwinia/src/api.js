@@ -9,7 +9,7 @@ const {
 
 module.exports = {
   getApi: async () => {
-    const wsNodeUri = process.env.WS_NODE_URI || "wss://cc1.darwinia.network"
+    const wsNodeUri = process.env.WS_NODE_URI || "wss://rpc.darwinia.network"
     const wsProvider = new WsProvider(wsNodeUri)
     const httpProvider = new HttpProvider(process.env.HTTP_NODE_URI)
     const api = await ApiPromise.create({
