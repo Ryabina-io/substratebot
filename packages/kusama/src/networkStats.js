@@ -34,9 +34,10 @@ async function getNetworkStats(api) {
   var token_data
   try {
     var token_data = await getJSON(
-      `https://api.coingecko.com/api/v3/coins/kusama`
+      `https://api.coingecko.com/api/v3/coins/kusama/`
     )
   } catch (error) {
+    console.error(new Date(), error.message)
     token_data = "NA"
   }
   var validators = await api.query.session.validators()
@@ -56,7 +57,7 @@ async function getNetworkStats(api) {
             )
             .toFixed(0),
           {
-            decimals: 10,
+            decimals: 12,
             withSi: true,
             withUnit: "USD",
           }
@@ -81,7 +82,7 @@ async function getNetworkStats(api) {
   result.totalIssuance = formatBalance(
     new BigNumber(totalIssuance.toString()).toFixed(0),
     {
-      decimals: 10,
+      decimals: 12,
       withSi: true,
       withUnit: "KSM",
     }
@@ -90,7 +91,7 @@ async function getNetworkStats(api) {
   result.totalStaked = formatBalance(
     new BigNumber(totalStake.toString()).toFixed(0),
     {
-      decimals: 10,
+      decimals: 12,
       withSi: true,
       withUnit: "KSM",
     }

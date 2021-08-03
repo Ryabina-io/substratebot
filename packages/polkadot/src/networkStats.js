@@ -34,7 +34,7 @@ async function getNetworkStats(api) {
   var token_data
   try {
     var token_data = await getJSON(
-      `https://api.coingecko.com/api/v3/coins/polkadot`
+      `https://api.coingecko.com/api/v3/coins/polkadot/`
     )
   } catch (error) {
     token_data = "NA"
