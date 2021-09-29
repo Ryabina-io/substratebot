@@ -70,16 +70,15 @@ setFilterMenu
             isEqual: false,
             isLess: false,
           }
+          let type = ctx.session.current.args.find(p => p.name == key).type
+          let baseType = ctx.session.current.args.find(p => p.name == key)
+            .baseType
           if (ctx.session.notification.call && key == "sender") {
             ctx.session.currentFilterType = "AccountId"
             ctx.session.currentFilterBaseType = "GenericAccountId"
           } else {
-            ctx.session.currentFilterType = getInnerType(
-              ctx.session.current.args.find(p => p.name == key).type
-            )
-            ctx.session.currentFilterBaseType = getInnerType(
-              ctx.session.current.args.find(p => p.name == key).baseType
-            )
+            ctx.session.currentFilterType = getInnerType(type)
+            ctx.session.currentFilterBaseType = getInnerType(baseType)
           }
           if (
             ctx.session.currentFilterBaseType == "GenericAccountId" ||
@@ -109,7 +108,8 @@ setFilterMenu
               "u64",
               "u128",
               "u256",
-            ].includes(ctx.session.currentFilterBaseType)
+            ].includes(ctx.session.currentFilterBaseType) ||
+            baseType.indexOf("Int<") > 0
           ) {
             ctx.session.isNumEditing = true
           } else {

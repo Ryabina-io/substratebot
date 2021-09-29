@@ -139,9 +139,14 @@ function isHide(type, registry, hideIgnore) {
     var innerType = type.substring(type.lastIndexOf("<") + 1, type.indexOf(">"))
     return isHide(innerType, registry, hideIgnore)
   } else {
+    let baseDef = getBaseDef(type, registry)
     return (
       !hideIgnore.hide.includes(type) &&
-      !hideIgnore.hide.includes(getBaseDef(type, registry))
+      !hideIgnore.hide.includes(baseDef) &&
+      _.findIndex(
+        hideIgnore.hide,
+        h => baseDef.toLowerCase().indexOf(h + "<") > 0
+      ) === -1
     )
   }
 }
