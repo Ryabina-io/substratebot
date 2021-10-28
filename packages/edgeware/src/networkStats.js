@@ -52,7 +52,7 @@ async function getNetworkStats(api) {
             )
             .toFixed(0),
           {
-            decimals: api.registry.chainDecimals,
+            decimals: api.registry.chainDecimals[0],
             withSi: true,
             withUnit: "USD",
           }

@@ -5,12 +5,13 @@ const { stringShorten } = require("@polkadot/util")
 const { splitSentenceIntoRows } = require("../tools/utils")
 
 const parsingMap = {
+  Id: uintToString,
   AccountId: accountToString,
   GenericAccountId: accountToString,
   GenericAddress: accountToString,
   GenericAccountIndex: uintToString,
   GenericLookupSource: accountToString,
-  GenericMultiAddress: accountToString,
+  GenericMultiAddress: multiAddressToString,
   AccountIndex: uintToString,
   AccountVote: enumToString,
   AccountVoteStandart: structToString,
@@ -18,7 +19,7 @@ const parsingMap = {
   Balance: balanceToString,
   BalanceOf: balanceToString,
   BlockNumber: uintToString,
-  Bytes: hexToString,
+  Bytes: primitiveToString,
   Call: callToString,
   GenericCall: callToString,
   CallHash: primitiveToString,
@@ -66,6 +67,7 @@ const parsingMap = {
   SessionIndex: uintToString,
   Signature: primitiveToString,
   SocietyJudgement: enumToString,
+  StorageKey: primitiveToString,
   TaskAddress: primitiveToString,
   Timepoint: dateToString,
   ValidatorPrefs: structToString,
@@ -294,13 +296,35 @@ async function accountToString(value, type, baseType, depth) {
   return value.toString()
 }
 
+async function multiAddressToString(value, type, baseType, depth) {
+  if (value.toJSON().id) {
+    var accountInfo = await botParams.api.derive.accounts.info(value.toString())
+    if (accountInfo.identity.displayParent || accountInfo.identity.display) {
+      var result = ""
+      if (accountInfo.identity.displayParent) {
+        result += accountInfo.identity.displayParent + ":"
+      }
+      if (accountInfo.identity.display) {
+        result += accountInfo.identity.display
+      }
+      return result
+    } else if (accountInfo.accountIndex) {
+      return accountInfo.accountIndex
+    }
+  }
+  return value.toString()
+}
+
 async function balanceToString(value, type, baseType, depth) {
   var decimals = botParams.settings.network.decimals
-  if(decimals.toRawType != null && decimals.toRawType() === 'Option<Vec<u32>>'){
+  if (
+    decimals.toRawType != null &&
+    decimals.toRawType() === "Option<Vec<u32>>"
+  ) {
     decimals = decimals.toJSON()[0]
   }
   var token = botParams.settings.network.token
-  if(decimals.toRawType != null && token.toRawType() === 'Option<Vec<Text>>'){
+  if (decimals.toRawType != null && token.toRawType() === "Option<Vec<Text>>") {
     token = token.toJSON()[0]
   }
   return (
@@ -327,9 +351,8 @@ async function uintToString(value, type, baseType, depth) {
         " " +
         botParams.settings.network.token
       )
-    }
-    return humanValue
-  } else return new BigNumber(value.toString()).toFixed(4)
+    } else return value.toString()
+  } else return new BigNumber(value.toString()).toFixed(0)
 }
 
 async function dateToString(value, type, baseType, depth) {

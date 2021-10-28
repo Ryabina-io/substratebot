@@ -7,7 +7,7 @@ module.exports.handler = async function (bot, data, isExtrinsic) {
       if (
         extrinsic.signer == "DFfmNGJBuAexib19TbjhaubfekchJe8mMTVQv4Axd8ynSjw"
       ) {
-        var remark = await hexToString(extrinsic.args["_remark"], "", "", 0)
+        var remark = await hexToString(extrinsic.args["remark"], "", "", 0)
         remark = JSON.parse(remark)
         var alert = {
           section: "ecosystem",

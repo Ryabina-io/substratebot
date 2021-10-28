@@ -3,216 +3,42 @@ const { stringCamelCase } = require("@polkadot/util")
 const _ = require("lodash")
 const BigNumber = require("bignumber.js")
 const marked = require("marked")
+const { result } = require("lodash")
 
 function metaConvertToConfig(api, hideIgnore) {
   if (api.runtimeMetadata.version >= 14) {
-    let modules = {}
-    let pallets = api.runtimeMetadata.asLatest.pallets
-    let types = api.runtimeMetadata.asLatest.lookup.types
-    pallets.forEach(pallet => {
-      let events = []
-      let calls = []
-      if (pallet.events.value.toHuman()) {
-        let eventsId = pallet.events.value.type.toHuman()
-        events = types[eventsId].toJSON().type.def.variant.variants
-      }
-      if (pallet.calls.value.toHuman()) {
-        let callsId = pallet.calls.value.type.toHuman()
-        calls = types[callsId].toJSON().type.def.variant.variants
-      }
-      if (events.length > 0 || calls.length > 0) {
-        modules[pallet.name.toString()] = {
-          events: {},
-          calls: {},
-          short: pallet.name.toString().replace(/[aeiou]/g, ""),
-        }
-
-        if (events.length > 0) {
-          events.forEach(event => {
-            if (!hideIgnore.events.includes(event.name)) {
-              let emptyIndex = event.docs.indexOf("")
-              if (emptyIndex == -1) {
-                emptyIndex = event.docs.indexOf(" # <weight>")
-              }
-              let documentation = ""
-              if (emptyIndex > 0) event.docs.length = emptyIndex
-              let documentationArgs = []
-              var docStr =
-                event.docs.length > 0
-                  ? event.docs
-                      .map(d => d.toString())
-                      .reduce((total, d) => {
-                        return total + " " + d
-                      })
-                  : ""
-              var squareBrackets = docStr.match(/\[.*?\]/g)
-              if (squareBrackets && squareBrackets.length > 0) {
-                documentationArgs = docStr
-                  .match(/\[.*?\]/g)[0]
-                  .replace("[", "")
-                  .replace("]", "")
-                  .replace(/\\/g, "")
-                  .replace(/ /g, "")
-                  .split(",")
-                documentation = docStr
-                  .replace(/\\/g, "")
-                  .replace("[", "`(")
-                  .replace("]", ")`")
-              } else if (event.docs.length > 0) {
-                documentation = docStr
-              }
-              modules[pallet.name.toString()].events[event.name] = {
-                short: event.name.replace(/[aeiou]/g, ""),
-                documentation: documentation,
-                args: [],
-              }
-              event.fields.forEach((arg, index) => {
-                //name of argument
-                var docName = ""
-                if (documentationArgs && documentationArgs.length > index) {
-                  docName = stringCamelCase(documentationArgs[index])
-                } else if (arg.name) {
-                  docName = stringCamelCase(arg.name)
-                } else {
-                  if (types[arg.type].type.path.length > 0) {
-                    docName = types[arg.type].type.path[
-                      types[arg.type].type.path.length - 1
-                    ].toString()
-                  } else {
-                    docName = arg.typeName
-                  }
-                }
-                var checkExistName = (name, index = 1) => {
-                  var result = name
-                  if (
-                    modules[pallet.name.toString()].events[
-                      event.name
-                    ].args.find(a => a.name == result)
-                  ) {
-                    result = result + `${index + 1}`
-                    return checkExistName(result, index + 1)
-                  } else return result
-                }
-                docName = checkExistName(docName)
-
-                //type of argument
-                let argType = ""
-                let argTypeName = arg.typeName
-                  .split(":")
-                  [arg.typeName.split(":").length - 1].replace("<T>", "")
-                //if(argTypeName.lastIndexOf("<") > -1){
-                //  argTypeName = argTypeName.substring(0, argTypeName.lastIndexOf("<"))
-                //}
-                if (types[arg.type].type.path.length > 0) {
-                  argType = types[arg.type].type.path[
-                    types[arg.type].type.path.length - 1
-                  ].toString()
-                } else if (types[arg.type].type.def.toJSON().primitive) {
-                  argType = types[arg.type].type.def
-                    .toJSON()
-                    .primitive.toLowerCase()
-                } else {
-                  argType = argTypeName
-                }
-                var newArg = {
-                  name: docName,
-                  type: argTypeName,
-                  baseType: getBaseDef(argType, api.registry),
-                }
-                if (isHide(argType, api.registry, hideIgnore))
-                  newArg.visible = "hide"
-                modules[pallet.name.toString()].events[event.name].args.push(
-                  newArg
-                )
-              })
-            }
-          })
-        }
-        if (calls.length > 0) {
-          calls.forEach(call => {
-            var callName = stringCamelCase(call.name)
-            if (!hideIgnore.calls.includes(callName)) {
-              var emptyIndex = call.docs.indexOf("")
-              if (emptyIndex == -1) {
-                emptyIndex = call.docs.indexOf(" # <weight>")
-              }
-              var documentation = call.docs
-              if (emptyIndex > 0) documentation.length = emptyIndex
-              if (documentation.length > 0) {
-                documentation = documentation
-                  .map(d => d.toString())
-                  .reduce((total, d) => {
-                    return total + " " + d
-                  })
-              } else documentation = ""
-              modules[pallet.name.toString()].calls[callName] = {
-                short: callName.replace(/[aeiou]/g, ""),
-                documentation: documentation,
-                args: [],
-              }
-              call.fields.forEach(arg => {
-                let argType = ""
-                let argTypeName = arg.typeName
-                  .split(":")
-                  [arg.typeName.split(":").length - 1].replace("<T>", "")
-                //if(argTypeName.lastIndexOf("<") > -1){
-                //  argTypeName = argTypeName.substring(0, argTypeName.lastIndexOf("<"))
-                //}
-                if (types[arg.type].type.path.length > 0) {
-                  argType = types[arg.type].type.path[
-                    types[arg.type].type.path.length - 1
-                  ].toString()
-                } else if (types[arg.type].type.def.toJSON().primitive) {
-                  argType = types[arg.type].type.def
-                    .toJSON()
-                    .primitive.toLowerCase()
-                } else {
-                  argType = argTypeName
-                }
-                var newArg = {
-                  name: stringCamelCase(arg.name),
-                  type: argTypeName,
-                  baseType: getBaseDef(argType, api.registry),
-                }
-                if (isHide(argType, api.registry, hideIgnore))
-                  newArg.visible = "hide"
-                modules[pallet.name.toString()].calls[callName].args.push(
-                  newArg
-                )
-              })
-            }
-          })
-        }
-      }
-    })
-
-    return modules
+    return convertMetaV14(api.runtimeMetadata, api.registry, hideIgnore)
   } else {
     let modules = {}
-    api.runtimeMetadata.asLatest.modules.forEach(module => {
-      if (
-        (module.events && module.events.value.length > 0) ||
-        (module.calls && module.calls.value.length > 0)
-      ) {
+    api.runtimeMetadata
+      .toJSON()
+      .metadata["v" + api.runtimeMetadata.version].modules.forEach(module => {
         modules[module.name.toString()] = {
           events: {},
           calls: {},
           short: module.name.toString().replace(/[aeiou]/g, ""),
         }
-
-        if (module.events.value.length > 0) {
-          module.events.value.forEach(event => {
+        if (module.events && module.events.length > 0) {
+          module.events.forEach(event => {
             if (!hideIgnore.events.includes(event.name.toString())) {
-              var emptyIndex = event.documentation.indexOf("")
+              var emptyIndex = event[
+                getDocsPropertyName(api.runtimeMetadata.version)
+              ].indexOf("")
               if (emptyIndex == -1) {
-                emptyIndex = event.documentation.indexOf(" # <weight>")
+                emptyIndex = event[
+                  getDocsPropertyName(api.runtimeMetadata.version)
+                ].indexOf(" # <weight>")
               }
               var documentation = ""
-              if (emptyIndex > 0) event.documentation.length = emptyIndex
+              if (emptyIndex > 0)
+                event[
+                  getDocsPropertyName(api.runtimeMetadata.version)
+                ].length = emptyIndex
               var documentationArgs = []
               var docStr =
-                event.documentation.length > 0
-                  ? event.documentation
+                event[getDocsPropertyName(api.runtimeMetadata.version)].length >
+                0
+                  ? event[getDocsPropertyName(api.runtimeMetadata.version)]
                       .map(d => d.toString())
                       .reduce((total, d) => {
                         return total + " " + d
@@ -231,7 +57,10 @@ function metaConvertToConfig(api, hideIgnore) {
                   .replace(/\\/g, "")
                   .replace("[", "`(")
                   .replace("]", ")`")
-              } else if (event.documentation.length > 0) {
+              } else if (
+                event[getDocsPropertyName(api.runtimeMetadata.version)].length >
+                0
+              ) {
                 documentation = docStr
               }
               modules[module.name.toString()].events[event.name.toString()] = {
@@ -272,15 +101,20 @@ function metaConvertToConfig(api, hideIgnore) {
             }
           })
         }
-        if (module.calls.value.length > 0) {
-          module.calls.value.forEach(call => {
+        if (module.calls && module.calls.length > 0) {
+          module.calls.forEach(call => {
             var callName = stringCamelCase(call.name.toString())
             if (!hideIgnore.calls.includes(callName)) {
-              var emptyIndex = call.documentation.indexOf("")
+              var emptyIndex = call[
+                getDocsPropertyName(api.runtimeMetadata.version)
+              ].indexOf("")
               if (emptyIndex == -1) {
-                emptyIndex = call.documentation.indexOf(" # <weight>")
+                emptyIndex = call[
+                  getDocsPropertyName(api.runtimeMetadata.version)
+                ].indexOf(" # <weight>")
               }
-              var documentation = call.documentation
+              var documentation =
+                call[getDocsPropertyName(api.runtimeMetadata.version)]
               if (emptyIndex > 0) documentation.length = emptyIndex
               if (documentation.length > 0) {
                 documentation = documentation
@@ -295,13 +129,12 @@ function metaConvertToConfig(api, hideIgnore) {
                 args: [],
               }
               call.args.forEach(arg => {
-                var argJSON = arg.toJSON()
                 var newArg = {
-                  name: stringCamelCase(argJSON.name),
-                  type: argJSON.type,
-                  baseType: getBaseDef(argJSON.type, api.registry),
+                  name: stringCamelCase(arg.name),
+                  type: arg.type,
+                  baseType: getBaseDef(arg.type, api.registry),
                 }
-                if (isHide(argJSON.type, api.registry, hideIgnore))
+                if (isHide(arg.type, api.registry, hideIgnore))
                   newArg.visible = "hide"
                 modules[module.name.toString()].calls[callName].args.push(
                   newArg
@@ -310,10 +143,236 @@ function metaConvertToConfig(api, hideIgnore) {
             }
           })
         }
-      }
-    })
+        if (
+          Object.keys(modules[module.name.toString()].events).length === 0 &&
+          Object.keys(modules[module.name.toString()].calls).length === 0
+        ) {
+          delete modules[module.name.toString()]
+        }
+      })
     return modules
   }
+}
+
+function convertMetaV14(metadata, registry, hideIgnore) {
+  let modules = {}
+  let pallets = metadata.asLatest.pallets
+  let types = metadata.asLatest.lookup.types
+  pallets.forEach(pallet => {
+    let events = []
+    let calls = []
+    if (pallet.events.value.toHuman()) {
+      let eventsId = pallet.events.value.type.toHuman()
+      events = types[eventsId].toJSON().type.def.variant.variants
+    }
+    if (pallet.calls.value.toHuman()) {
+      let callsId = pallet.calls.value.type.toHuman()
+      calls = types[callsId].toJSON().type.def.variant.variants
+    }
+    if (events.length > 0 || calls.length > 0) {
+      modules[pallet.name.toString()] = {
+        events: {},
+        calls: {},
+        short: pallet.name.toString().replace(/[aeiou]/g, ""),
+      }
+
+      if (events.length > 0) {
+        events.forEach(event => {
+          if (!hideIgnore.events.includes(event.name)) {
+            let emptyIndex = event.docs.indexOf("")
+            if (emptyIndex == -1) {
+              emptyIndex = event.docs.indexOf(" # <weight>")
+            }
+            let documentation = ""
+            if (emptyIndex > 0) event.docs.length = emptyIndex
+            let documentationArgs = []
+            var docStr =
+              event.docs.length > 0
+                ? event.docs
+                    .map(d => d.toString())
+                    .reduce((total, d) => {
+                      return total + " " + d
+                    })
+                : ""
+            var squareBrackets = docStr.match(/\[.*?\]/g)
+            if (squareBrackets && squareBrackets.length > 0) {
+              documentationArgs = docStr
+                .match(/\[.*?\]/g)[0]
+                .replace("[", "")
+                .replace("]", "")
+                .replace(/\\/g, "")
+                .replace(/ /g, "")
+                .split(",")
+              documentation = docStr
+                .replace(/\\/g, "")
+                .replace("[", "`(")
+                .replace("]", ")`")
+            } else if (event.docs.length > 0) {
+              documentation = docStr
+            }
+            modules[pallet.name.toString()].events[event.name] = {
+              short: event.name.replace(/[aeiou]/g, ""),
+              documentation: documentation,
+              args: [],
+            }
+            event.fields.forEach((arg, index) => {
+              //name of argument
+              var docName = ""
+              if (documentationArgs && documentationArgs.length > index) {
+                docName = stringCamelCase(documentationArgs[index])
+              } else if (arg.name) {
+                docName = stringCamelCase(arg.name)
+              } else {
+                if (types[arg.type].type.path.length > 0) {
+                  docName = types[arg.type].type.path[
+                    types[arg.type].type.path.length - 1
+                  ].toString()
+                } else {
+                  docName = arg.typeName
+                }
+              }
+              var checkExistName = (name, index = 1) => {
+                var result = name
+                if (
+                  modules[pallet.name.toString()].events[event.name].args.find(
+                    a => a.name == result
+                  )
+                ) {
+                  result = result + `${index + 1}`
+                  return checkExistName(result, index + 1)
+                } else return result
+              }
+              docName = checkExistName(docName)
+
+              //type of argument
+              let argBaseTypeName = ""
+              let argTypeName = ""
+
+              if (
+                arg.typeName.startsWith("Vec<") ||
+                arg.typeName.startsWith("Option<") ||
+                arg.typeName.startsWith("Compact<")
+              ) {
+                argTypeName = clearTypeName(
+                  arg.typeName.substring(
+                    arg.typeName.indexOf("<") + 1,
+                    arg.typeName.lastIndexOf(">")
+                  ),
+                  arg.typeName.substring(0, arg.typeName.indexOf("<"))
+                )
+              } else argTypeName = clearTypeName(arg.typeName)
+              argBaseTypeName = getBaseDef(argTypeName, registry)
+              if (argBaseTypeName === argTypeName) {
+                if (types[arg.type].type.path.length > 0) {
+                  argBaseTypeName = getBaseDef(
+                    types[arg.type].type.path[
+                      types[arg.type].type.path.length - 1
+                    ].toString(),
+                    registry
+                  )
+                } else if (types[arg.type].type.def.toJSON().primitive) {
+                  argBaseTypeName = types[arg.type].type.def
+                    .toJSON()
+                    .primitive.toLowerCase()
+                }
+              }
+              var newArg = {
+                name: docName,
+                type: argTypeName,
+                baseType: argBaseTypeName,
+              }
+              if (isHide(argBaseTypeName, registry, hideIgnore))
+                newArg.visible = "hide"
+              modules[pallet.name.toString()].events[event.name].args.push(
+                newArg
+              )
+            })
+          }
+        })
+      }
+      if (calls.length > 0) {
+        calls.forEach(call => {
+          var callName = stringCamelCase(call.name)
+          if (!hideIgnore.calls.includes(callName)) {
+            var emptyIndex = call.docs.indexOf("")
+            if (emptyIndex == -1) {
+              emptyIndex = call.docs.indexOf(" # <weight>")
+            }
+            var documentation = call.docs
+            if (emptyIndex > 0) documentation.length = emptyIndex
+            if (documentation.length > 0) {
+              documentation = documentation
+                .map(d => d.toString())
+                .reduce((total, d) => {
+                  return total + " " + d
+                })
+            } else documentation = ""
+            modules[pallet.name.toString()].calls[callName] = {
+              short: callName.replace(/[aeiou]/g, ""),
+              documentation: documentation,
+              args: [],
+            }
+            call.fields.forEach(arg => {
+              let argBaseTypeName = ""
+              let argTypeName = ""
+              if (
+                arg.typeName.startsWith("Vec<") ||
+                arg.typeName.startsWith("Option<") ||
+                arg.typeName.startsWith("Compact<")
+              ) {
+                argTypeName = clearTypeName(
+                  arg.typeName.substring(
+                    arg.typeName.indexOf("<") + 1,
+                    arg.typeName.lastIndexOf(">")
+                  ),
+                  arg.typeName.substring(0, arg.typeName.indexOf("<"))
+                )
+              } else argTypeName = clearTypeName(arg.typeName)
+              argBaseTypeName = getBaseDef(argTypeName, registry)
+              if (argBaseTypeName === argTypeName) {
+                if (types[arg.type].type.path.length > 0) {
+                  argBaseTypeName = getBaseDef(
+                    types[arg.type].type.path[
+                      types[arg.type].type.path.length - 1
+                    ].toString(),
+                    registry
+                  )
+                } else if (types[arg.type].type.def.toJSON().primitive) {
+                  argBaseTypeName = types[arg.type].type.def
+                    .toJSON()
+                    .primitive.toLowerCase()
+                } else if (types[arg.type].type.def.toJSON().sequence) {
+                  let seqType = types[arg.type].type.def.toJSON().sequence.type
+                  if (types[seqType].type.path.length > 0) {
+                    argBaseTypeName =
+                      "Vec<" +
+                      getBaseDef(
+                        types[seqType].type.path[
+                          types[seqType].type.path.length - 1
+                        ].toString(),
+                        registry
+                      ) +
+                      ">"
+                  }
+                }
+              }
+              var newArg = {
+                name: stringCamelCase(arg.name),
+                type: argTypeName,
+                baseType: argBaseTypeName,
+              }
+
+              if (isHide(argBaseTypeName, registry, hideIgnore))
+                newArg.visible = "hide"
+              modules[pallet.name.toString()].calls[callName].args.push(newArg)
+            })
+          }
+        })
+      }
+    }
+  })
+
+  return modules
 }
 
 function isHide(type, registry, hideIgnore) {
@@ -322,7 +381,7 @@ function isHide(type, registry, hideIgnore) {
     type.startsWith("Option<") ||
     type.startsWith("Vec<")
   ) {
-    var innerType = type.substring(type.lastIndexOf("<") + 1, type.indexOf(">"))
+    var innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"))
     return isHide(innerType, registry, hideIgnore)
   } else {
     let baseDef = getBaseDef(type, registry)
@@ -337,18 +396,31 @@ function isHide(type, registry, hideIgnore) {
   }
 }
 
-function getBaseDef(type, registry, wrapType = "") {
+function getBaseDef(typeArg, registry, wrapType = "") {
+  let type = ""
+  if (isObject(typeArg)) {
+    type = JSON.stringify(typeArg)
+  } else type = typeArg
   if (
     type.startsWith("Compact<") ||
     type.startsWith("Option<") ||
     type.startsWith("Vec<")
   ) {
-    var innerType = type.substring(type.lastIndexOf("<") + 1, type.indexOf(">"))
-    return getBaseDef(
-      innerType,
-      registry,
-      type.substring(0, type.lastIndexOf("<"))
-    )
+    let innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"))
+    return getBaseDef(innerType, registry, type.substring(0, type.indexOf("<")))
+  } else if (type.startsWith("Box<")) {
+    let innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"))
+    return getBaseDef(innerType, registry, wrapType)
+  } else if (type.startsWith("UInt<")) {
+    return type
+      .substring(type.indexOf("<") + 1, type.lastIndexOf(">"))
+      .replace(" ", "")
+      .split(",")[1]
+  } else if (type.includes("<")) {
+    let formatType = clearTypeName(type)
+    return getBaseDef(formatType, registry, wrapType)
+  } else if (type.includes("::")) {
+    return getBaseDef(type.split("::")[1], registry, wrapType)
   } else {
     if (registry) {
       var baseDef = registry.getDefinition(type)
@@ -358,10 +430,70 @@ function getBaseDef(type, registry, wrapType = "") {
         } else {
           return `${wrapType}<${type}>`
         }
+      } else if (baseDef.startsWith("(")) {
+        let tupleDefs = baseDef
+          .substring(baseDef.indexOf("(") + 1, baseDef.lastIndexOf(")"))
+          .replace(" ", "")
+          .split(",")
+        let baseDefs = tupleDefs.map(d => {
+          return getBaseDef(d, registry)
+        })
+        let resultType = "(" + baseDefs.join(", ") + ")"
+        if (wrapType == "") {
+          return resultType
+        } else {
+          return `${wrapType}<${resultType}>`
+        }
+      } else if (baseDef.startsWith("{")) {
+        if (baseDef.includes("_enum")) {
+          if (wrapType == "") {
+            return baseDef
+          } else {
+            return `${wrapType}<${baseDef}>`
+          }
+        } else if (baseDef.includes("_bitLength")) {
+          if (wrapType == "") {
+            return baseDef
+          } else {
+            return `${wrapType}<${type}>`
+          }
+        } else {
+          let defStruct = JSON.parse(baseDef)
+          let resultStruct = {}
+          for (var key in defStruct) {
+            try {
+              resultStruct[key] = getBaseDef(defStruct[key], registry)
+            } catch (error) {
+              console.log("!")
+            }
+          }
+          let resultType = JSON.stringify(resultStruct)
+          if (wrapType == "") {
+            return resultType
+          } else {
+            return `${wrapType}<${resultType}>`
+          }
+        }
       } else return getBaseDef(baseDef, registry, wrapType)
     } else {
       return type
     }
+  }
+}
+
+function clearTypeName(name, wrapType = "") {
+  let formatName = ""
+  let innerTagElements = getInnerTagsElements(name)
+  if (innerTagElements.length > 0) {
+    innerTagElements.forEach(e => (formatName = name.replace(e, "")))
+  } else formatName = name
+  if (formatName.includes("::")) {
+    formatName = formatName.split("::")[1]
+  }
+  if (wrapType === "") {
+    return formatName
+  } else {
+    return `${wrapType}<${formatName}>`
   }
 }
 
@@ -387,9 +519,13 @@ function isIterable(obj) {
 function getInnerType(type) {
   if (type.includes("<") && type.includes(">")) {
     return getInnerType(
-      type.substring(type.lastIndexOf("<") + 1, type.lastIndexOf(">"))
+      type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"))
     )
   } else return type
+}
+
+function getFirstInnerType(type) {
+  return type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"))
 }
 
 function replaceMarkdownSymbols(text, includingCode = true) {
@@ -558,6 +694,7 @@ function htmlEscapeToText(text) {
     return String.fromCharCode(escapeCode.match(/[0-9]+/))
   })
 }
+
 function render_plain() {
   var render = new marked.Renderer()
   render.link = function (href, title, text) {
@@ -604,12 +741,50 @@ function convertMarkdownToText(md) {
   return result
 }
 
+function getDocsPropertyName(version) {
+  if (version > 12) {
+    return "docs"
+  } else return "documentation"
+}
+
+function getInnerTagsElements(text) {
+  let result = []
+  for (let i = 0; i < text.length; i++) {
+    if (text[i] === "<") {
+      let tagText = getTagText(text.substring(i + 1, text.length))
+      result.push(text[i] + tagText)
+      i += tagText.length
+    }
+  }
+  return result
+}
+
+function getTagText(tag) {
+  let result = ""
+  for (let i = 0; i < tag.length; i++) {
+    result += tag[i]
+    if (tag[i] === "<") {
+      let tagText = getTagText(tag.substring(i + 1, tag.length))
+      result += tagText
+      i += tagText.length
+    } else if (tag[i] === ">") {
+      return result
+    }
+  }
+  return result
+}
+
+function isObject(a) {
+  return !!a && a.constructor === Object
+}
+
 module.exports = {
   metaConvertToConfig: metaConvertToConfig,
   isIterable: isIterable,
   getTargets: getTargets,
   getBaseDef: getBaseDef,
   getInnerType: getInnerType,
+  getInnerTagsElements: getInnerTagsElements,
   getStashAccount: getStashAccount,
   replaceMarkdownSymbols: replaceMarkdownSymbols,
   splitSentenceIntoRows: splitSentenceIntoRows,
