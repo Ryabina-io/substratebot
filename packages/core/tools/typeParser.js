@@ -97,6 +97,8 @@ async function parse(value, type, baseType, depth) {
     return await balanceToString(value)
   } else if (type == "Call" || type == "Proposal") {
     return await callToString(value, type, baseType, depth)
+  } else if (type == "ParaId") {
+    return await parachainIdToSring(value)
   } else if (baseType.startsWith("Compact<")) {
     return await compactToString(value, type, baseType, depth)
   } else if (baseType.startsWith("Option<")) {
@@ -413,6 +415,26 @@ async function oracleKeyToString(value, type, baseType, depth) {
       result += oracleKey[key] + " "
     }
   } else result = oracleKey.toString()
+  return result
+}
+
+async function parachainIdToSring(value, type, baseType, depth) {
+  let paraId = value.toString()
+  let fund = await botParams.api.query.crowdloan.funds(paraId)
+  let fundInfo = await botParams.api.derive.accounts.info(
+    fund.toJSON().depositor
+  )
+  let result = paraId
+  if (fundInfo.identity.displayParent || fundInfo.identity.display) {
+    let name = ""
+    if (fundInfo.identity.displayParent) {
+      name += fundInfo.identity.displayParent + ":"
+    }
+    if (fundInfo.identity.display) {
+      name += fundInfo.identity.display
+    }
+    result += " (" + name + ")"
+  }
   return result
 }
 
