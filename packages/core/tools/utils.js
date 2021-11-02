@@ -10,9 +10,9 @@ function metaConvertToConfig(api, hideIgnore) {
     return convertMetaV14(api.runtimeMetadata, api.registry, hideIgnore)
   } else {
     let modules = {}
-    api.runtimeMetadata
+    api.runtimeMetadata["asV" + api.runtimeMetadata.version]
       .toJSON()
-      .metadata["V" + api.runtimeMetadata.version].modules.forEach(module => {
+      .modules.forEach(module => {
         modules[module.name.toString()] = {
           events: {},
           calls: {},
