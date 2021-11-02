@@ -353,6 +353,8 @@ async function uintToString(value, type, baseType, depth) {
         " " +
         botParams.settings.network.token
       )
+    } else if (humanValue.includes("%")) {
+      return humanValue
     } else return value.toString()
   } else return new BigNumber(value.toString()).toFixed(0)
 }

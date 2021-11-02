@@ -5,16 +5,23 @@ module.exports = {
     const nodeUri = process.env.NODE_URI || "wss://mainnet-rpc.stafi.io"
     const provider = new WsProvider(nodeUri)
     const types = {
+      Address: "IndicesLookupSource",
+      LookupSource: "IndicesLookupSource",
       RefCount: "u32",
       ChainId: "u8",
       ResourceId: "[u8; 32]",
       DepositNonce: "u64",
       RateType: "u64",
+      AccountInfo: {
+        nonce: "u32",
+        refcount: "RefCount",
+        data: "AccountData",
+      },
       AccountRData: {
         free: "u128",
       },
       RSymbol: {
-        _enum: ["RFIS", "RDOT", "RKSM", "RATOM"],
+        _enum: ["RFIS", "RDOT", "RKSM", "RATOM", "RSOL", "RMATIC", "RBNB"],
       },
       AccountXData: {
         free: "u128",
@@ -81,13 +88,7 @@ module.exports = {
         active: "u128",
       },
       OriginalTxType: {
-        _enum: [
-          "Transfer",
-          "Bond",
-          "Unbond",
-          "WithdrawUnbond",
-          "ClaimRewards",
-        ],
+        _enum: ["Transfer", "Bond", "Unbond", "WithdrawUnbond", "ClaimRewards"],
       },
       Unbonding: {
         who: "AccountId",
@@ -108,6 +109,56 @@ module.exports = {
         votes_against: "Vec<AccountId>",
         status: "RproposalStatus",
         expiry: "BlockNumber",
+      },
+      SwapTransactionInfo: {
+        account: "AccountId",
+        receiver: "Vec<u8>",
+        value: "u128",
+        is_deal: "bool",
+      },
+      SwapRate: {
+        lock_number: "u64",
+        rate: "u128",
+      },
+      BondAction: {
+        _enum: [
+          "BondOnly",
+          "UnbondOnly",
+          "BothBondUnbond",
+          "EitherBondUnbond",
+          "InterDeduct",
+        ],
+      },
+      BondSwap: {
+        bonder: "AccountId",
+        swap_fee: "Balance",
+        swap_receiver: "AccountId",
+        bridger: "AccountId",
+        recipient: "Vec<u8>",
+        dest_id: "ChainId",
+        expire: "BlockNumber",
+        bond_state: "BondState",
+        refunded: "bool",
+      },
+      ClaimInfo: {
+        mint_amount: "u128",
+        native_token_amount: "u128",
+        total_reward: "Balance",
+        total_claimed: "Balance",
+        latest_claimed_block: "BlockNumber",
+        mint_block: "BlockNumber",
+      },
+      MintRewardAct: {
+        begin: "BlockNumber",
+        end: "BlockNumber",
+        cycle: "u32",
+        reward_rate: "u128",
+        total_reward: "Balance",
+        left_amount: "Balance",
+        user_limit: "Balance",
+        locked_blocks: "u32",
+        total_rtoken_amount: "u128",
+        total_native_token_amount: "u128",
       },
     }
     const api = await ApiPromise.create({

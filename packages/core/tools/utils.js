@@ -12,7 +12,7 @@ function metaConvertToConfig(api, hideIgnore) {
     let modules = {}
     api.runtimeMetadata
       .toJSON()
-      .metadata["v" + api.runtimeMetadata.version].modules.forEach(module => {
+      .metadata["V" + api.runtimeMetadata.version].modules.forEach(module => {
         modules[module.name.toString()] = {
           events: {},
           calls: {},
