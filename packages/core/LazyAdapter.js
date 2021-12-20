@@ -1,5 +1,15 @@
 const BaseAdapter = require("lowdb/adapters/Base")
 const fs = require("graceful-fs")
+const prom = require("./metrics")
+
+const usersGauge = new prom.Gauge({
+  name: "substrate_bot_users_count",
+  help: "metric_help",
+})
+const notificationsGauge = new prom.Gauge({
+  name: "substrate_bot_notifications_count",
+  help: "metric_help",
+})
 
 const readFile = fs.readFileSync
 const writeFile = fs.writeFile
@@ -27,6 +37,8 @@ module.exports = class LazyAdapter extends BaseAdapter {
       }
     }
     const updateFile = async () => {
+      usersGauge.set(this.memory.users.length)
+      notificationsGauge.set(this.memory.notifications.length)
       writeFile(this.source, this.serialize(this.memory), err => {
         if (err) {
           console.error("Write file error")
