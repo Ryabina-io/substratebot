@@ -118,7 +118,7 @@ module.exports = {
           },
           {
             name: "New Treasury Tip",
-            contract: "treasury",
+            contract: "tips",
             call: "tipNew",
             short: "NwTp",
             selected: true,
@@ -132,7 +132,7 @@ module.exports = {
           },
           {
             name: "New Bounty proposal",
-            contract: "treasury",
+            contract: "bounties",
             event: "BountyProposed",
             short: "BntPrpsd",
             selected: true,
