@@ -32,7 +32,7 @@ function getEventLinks(event, eventDB, index, block) {
     (event.section == "democracy" && event.method == "NotPassed") ||
     (event.section == "democracy" && event.method == "Executed")
   ) {
-    var argIndex = _.findIndex(eventDB.args, a => a.name == "refIndex")
+    var argIndex = _.findIndex(eventDB.args, a => a.name == "ref_index")
     var referendumId = event.data[argIndex].toNumber()
     links.push([
       [
@@ -56,7 +56,7 @@ function getEventLinks(event, eventDB, index, block) {
     (event.section == "treasury" && event.method == "Awarded") ||
     (event.section == "treasury" && event.method == "Rejected")
   ) {
-    var argIndex = _.findIndex(eventDB.args, a => a.name == "proposalIndex")
+    var argIndex = _.findIndex(eventDB.args, a => a.name == "proposal_index")
     var proposalId = event.data[argIndex].toNumber()
     links.push([
       [
