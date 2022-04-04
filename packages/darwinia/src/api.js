@@ -1,11 +1,14 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api")
 const { HttpProvider } = require("@polkadot/rpc-provider")
-const {
-  typesChain,
-  typesSpec,
-  typesBundle,
-  typesRpc,
-} = require("@polkadot/apps-config/api")
+const { typesBundleForPolkadotApps } = require("@darwinia/types/mix")
+
+const darwiniaTypesBundle = {
+  spec: {
+    Crab: typesBundleForPolkadotApps.spec.Crab,
+    Darwinia: typesBundleForPolkadotApps.spec.Darwinia,
+    Pangolin: typesBundleForPolkadotApps.spec.Pangolin,
+  },
+}
 
 module.exports = {
   getApi: async () => {
@@ -13,20 +16,12 @@ module.exports = {
     const wsProvider = new WsProvider(wsNodeUri)
     const httpProvider = new HttpProvider(process.env.HTTP_NODE_URI)
     const api = await ApiPromise.create({
-      provider: httpProvider,
-      rpc: typesRpc,
-      types: {},
-      typesBundle,
-      typesChain,
-      typesSpec,
+      provider: wsProvider,
+      typesBundle: darwiniaTypesBundle,
     })
     const subscribeApi = await ApiPromise.create({
       provider: wsProvider,
-      rpc: typesRpc,
-      types: {},
-      typesBundle,
-      typesChain,
-      typesSpec,
+      typesBundle: darwiniaTypesBundle,
     })
     Promise.all([
       api.rpc.system.chain(),
