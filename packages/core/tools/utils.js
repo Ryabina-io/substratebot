@@ -21,24 +21,19 @@ function metaConvertToConfig(api, hideIgnore) {
         if (module.events && module.events.length > 0) {
           module.events.forEach(event => {
             if (!hideIgnore.events.includes(event.name.toString())) {
-              var emptyIndex = event[
-                getDocsPropertyName(api.runtimeMetadata.version)
-              ].indexOf("")
+              var emptyIndex = event[getDocsPropertyName(event)].indexOf("")
               if (emptyIndex == -1) {
-                emptyIndex = event[
-                  getDocsPropertyName(api.runtimeMetadata.version)
-                ].indexOf(" # <weight>")
+                emptyIndex = event[getDocsPropertyName(event)].indexOf(
+                  " # <weight>"
+                )
               }
               var documentation = ""
               if (emptyIndex > 0)
-                event[
-                  getDocsPropertyName(api.runtimeMetadata.version)
-                ].length = emptyIndex
+                event[getDocsPropertyName(event)].length = emptyIndex
               var documentationArgs = []
               var docStr =
-                event[getDocsPropertyName(api.runtimeMetadata.version)].length >
-                0
-                  ? event[getDocsPropertyName(api.runtimeMetadata.version)]
+                event[getDocsPropertyName(event)].length > 0
+                  ? event[getDocsPropertyName(event)]
                       .map(d => d.toString())
                       .reduce((total, d) => {
                         return total + " " + d
@@ -57,10 +52,7 @@ function metaConvertToConfig(api, hideIgnore) {
                   .replace(/\\/g, "")
                   .replace("[", "`(")
                   .replace("]", ")`")
-              } else if (
-                event[getDocsPropertyName(api.runtimeMetadata.version)].length >
-                0
-              ) {
+              } else if (event[getDocsPropertyName(event)].length > 0) {
                 documentation = docStr
               }
               modules[module.name.toString()].events[event.name.toString()] = {
@@ -105,16 +97,13 @@ function metaConvertToConfig(api, hideIgnore) {
           module.calls.forEach(call => {
             var callName = stringCamelCase(call.name.toString())
             if (!hideIgnore.calls.includes(callName)) {
-              var emptyIndex = call[
-                getDocsPropertyName(api.runtimeMetadata.version)
-              ].indexOf("")
+              var emptyIndex = call[getDocsPropertyName(call)].indexOf("")
               if (emptyIndex == -1) {
-                emptyIndex = call[
-                  getDocsPropertyName(api.runtimeMetadata.version)
-                ].indexOf(" # <weight>")
+                emptyIndex = call[getDocsPropertyName(call)].indexOf(
+                  " # <weight>"
+                )
               }
-              var documentation =
-                call[getDocsPropertyName(api.runtimeMetadata.version)]
+              var documentation = call[getDocsPropertyName(call)]
               if (emptyIndex > 0) documentation.length = emptyIndex
               if (documentation.length > 0) {
                 documentation = documentation
@@ -741,10 +730,9 @@ function convertMarkdownToText(md) {
   return result
 }
 
-function getDocsPropertyName(version) {
-  if (version > 12) {
-    return "docs"
-  } else return "documentation"
+function getDocsPropertyName(obj) {
+  if (!obj["docs"]) return "documentation"
+  return "docs"
 }
 
 function getInnerTagsElements(text) {
