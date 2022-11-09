@@ -10,7 +10,6 @@
     "@ryabina-io/substratebot": "^1.1.0",
     "bent": "^7.3.7",
     "bignumber.js": "^9.0.0",
-    "i": "^0.3.6",
     "lodash": "^4.17.19",
     "npm": "^6.14.8"
   }
