@@ -684,19 +684,6 @@
     "@polkadot/util-crypto" "^6.11.1"
     "@polkadot/x-rxjs" "^6.11.1"
 
-"@polkadot/api-derive@6.11.1":
-  version "6.11.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/api-derive/-/api-derive-6.11.1.tgz#9e16e073c66e62af7e407ec428e5ffee795a5bb8"
-  integrity sha512-v5tLUPVk5WjHVZTmEBtuuSlR0bl3Vd1cab57gEVaHMn7N2ZUoPhUrj5KqZhzx4lKVihKve5X/1Zlmk9ssrH+UQ==
-  dependencies:
-    "@babel/runtime" "^7.16.3"
-    "@polkadot/api" "6.11.1"
-    "@polkadot/rpc-core" "6.11.1"
-    "@polkadot/types" "6.11.1"
-    "@polkadot/util" "^8.1.2"
-    "@polkadot/util-crypto" "^8.1.2"
-    rxjs "^7.4.0"
-
 "@polkadot/api-derive@6.12.1":
   version "6.12.1"
   resolved "https://registry.yarnpkg.com/@polkadot/api-derive/-/api-derive-6.12.1.tgz#f5356104d4cb1bed8f0dcac32afc4b0a5c05c232"
@@ -832,23 +819,6 @@
     "@polkadot/util-crypto" "^6.11.1"
     "@polkadot/x-rxjs" "^6.11.1"
     eventemitter3 "^4.0.7"
-
-"@polkadot/api@6.11.1":
-  version "6.11.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/api/-/api-6.11.1.tgz#05c1c19bd71b5041ca656d7749eac2a91fcc7155"
-  integrity sha512-MhaPJNe4Tu39j/kzjknfjGOloN2681qjQxVxDpFp6pOx1bfOjtwwiJYpOF9cZlMKkssvPGSN+LGqVHUXRlBuOw==
-  dependencies:
-    "@babel/runtime" "^7.16.3"
-    "@polkadot/api-derive" "6.11.1"
-    "@polkadot/keyring" "^8.1.2"
-    "@polkadot/rpc-core" "6.11.1"
-    "@polkadot/rpc-provider" "6.11.1"
-    "@polkadot/types" "6.11.1"
-    "@polkadot/types-known" "6.11.1"
-    "@polkadot/util" "^8.1.2"
-    "@polkadot/util-crypto" "^8.1.2"
-    eventemitter3 "^4.0.7"
-    rxjs "^7.4.0"
 
 "@polkadot/api@6.12.1", "@polkadot/api@^6.11.1":
   version "6.12.1"
@@ -1226,17 +1196,6 @@
     "@polkadot/util" "^6.11.1"
     "@polkadot/x-rxjs" "^6.11.1"
 
-"@polkadot/rpc-core@6.11.1":
-  version "6.11.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/rpc-core/-/rpc-core-6.11.1.tgz#6bf9dec62e21947be9b09e5fc37204aea1f9fa46"
-  integrity sha512-WCn284LeNW35HWpXV5BpFohdGBOu5gLxVfDCLnFPg/drxuRFwTuMCKC2IDB7Aoo4EThfAzC61tNO5Qr29goUrg==
-  dependencies:
-    "@babel/runtime" "^7.16.3"
-    "@polkadot/rpc-provider" "6.11.1"
-    "@polkadot/types" "6.11.1"
-    "@polkadot/util" "^8.1.2"
-    rxjs "^7.4.0"
-
 "@polkadot/rpc-core@6.12.1":
   version "6.12.1"
   resolved "https://registry.yarnpkg.com/@polkadot/rpc-core/-/rpc-core-6.12.1.tgz#b5d65589349a0db6edb25fdfd141707a3a5698fa"
@@ -1337,20 +1296,6 @@
     "@polkadot/x-fetch" "^6.11.1"
     "@polkadot/x-global" "^6.11.1"
     "@polkadot/x-ws" "^6.11.1"
-    eventemitter3 "^4.0.7"
-
-"@polkadot/rpc-provider@6.11.1":
-  version "6.11.1"
-  resolved "https://registry.yarnpkg.com/@polkadot/rpc-provider/-/rpc-provider-6.11.1.tgz#faf91b69170a5530ab79f4793d6c32c901f365fb"
-  integrity sha512-KMxPlx2Grtg+64ACLuroJC4VJQnTqnH6nw9rP0wMf5+K0jILdQ3h2GHJvBDDlEUg3rNNNOSjol6qTdHJVXh8OA==
-  dependencies:
-    "@babel/runtime" "^7.16.3"
-    "@polkadot/types" "6.11.1"
-    "@polkadot/util" "^8.1.2"
-    "@polkadot/util-crypto" "^8.1.2"
-    "@polkadot/x-fetch" "^8.1.2"
-    "@polkadot/x-global" "^8.1.2"
-    "@polkadot/x-ws" "^8.1.2"
     eventemitter3 "^4.0.7"
 
 "@polkadot/rpc-provider@6.12.1":
