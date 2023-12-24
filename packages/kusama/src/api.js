@@ -4,7 +4,9 @@ module.exports = {
   getApi: async () => {
     const wsNodeUri = process.env.WS_NODE_URI || "ws://127.0.0.1:9955/"
     const wsProvider = new WsProvider(wsNodeUri)
-    const httpProvider = new HttpProvider(process.env.HTTP_NODE_URI)
+    const httpProvider = process.env.HTTP_NODE_URI
+      ? new HttpProvider(process.env.HTTP_NODE_URI)
+      : wsProvider
     const api = await ApiPromise.create({ provider: httpProvider })
     const subscribeApi = await ApiPromise.create({ provider: wsProvider })
     Promise.all([
