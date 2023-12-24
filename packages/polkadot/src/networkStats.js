@@ -63,10 +63,6 @@ async function getNetworkStats(api) {
         )
       : token_data
 
-  const referendums = await api.query.democracy.referendumInfoOf.entries()
-  const ongoingReferendums = referendums.filter(r => r[1].value.isOngoing)
-  const ongoingProposals = await api.query.democracy.publicProps()
-
   result.price =
     token_data != "NA"
       ? token_data.market_data.current_price.usd.toString() + " USD"
@@ -103,8 +99,6 @@ async function getNetworkStats(api) {
   result.elected = validators.length
   result.waiting = validators2.length - validators.length
   result.nominators = nominators.length
-  result.ongoingProposalsCount = ongoingProposals.length
-  result.ongoingReferendumsCount = ongoingReferendums.length
   return result
 }
 

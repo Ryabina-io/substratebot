@@ -31,13 +31,6 @@ async function main() {
     getNetworkStatsMessage,
   })
   substrateBot.run()
-
-  polkaProjectAlert.run(substrateBot, 30000)
-  githubReleaseAlert.run(substrateBot, process.env.GITHUB_TOKEN ? 5000 : 100000)
-  substrateGithubReleaseAlert.run(
-    substrateBot,
-    process.env.GITHUB_TOKEN ? 10000 : 100000
-  )
 }
 
 main()

@@ -11,6 +11,7 @@ const networkEvents = require("./src/newEvents/networkEventsHandler")
 const githubReleaseAlert = require("./src/newEvents/githubRelease")
 const substrateGithubReleaseAlert = require("./src/newEvents/substrateGithubRelease")
 const polkaProjectAlert = require("./src/newEvents/polkaProject")
+require("dotenv").config()
 
 async function main() {
   var settings = getSettings()
@@ -30,13 +31,6 @@ async function main() {
     getNetworkStatsMessage,
   })
   substrateBot.run()
-
-  polkaProjectAlert.run(substrateBot, 30000)
-  githubReleaseAlert.run(substrateBot, process.env.GITHUB_TOKEN ? 5000 : 100000)
-  substrateGithubReleaseAlert.run(
-    substrateBot,
-    process.env.GITHUB_TOKEN ? 10000 : 100000
-  )
 }
 
 main()
